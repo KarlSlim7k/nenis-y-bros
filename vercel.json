@@ -1,54 +1,38 @@
 {
   "version": 2,
   "name": "nenis-y-bros",
-  "routes": [
+  "rewrites": [
     {
-      "src": "/frontend/assets/(.*)",
-      "dest": "/frontend/assets/$1"
+      "source": "/login",
+      "destination": "/frontend/pages/auth/login.html"
     },
     {
-      "src": "/frontend/components/(.*)",
-      "dest": "/frontend/components/$1"
+      "source": "/registro",
+      "destination": "/frontend/pages/auth/registro.html"
     },
     {
-      "src": "/frontend/pages/(.*)",
-      "dest": "/frontend/pages/$1"
+      "source": "/dashboard",
+      "destination": "/frontend/pages/user/dashboard.html"
     },
     {
-      "src": "/login",
-      "dest": "/frontend/pages/auth/login.html"
+      "source": "/perfil",
+      "destination": "/frontend/pages/user/perfil-empresarial.html"
     },
     {
-      "src": "/registro",
-      "dest": "/frontend/pages/auth/registro.html"
+      "source": "/diagnostico",
+      "destination": "/frontend/pages/user/diagnosticos.html"
     },
     {
-      "src": "/dashboard",
-      "dest": "/frontend/pages/user/dashboard.html"
+      "source": "/productos",
+      "destination": "/frontend/pages/user/vitrina-productos.html"
     },
     {
-      "src": "/perfil",
-      "dest": "/frontend/pages/user/perfil-empresarial.html"
+      "source": "/logros",
+      "destination": "/frontend/pages/user/mis-logros.html"
     },
     {
-      "src": "/diagnostico",
-      "dest": "/frontend/pages/user/diagnosticos.html"
-    },
-    {
-      "src": "/productos",
-      "dest": "/frontend/pages/user/vitrina-productos.html"
-    },
-    {
-      "src": "/logros",
-      "dest": "/frontend/pages/user/mis-logros.html"
-    },
-    {
-      "src": "/mentoria",
-      "dest": "/frontend/pages/user/mentoria-ai.html"
-    },
-    {
-      "src": "/",
-      "dest": "/index.html"
+      "source": "/mentoria",
+      "destination": "/frontend/pages/user/mentoria-ai.html"
     }
   ],
   "headers": [
