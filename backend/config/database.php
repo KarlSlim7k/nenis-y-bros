@@ -11,6 +11,7 @@ class Database {
     private static $instance = null;
     private $connection;
     private $host;
+    private $port;
     private $database;
     private $username;
     private $password;
@@ -21,6 +22,7 @@ class Database {
      */
     private function __construct() {
         $this->host = DB_HOST;
+        $this->port = defined('DB_PORT') ? DB_PORT : '3306';
         $this->database = DB_DATABASE;
         $this->username = DB_USERNAME;
         $this->password = DB_PASSWORD;
@@ -48,7 +50,7 @@ class Database {
      */
     private function connect() {
         try {
-            $dsn = "mysql:host={$this->host};dbname={$this->database};charset={$this->charset}";
+            $dsn = "mysql:host={$this->host};port={$this->port};dbname={$this->database};charset={$this->charset}";
             
             $options = [
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
