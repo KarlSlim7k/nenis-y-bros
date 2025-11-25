@@ -1,6 +1,8 @@
 {
   "version": 2,
   "name": "nenis-y-bros",
+  "buildCommand": "",
+  "outputDirectory": ".",
   "rewrites": [
     {
       "source": "/login",
