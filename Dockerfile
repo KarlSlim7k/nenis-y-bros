@@ -13,7 +13,15 @@ RUN apt-get update && apt-get install -y \
 # Habilitar mod_rewrite para Apache
 RUN a2enmod rewrite
 
-# Configurar Apache para servir desde /var/www/html
+# Configurar Apache para servir desde /var/www/html/backend
+ENV APACHE_DOCUMENT_ROOT /var/www/html/backend
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Habilitar AllowOverride para .htaccess
+RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
+
+# Configurar ServerName
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Copiar archivos del proyecto

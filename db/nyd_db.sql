@@ -35,7 +35,7 @@ CREATE TABLE usuarios (
     pais VARCHAR(100),
     
     -- Configuración de privacidad (JSON)
-    configuracion_privacidad JSON DEFAULT '{"perfil_publico": true, "mostrar_email": false, "mostrar_telefono": false, "mostrar_biografia": true, "mostrar_ubicacion": true, "permitir_mensajes": true}' COMMENT 'Configuración de privacidad del usuario',
+    configuracion_privacidad JSON COMMENT 'Configuración de privacidad del usuario',
     
     -- Auditoría
     fecha_registro DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -69,7 +69,7 @@ CREATE TABLE perfiles_empresariales (
     
     -- Estado del negocio
     etapa_desarrollo ENUM('idea', 'validacion', 'desarrollo', 'lanzamiento', 'crecimiento', 'expansion') NOT NULL DEFAULT 'idea',
-    años_operacion INT DEFAULT 0,
+    anios_operacion INT DEFAULT 0,
     numero_empleados INT DEFAULT 0,
     
     -- Logo/imagen
