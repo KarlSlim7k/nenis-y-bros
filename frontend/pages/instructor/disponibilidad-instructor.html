@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Disponibilidad - Instructor</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; }
+        .admin-container { display: flex; min-height: 100vh; }
+        
+        /* Sidebar */
+        .admin-sidebar { width: 260px; background: #2c3e50; color: white; position: fixed; height: 100vh; overflow-y: auto; }
+        .admin-logo { padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .admin-logo h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
+        .admin-logo span { font-size: 0.85rem; color: #95a5a6; }
+        .admin-menu { list-style: none; padding: 1rem 0; }
+        .admin-menu li a { display: flex; align-items: center; padding: 0.875rem 1.5rem; color: #ecf0f1; text-decoration: none; transition: all 0.3s; }
+        .admin-menu li a:hover, .admin-menu li a.active { background: #34495e; border-left: 4px solid #3498db; }
+        
+        /* Main */
+        .admin-main { margin-left: 260px; flex: 1; padding: 2rem; }
+        .admin-header { background: white; padding: 1.5rem 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .admin-user { display: flex; align-items: center; gap: 1rem; }
+        .admin-user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #3498db; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .btn-logout { background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+        
+        /* Content */
+        .content-section { background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #ecf0f1; }
+        
+        .schedule-grid { display: grid; gap: 15px; }
+        .day-block { border: 2px solid #e0e0e0; border-radius: 10px; padding: 15px; transition: all 0.2s; }
+        .day-block.active { border-color: #3498db; background: #f8f9ff; }
+        .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .day-name { font-weight: 600; font-size: 16px; }
+        .toggle-day { width: 50px; height: 26px; background: #ccc; border-radius: 13px; position: relative; cursor: pointer; transition: background 0.3s; }
+        .toggle-day.active { background: #3498db; }
+        .toggle-day::after { content: ''; position: absolute; width: 20px; height: 20px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: left 0.3s; }
+        .toggle-day.active::after { left: 27px; }
+        .time-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .time-input-group { display: flex; flex-direction: column; gap: 5px; }
+        .time-input-group label { font-size: 12px; color: #666; font-weight: 600; }
+        .time-input-group input { padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; outline: none; }
+        .time-input-group input:focus { border-color: #3498db; }
+        .btn-primary { background: #3498db; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .btn-primary:hover { background: #2980b9; }
+        .btn-primary.full-width { width: 100%; margin-top: 1rem; }
+        .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; }
+        .alert.show { display: block; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <h1>👨‍🏫 Nenis y Bros</h1>
+                <span>Panel Instructor</span>
+            </div>
+            <ul class="admin-menu">
+                <li><a href="./dashboard.html" data-page="dashboard">📊 Dashboard</a></li>
+                <li><a href="./estudiantes.html" data-page="estudiantes">👥 Mis Estudiantes</a></li>
+                <li><a href="./sesiones.html" data-page="sesiones">🎯 Sesiones de Mentoría</a></li>
+                <li><a href="./disponibilidad-instructor.html" data-page="disponibilidad">📅 Mi Disponibilidad</a></li>
+                <li><a href="./cursos.html" data-page="cursos">📚 Mis Cursos</a></li>
+                <li><a href="./mensajes.html" data-page="mensajes">💬 Mensajes</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="admin-header">
+                <h2>Mi Disponibilidad</h2>
+                <div class="admin-user">
+                    <div class="admin-user-avatar user-avatar">I</div>
+                    <div>
+                        <div class="user-name">Instructor</div>
+                        <div class="user-tipo" style="font-size: 0.85rem; color: #7f8c8d;">Mentor</div>
+                    </div>
+                    <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            <div id="alertContainer"></div>
+
+            <!-- Disponibilidad Card -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h3>Configura tu Horario Disponible</h3>
+                </div>
+                <p style="color: #7f8c8d; margin-bottom: 1.5rem;">
+                    Define los días y horarios en los que estás disponible para sesiones de mentoría con tus estudiantes.
+                </p>
+
+                <div class="schedule-grid" id="scheduleContainer">
+                    <div style="text-align: center; padding: 2rem; color: #7f8c8d;">Cargando disponibilidad...</div>
+                </div>
+
+                <button class="btn-primary full-width" onclick="guardarDisponibilidad()">
+                    💾 Guardar Disponibilidad
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script>
+        // Verificar autenticación
+        if (!checkAuth() || !isMentor()) {
+            alert('Acceso denegado. Solo instructores pueden acceder a esta página.');
+            window.location.href = ROUTES.login;
+        }
+
+        const DIAS = [
+            { id: 1, nombre: 'Lunes' },
+            { id: 2, nombre: 'Martes' },
+            { id: 3, nombre: 'Miércoles' },
+            { id: 4, nombre: 'Jueves' },
+            { id: 5, nombre: 'Viernes' },
+            { id: 6, nombre: 'Sábado' },
+            { id: 0, nombre: 'Domingo' }
+        ];
+
+        let disponibilidadActual = {};
+
+        // Cargar disponibilidad al inicio
+        async function cargarDisponibilidad() {
+            try {
+                const response = await apiGet('/mentorias/disponibilidad');
+                
+                if (response.success && response.data) {
+                    response.data.forEach(bloque => {
+                        disponibilidadActual[bloque.dia_semana] = {
+                            activo: bloque.activo || true,
+                            hora_inicio: bloque.hora_inicio ? bloque.hora_inicio.substring(0, 5) : '09:00',
+                            hora_fin: bloque.hora_fin ? bloque.hora_fin.substring(0, 5) : '17:00'
+                        };
+                    });
+                }
+            } catch (error) {
+                console.error('Error al cargar disponibilidad:', error);
+            }
+            
+            renderSchedule();
+        }
+
+        function renderSchedule() {
+            const container = document.getElementById('scheduleContainer');
+
+            container.innerHTML = DIAS.map(dia => {
+                const disp = disponibilidadActual[dia.id] || {
+                    activo: false,
+                    hora_inicio: '09:00',
+                    hora_fin: '17:00'
+                };
+
+                return `
+                    <div class="day-block ${disp.activo ? 'active' : ''}" id="day-${dia.id}">
+                        <div class="day-header">
+                            <span class="day-name">${dia.nombre}</span>
+                            <div class="toggle-day ${disp.activo ? 'active' : ''}" 
+                                 onclick="toggleDay(${dia.id})">
+                            </div>
+                        </div>
+                        <div class="time-inputs" ${!disp.activo ? 'style="display:none"' : ''} id="times-${dia.id}">
+                            <div class="time-input-group">
+                                <label>Hora inicio</label>
+                                <input type="time" value="${disp.hora_inicio}" id="inicio-${dia.id}">
+                            </div>
+                            <div class="time-input-group">
+                                <label>Hora fin</label>
+                                <input type="time" value="${disp.hora_fin}" id="fin-${dia.id}">
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleDay(diaId) {
+            const block = document.getElementById(`day-${diaId}`);
+            const toggle = block.querySelector('.toggle-day');
+            const times = document.getElementById(`times-${diaId}`);
+
+            const isActive = toggle.classList.contains('active');
+
+            if (isActive) {
+                toggle.classList.remove('active');
+                block.classList.remove('active');
+                times.style.display = 'none';
+            } else {
+                toggle.classList.add('active');
+                block.classList.add('active');
+                times.style.display = 'grid';
+            }
+        }
+
+        async function guardarDisponibilidad() {
+            const bloques = [];
+
+            DIAS.forEach(dia => {
+                const toggle = document.querySelector(`#day-${dia.id} .toggle-day`);
+                const isActive = toggle && toggle.classList.contains('active');
+
+                if (isActive) {
+                    const inicio = document.getElementById(`inicio-${dia.id}`).value;
+                    const fin = document.getElementById(`fin-${dia.id}`).value;
+
+                    if (!inicio || !fin) {
+                        return;
+                    }
+
+                    bloques.push({
+                        dia_semana: dia.id,
+                        hora_inicio: inicio + ':00',
+                        hora_fin: fin + ':00'
+                    });
+                }
+            });
+
+            if (bloques.length === 0) {
+                mostrarAlerta('Debes seleccionar al menos un día', 'error');
+                return;
+            }
+
+            try {
+                const response = await apiPost('/mentorias/disponibilidad', { bloques });
+
+                if (response.success) {
+                    mostrarAlerta('✅ Disponibilidad guardada exitosamente', 'success');
+                    await cargarDisponibilidad();
+                } else {
+                    mostrarAlerta('Error: ' + response.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarAlerta('Error al guardar disponibilidad', 'error');
+            }
+        }
+
+        function mostrarAlerta(mensaje, tipo) {
+            const container = document.getElementById('alertContainer');
+            container.innerHTML = `
+                <div class="alert alert-${tipo} show">
+                    ${mensaje}
+                </div>
+            `;
+
+            setTimeout(() => {
+                const alert = container.querySelector('.alert');
+                if (alert) alert.classList.remove('show');
+            }, 5000);
+        }
+
+        function logout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            window.location.href = ROUTES.login;
+        }
+
+        // Resaltar enlace activo del sidebar
+        function highlightActiveLink() {
+            const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+            const links = document.querySelectorAll('.admin-menu a');
+            links.forEach(link => {
+                link.classList.remove('active');
+                const href = link.getAttribute('href');
+                if (href === './' + currentPage || href === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Cargar datos al inicio
+        document.addEventListener('DOMContentLoaded', function() {
+            displayUserInfo();
+            cargarDisponibilidad();
+            highlightActiveLink();
+        });
+    </script>
+</body>
+</html>

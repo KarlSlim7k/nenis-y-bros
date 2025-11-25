@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Enlaces - Admin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f6fa;
+        }
+        h1 { color: #2c3e50; }
+        .link-list {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .link-item {
+            padding: 15px;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .link-item:last-child { border-bottom: none; }
+        a {
+            color: #3498db;
+            text-decoration: none;
+            padding: 8px 16px;
+            background: #ecf0f1;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        a:hover {
+            background: #3498db;
+            color: white;
+        }
+        .info {
+            background: #d1ecf1;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border-left: 4px solid #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Enlaces del Panel Admin</h1>
+    
+    <div class="info">
+        <strong>Instrucciones:</strong> Haz clic en cada enlace para verificar que la navegación funciona correctamente. 
+        El sidebar en cada página debe resaltar el enlace activo automáticamente.
+    </div>
+
+    <div class="link-list">
+        <div class="link-item">
+            <span>📊 Dashboard Principal</span>
+            <a href="./dashboard.html" target="_blank">Ir →</a>
+        </div>
+        <div class="link-item">
+            <span>👥 Gestión de Usuarios</span>
+            <a href="./usuarios.html" target="_blank">Ir →</a>
+        </div>
+        <div class="link-item">
+            <span>📚 Gestión de Cursos</span>
+            <a href="./cursos.html" target="_blank">Ir →</a>
+        </div>
+        <div class="link-item">
+            <span>📋 Diagnósticos</span>
+            <a href="./diagnosticos.html" target="_blank">Ir →</a>
+        </div>
+        <div class="link-item">
+            <span>🛍️ Gestión de Productos</span>
+            <a href="./productos.html" target="_blank">Ir →</a>
+        </div>
+        <div class="link-item">
+            <span>📖 Biblioteca de Recursos</span>
+            <a href="./recursos.html" target="_blank">Ir →</a>
+        </div>
+        <div class="link-item">
+            <span>🔍 Auditoría y Logs</span>
+            <a href="./auditoria.html" target="_blank">Ir →</a>
+        </div>
+        <div class="link-item">
+            <span>⚙️ Configuración del Sistema</span>
+            <a href="./configuracion.html" target="_blank">Ir →</a>
+        </div>
+    </div>
+
+    <script>
+        // Agregar localStorage para pruebas
+        document.addEventListener('DOMContentLoaded', () => {
+            // Simular sesión admin si no existe (solo para pruebas)
+            if (!localStorage.getItem('auth_token')) {
+                console.log('⚠️ No hay sesión activa. Agregando sesión de prueba...');
+                localStorage.setItem('auth_token', 'test_token_123');
+                localStorage.setItem('auth_user', JSON.stringify({
+                    id: 19,
+                    email: 'admin@test.com',
+                    nombre: 'Admin',
+                    apellido: 'Test',
+                    tipo_usuario: 'administrador'
+                }));
+            }
+        });
+
+        // Test de enlaces
+        document.querySelectorAll('a[href^="./"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                console.log('✅ Navegando a:', link.getAttribute('href'));
+            });
+        });
+    </script>
+</body>
+</html>

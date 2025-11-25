@@ -1,0 +1,46 @@
+# Archivos de desarrollo
+.env
+.env.local
+.env.*.local
+.env.railway
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+backend/logs/
+
+# Database
+db/
+*.sql
+
+# Uploads
+uploads/
+
+# Tests
+test*.php
+test*.html
+test*.ps1
+
+# Documentation
+docs/
+*.md
+
+# Tools
+tools/

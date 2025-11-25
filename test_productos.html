@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Productos - Fase 5A</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+        }
+
+        .test-section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .test-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .endpoint-label {
+            font-weight: bold;
+            color: #333;
+            min-width: 200px;
+        }
+
+        .response-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .success {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .auth-section {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .auth-section input {
+            padding: 10px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            margin-right: 10px;
+            width: 250px;
+        }
+
+        .token-display {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            word-break: break-all;
+            font-size: 12px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛍️ Test Marketplace de Productos - Fase 5A</h1>
+
+        <!-- Autenticación -->
+        <div class="card auth-section">
+            <h3>🔐 Autenticación</h3>
+            <div style="margin-top: 15px;">
+                <input type="email" id="email" placeholder="Email" value="gamificacion@test.com">
+                <input type="password" id="password" placeholder="Contraseña" value="Test123!">
+                <button onclick="login()">Hacer Login</button>
+            </div>
+            <div id="tokenDisplay" class="token-display" style="display: none;">
+                <strong>Token:</strong> <span id="tokenValue"></span>
+            </div>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="card">
+            <h2>📊 Estadísticas Rápidas</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalCategorias">-</div>
+                    <div class="stat-label">Categorías</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalProductos">-</div>
+                    <div class="stat-label">Productos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalPublicados">-</div>
+                    <div class="stat-label">Publicados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="misProductos">-</div>
+                    <div class="stat-label">Mis Productos</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tests Públicos -->
+        <div class="card test-section">
+            <h2>🌐 Endpoints Públicos (Sin Autenticación)</h2>
+            
+            <div class="test-row">
+                <span class="endpoint-label">GET /productos/categorias</span>
+                <button onclick="testEndpoint('/productos/categorias', 'GET', null, 'categorias')">Probar</button>
+            </div>
+            <div id="categorias-response" class="response-box" style="display: none;"></div>
+
+            <div class="test-row">
+                <span class="endpoint-label">GET /productos (búsqueda)</span>
+                <button onclick="testEndpoint('/productos?por_pagina=5', 'GET', null, 'busqueda')">Probar</button>
+            </div>
+            <div id="busqueda-response" class="response-box" style="display: none;"></div>
+
+            <div class="test-row">
+                <span class="endpoint-label">GET /productos/1 (detalle)</span>
+                <button onclick="testEndpoint('/productos/1', 'GET', null, 'detalle')">Probar</button>
+            </div>
+            <div id="detalle-response" class="response-box" style="display: none;"></div>
+        </div>
+
+        <!-- Tests Privados -->
+        <div class="card test-section">
+            <h2>🔒 Endpoints Privados (Requieren Autenticación)</h2>
+            
+            <div class="test-row">
+                <span class="endpoint-label">GET /productos/mis-productos</span>
+                <button onclick="testEndpoint('/productos/mis-productos', 'GET', null, 'misproductos', true)">Probar</button>
+            </div>
+            <div id="misproductos-response" class="response-box" style="display: none;"></div>
+
+            <div class="test-row">
+                <span class="endpoint-label">GET /productos/estadisticas-vendedor</span>
+                <button onclick="testEndpoint('/productos/estadisticas-vendedor', 'GET', null, 'stats', true)">Probar</button>
+            </div>
+            <div id="stats-response" class="response-box" style="display: none;"></div>
+
+            <div class="test-row">
+                <span class="endpoint-label">POST /productos (crear)</span>
+                <button onclick="crearProductoTest()">Probar</button>
+            </div>
+            <div id="crear-response" class="response-box" style="display: none;"></div>
+
+            <div class="test-row">
+                <span class="endpoint-label">POST /productos/1/favorito</span>
+                <button onclick="testEndpoint('/productos/1/favorito', 'POST', {}, 'favorito', true)">Toggle Favorito</button>
+            </div>
+            <div id="favorito-response" class="response-box" style="display: none;"></div>
+
+            <div class="test-row">
+                <span class="endpoint-label">GET /productos/favoritos</span>
+                <button onclick="testEndpoint('/productos/favoritos', 'GET', null, 'listfavoritos', true)">Ver Favoritos</button>
+            </div>
+            <div id="listfavoritos-response" class="response-box" style="display: none;"></div>
+
+            <div class="test-row">
+                <span class="endpoint-label">POST /productos/1/contacto</span>
+                <button onclick="registrarContactoTest()">Registrar Contacto</button>
+            </div>
+            <div id="contacto-response" class="response-box" style="display: none;"></div>
+        </div>
+
+        <!-- Accesos rápidos -->
+        <div class="card">
+            <h2>🚀 Accesos Rápidos a Frontend</h2>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                <button onclick="window.open('frontend/pages/user/vitrina-productos.html', '_blank')">
+                    🛍️ Vitrina de Productos
+                </button>
+                <button onclick="window.open('frontend/pages/user/producto-detalle.html?id=1', '_blank')">
+                    👁️ Detalle Producto #1
+                </button>
+                <button onclick="window.open('frontend/pages/user/mis-productos.html', '_blank')">
+                    📦 Mis Productos
+                </button>
+                <button onclick="window.open('frontend/pages/user/publicar-producto.html', '_blank')">
+                    ➕ Publicar Producto
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost/nenis_y_bros/backend';
+        let token = localStorage.getItem('token') || '';
+
+        // Mostrar token si existe
+        if (token) {
+            document.getElementById('tokenDisplay').style.display = 'block';
+            document.getElementById('tokenValue').textContent = token.substring(0, 50) + '...';
+        }
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch(`${API_URL}/index.php?request=auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                
+                if (data.success && data.data.token) {
+                    token = data.data.token;
+                    localStorage.setItem('token', token);
+                    document.getElementById('tokenDisplay').style.display = 'block';
+                    document.getElementById('tokenValue').textContent = token.substring(0, 50) + '...';
+                    alert('✅ Login exitoso');
+                    
+                    // Cargar estadísticas
+                    loadStats();
+                } else {
+                    alert('❌ Error: ' + data.message);
+                }
+            } catch (error) {
+                alert('❌ Error de conexión: ' + error.message);
+            }
+        }
+
+        async function testEndpoint(endpoint, method = 'GET', body = null, responseId, requiresAuth = false) {
+            const responseBox = document.getElementById(responseId + '-response');
+            responseBox.style.display = 'block';
+            responseBox.innerHTML = '<div class="loading"></div> Cargando...';
+
+            try {
+                const options = {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+
+                if (requiresAuth && token) {
+                    options.headers['Authorization'] = `Bearer ${token}`;
+                }
+
+                if (body) {
+                    options.body = JSON.stringify(body);
+                }
+
+                const response = await fetch(`${API_URL}/index.php?request=${endpoint}`, options);
+                const data = await response.json();
+
+                responseBox.innerHTML = `<span class="${data.success ? 'success' : 'error'}">
+                    ${data.success ? '✅ SUCCESS' : '❌ ERROR'}
+                </span>\n\n${JSON.stringify(data, null, 2)}`;
+
+                // Actualizar stats si es necesario
+                if (data.success) {
+                    if (responseId === 'categorias' && data.data) {
+                        document.getElementById('totalCategorias').textContent = data.data.length;
+                    }
+                    if (responseId === 'busqueda' && data.data) {
+                        document.getElementById('totalProductos').textContent = data.data.total || 0;
+                        document.getElementById('totalPublicados').textContent = data.data.productos?.length || 0;
+                    }
+                    if (responseId === 'misproductos' && data.data) {
+                        document.getElementById('misProductos').textContent = data.data.total || 0;
+                    }
+                }
+
+            } catch (error) {
+                responseBox.innerHTML = `<span class="error">❌ ERROR DE CONEXIÓN</span>\n\n${error.message}`;
+            }
+        }
+
+        async function crearProductoTest() {
+            const producto = {
+                titulo: 'Producto de Prueba ' + new Date().getTime(),
+                id_categoria: 1,
+                tipo_producto: 'producto_fisico',
+                precio: 99.99,
+                descripcion_corta: 'Producto creado desde el test',
+                estado: 'publicado'
+            };
+
+            const responseBox = document.getElementById('crear-response');
+            responseBox.style.display = 'block';
+            responseBox.innerHTML = '<div class="loading"></div> Creando producto...';
+
+            try {
+                const response = await fetch(`${API_URL}/index.php?request=/productos`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(producto)
+                });
+
+                const data = await response.json();
+                responseBox.innerHTML = `<span class="${data.success ? 'success' : 'error'}">
+                    ${data.success ? '✅ SUCCESS' : '❌ ERROR'}
+                </span>\n\n${JSON.stringify(data, null, 2)}`;
+
+            } catch (error) {
+                responseBox.innerHTML = `<span class="error">❌ ERROR</span>\n\n${error.message}`;
+            }
+        }
+
+        async function registrarContactoTest() {
+            const contacto = {
+                tipo: 'click_whatsapp',
+                metadata: { mensaje: 'Test desde página de prueba' }
+            };
+
+            const responseBox = document.getElementById('contacto-response');
+            responseBox.style.display = 'block';
+            responseBox.innerHTML = '<div class="loading"></div> Registrando contacto...';
+
+            try {
+                const response = await fetch(`${API_URL}/index.php?request=/productos/1/contacto`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(contacto)
+                });
+
+                const data = await response.json();
+                responseBox.innerHTML = `<span class="${data.success ? 'success' : 'error'}">
+                    ${data.success ? '✅ SUCCESS' : '❌ ERROR'}
+                </span>\n\n${JSON.stringify(data, null, 2)}`;
+
+            } catch (error) {
+                responseBox.innerHTML = `<span class="error">❌ ERROR</span>\n\n${error.message}`;
+            }
+        }
+
+        async function loadStats() {
+            // Cargar categorías
+            testEndpoint('/productos/categorias', 'GET', null, 'categorias');
+            
+            // Cargar productos
+            testEndpoint('/productos', 'GET', null, 'busqueda');
+            
+            // Si hay token, cargar mis productos
+            if (token) {
+                testEndpoint('/productos/mis-productos', 'GET', null, 'misproductos', true);
+            }
+        }
+
+        // Cargar stats al inicio
+        window.onload = () => {
+            if (token) {
+                loadStats();
+            } else {
+                // Solo cargar datos públicos
+                testEndpoint('/productos/categorias', 'GET', null, 'categorias');
+                testEndpoint('/productos', 'GET', null, 'busqueda');
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+# Variables de entorno
+.env
+
+# Logs
+backend/logs/*.log
+backend/logs/*.txt
+*.log
+
+# Archivos subidos
+uploads/*
+!uploads/.gitkeep
+uploads/profiles/*
+!uploads/profiles/.gitkeep
+uploads/temp/*
+!uploads/temp/.gitkeep
+
+# Sesiones
+backend/sessions/*
+!backend/sessions/.gitkeep
+
+# Cache
+backend/cache/*
+!backend/cache/.gitkeep
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node modules (si usas npm)
+node_modules/
+package-lock.json
+
+# Composer (si usas composer)
+vendor/
+composer.lock
+
+# Temporales
+*.tmp
+*.bak
+*.backup

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mensajes - Instructor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f6fa; }
+        .admin-container { display: flex; min-height: 100vh; }
+        .admin-sidebar { width: 260px; background: #2c3e50; color: white; position: fixed; height: 100vh; overflow-y: auto; }
+        .admin-logo { padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .admin-menu { list-style: none; padding: 1rem 0; }
+        .admin-menu li a { display: block; padding: 0.875rem 1.5rem; color: #ecf0f1; text-decoration: none; }
+        .admin-menu li a:hover, .admin-menu li a.active { background: #34495e; border-left: 4px solid #3498db; }
+        .admin-main { margin-left: 260px; flex: 1; padding: 2rem; }
+        .admin-header { background: white; padding: 1.5rem 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .btn-logout { background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+        .content-section { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; padding: 4rem 2rem; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-logo"><h1>👨‍🏫 Nenis y Bros</h1><span>Panel Instructor</span></div>
+            <ul class="admin-menu">
+                <li><a href="./dashboard.html">📊 Dashboard</a></li>
+                <li><a href="./estudiantes.html">👥 Mis Estudiantes</a></li>
+                <li><a href="./sesiones.html">🎯 Sesiones de Mentoría</a></li>
+                <li><a href="./disponibilidad-instructor.html">📅 Mi Disponibilidad</a></li>
+                <li><a href="./cursos.html">📚 Mis Cursos</a></li>
+                <li><a href="./mensajes.html">💬 Mensajes</a></li>
+            </ul>
+        </aside>
+        <main class="admin-main">
+            <div class="admin-header">
+                <h2>Mensajes</h2>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+            <div class="content-section">
+                <h3 style="font-size: 3rem; margin-bottom: 1rem;">💬</h3>
+                <h3>Sistema de Mensajería</h3>
+                <p style="color: #7f8c8d; margin-top: 1rem;">Funcionalidad en desarrollo</p>
+            </div>
+        </main>
+    </div>
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!checkAuth() || !isMentor()) window.location.href = ROUTES.login;
+        function logout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            window.location.href = ROUTES.login;
+        }
+        function highlightActiveLink() {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.admin-menu a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === './' + currentPage) link.classList.add('active');
+            });
+        }
+        document.addEventListener('DOMContentLoaded', highlightActiveLink);
+    </script>
+</body>
+</html>

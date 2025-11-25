@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Configuración de Privacidad</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        label:hover {
+            background: #f0f0f0;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border 0.3s ease;
+        }
+        
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background: white;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .result pre {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .success {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+        
+        .error {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status.logged-in {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .status.logged-out {
+            background: #f44336;
+            color: white;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .info-box strong {
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Test de Configuración de Privacidad</h1>
+        <p class="subtitle">Prueba los endpoints de privacidad del sistema</p>
+        
+        <div class="info-box">
+            <strong>Estado:</strong> 
+            <span id="status-text">No autenticado</span>
+            <span class="status logged-out" id="status-badge">Logged Out</span>
+        </div>
+        
+        <!-- Sección de Login -->
+        <div class="section">
+            <h2>1. Autenticación</h2>
+            <div class="form-group">
+                <input type="text" id="email" placeholder="Email" value="admin@nyd.com">
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="Contraseña" value="admin123">
+            </div>
+            <button onclick="login()">🔑 Iniciar Sesión</button>
+            <button onclick="logout()">🚪 Cerrar Sesión</button>
+            <div id="login-result" class="result" style="display:none;"></div>
+        </div>
+        
+        <!-- Sección de Configuración de Privacidad -->
+        <div class="section">
+            <h2>2. Obtener Configuración Actual</h2>
+            <button onclick="getPrivacySettings()" id="btn-get-privacy">📋 Obtener Configuración</button>
+            <div id="get-privacy-result" class="result" style="display:none;"></div>
+        </div>
+        
+        <!-- Sección de Actualizar Privacidad -->
+        <div class="section">
+            <h2>3. Actualizar Configuración</h2>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="perfil_publico" checked>
+                    <span><strong>Perfil Público</strong> - Otros usuarios pueden ver mi perfil</span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="mostrar_email">
+                    <span><strong>Mostrar Email</strong> - Mi email es visible para otros</span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="mostrar_telefono">
+                    <span><strong>Mostrar Teléfono</strong> - Mi teléfono es visible para otros</span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="mostrar_biografia" checked>
+                    <span><strong>Mostrar Biografía</strong> - Mi biografía es visible</span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="mostrar_ubicacion" checked>
+                    <span><strong>Mostrar Ubicación</strong> - Mi ciudad y país son visibles</span>
+                </label>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="permitir_mensajes" checked>
+                    <span><strong>Permitir Mensajes</strong> - Otros usuarios pueden contactarme</span>
+                </label>
+            </div>
+            <button onclick="updatePrivacySettings()" id="btn-update-privacy">💾 Guardar Configuración</button>
+            <button onclick="setPrivate()">🔒 Hacer Privado</button>
+            <button onclick="setPublic()">🌐 Hacer Público</button>
+            <div id="update-privacy-result" class="result" style="display:none;"></div>
+        </div>
+        
+        <!-- Sección de Ver Perfil Público -->
+        <div class="section">
+            <h2>4. Ver Cómo Me Ven Otros</h2>
+            <p style="margin-bottom: 15px; color: #666;">Simula cómo otros usuarios ven tu perfil</p>
+            <button onclick="viewOwnProfile()">👤 Ver Mi Perfil (Como Yo)</button>
+            <button onclick="viewPublicProfile()">🌍 Ver Como Usuario Público</button>
+            <div id="view-profile-result" class="result" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost/nenis_y_bros/backend';
+        let token = localStorage.getItem('token');
+        let userId = localStorage.getItem('userId');
+        
+        // Actualizar estado al cargar
+        updateStatus();
+        
+        function updateStatus() {
+            const statusText = document.getElementById('status-text');
+            const statusBadge = document.getElementById('status-badge');
+            
+            if (token) {
+                statusText.textContent = `Autenticado (User ID: ${userId})`;
+                statusBadge.textContent = 'Logged In';
+                statusBadge.className = 'status logged-in';
+            } else {
+                statusText.textContent = 'No autenticado';
+                statusBadge.textContent = 'Logged Out';
+                statusBadge.className = 'status logged-out';
+            }
+        }
+        
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                const resultDiv = document.getElementById('login-result');
+                resultDiv.style.display = 'block';
+                
+                if (data.success) {
+                    token = data.data.token;
+                    userId = data.data.user.id_usuario;
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('userId', userId);
+                    resultDiv.className = 'result success';
+                    updateStatus();
+                } else {
+                    resultDiv.className = 'result error';
+                }
+                
+                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                showError('login-result', error);
+            }
+        }
+        
+        function logout() {
+            token = null;
+            userId = null;
+            localStorage.removeItem('token');
+            localStorage.removeItem('userId');
+            updateStatus();
+            document.getElementById('login-result').style.display = 'none';
+        }
+        
+        async function getPrivacySettings() {
+            if (!token) {
+                alert('Debes iniciar sesión primero');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/users/privacy-settings`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                const resultDiv = document.getElementById('get-privacy-result');
+                resultDiv.style.display = 'block';
+                resultDiv.className = data.success ? 'result success' : 'result error';
+                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                
+                // Actualizar checkboxes con valores obtenidos
+                if (data.success && data.data.privacy_settings) {
+                    const settings = data.data.privacy_settings;
+                    document.getElementById('perfil_publico').checked = settings.perfil_publico;
+                    document.getElementById('mostrar_email').checked = settings.mostrar_email;
+                    document.getElementById('mostrar_telefono').checked = settings.mostrar_telefono;
+                    document.getElementById('mostrar_biografia').checked = settings.mostrar_biografia;
+                    document.getElementById('mostrar_ubicacion').checked = settings.mostrar_ubicacion;
+                    document.getElementById('permitir_mensajes').checked = settings.permitir_mensajes;
+                }
+            } catch (error) {
+                showError('get-privacy-result', error);
+            }
+        }
+        
+        async function updatePrivacySettings() {
+            if (!token) {
+                alert('Debes iniciar sesión primero');
+                return;
+            }
+            
+            const settings = {
+                perfil_publico: document.getElementById('perfil_publico').checked,
+                mostrar_email: document.getElementById('mostrar_email').checked,
+                mostrar_telefono: document.getElementById('mostrar_telefono').checked,
+                mostrar_biografia: document.getElementById('mostrar_biografia').checked,
+                mostrar_ubicacion: document.getElementById('mostrar_ubicacion').checked,
+                permitir_mensajes: document.getElementById('permitir_mensajes').checked
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/users/privacy-settings`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(settings)
+                });
+                
+                const data = await response.json();
+                const resultDiv = document.getElementById('update-privacy-result');
+                resultDiv.style.display = 'block';
+                resultDiv.className = data.success ? 'result success' : 'result error';
+                resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                showError('update-privacy-result', error);
+            }
+        }
+        
+        function setPrivate() {
+            document.getElementById('perfil_publico').checked = false;
+            document.getElementById('mostrar_email').checked = false;
+            document.getElementById('mostrar_telefono').checked = false;
+            document.getElementById('mostrar_biografia').checked = false;
+            document.getElementById('mostrar_ubicacion').checked = false;
+            document.getElementById('permitir_mensajes').checked = false;
+        }
+        
+        function setPublic() {
+            document.getElementById('perfil_publico').checked = true;
+            document.getElementById('mostrar_email').checked = true;
+            document.getElementById('mostrar_telefono').checked = true;
+            document.getElementById('mostrar_biografia').checked = true;
+            document.getElementById('mostrar_ubicacion').checked = true;
+            document.getElementById('permitir_mensajes').checked = true;
+        }
+        
+        async function viewOwnProfile() {
+            if (!token) {
+                alert('Debes iniciar sesión primero');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/users/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                const resultDiv = document.getElementById('view-profile-result');
+                resultDiv.style.display = 'block';
+                resultDiv.className = data.success ? 'result success' : 'result error';
+                resultDiv.innerHTML = `
+                    <h3>👤 Vista Personal (Sin Filtros)</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                showError('view-profile-result', error);
+            }
+        }
+        
+        async function viewPublicProfile() {
+            if (!userId) {
+                alert('Debes iniciar sesión primero');
+                return;
+            }
+            
+            try {
+                // Ver perfil SIN token (como usuario público)
+                const response = await fetch(`${API_URL}/users/${userId}`);
+                
+                const data = await response.json();
+                const resultDiv = document.getElementById('view-profile-result');
+                resultDiv.style.display = 'block';
+                resultDiv.className = data.success ? 'result success' : 'result error';
+                resultDiv.innerHTML = `
+                    <h3>🌍 Vista Pública (Con Filtros de Privacidad)</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (error) {
+                showError('view-profile-result', error);
+            }
+        }
+        
+        function showError(divId, error) {
+            const resultDiv = document.getElementById(divId);
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result error';
+            resultDiv.innerHTML = `<pre>Error: ${error.message}</pre>`;
+        }
+    </script>
+</body>
+</html>

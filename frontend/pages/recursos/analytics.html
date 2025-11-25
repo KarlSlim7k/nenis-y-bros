@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - Biblioteca de Recursos</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .analytics-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .dashboard-header {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dashboard-header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2rem;
+        }
+
+        .dashboard-header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .filters-bar {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filters-bar label {
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .filters-bar input,
+        .filters-bar select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .filters-bar button {
+            padding: 0.5rem 1.5rem;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .filters-bar button:hover {
+            background: #4f46e5;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-card h3 {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-trend {
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .metric-trend.up {
+            color: #10b981;
+        }
+
+        .metric-trend.down {
+            color: #ef4444;
+        }
+
+        .metric-trend.neutral {
+            color: #6b7280;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .chart-card h2 {
+            font-size: 1.25rem;
+            margin: 0 0 1rem 0;
+            color: #111827;
+        }
+
+        .chart-card.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .chart-container.tall {
+            height: 400px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+
+        .data-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .export-buttons button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .export-buttons button:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="analytics-container">
+        <div class="dashboard-header">
+            <h1>📊 Analytics Dashboard</h1>
+            <p>Métricas y análisis de la biblioteca de recursos</p>
+        </div>
+
+        <div class="filters-bar">
+            <div>
+                <label for="fechaDesde">Desde:</label>
+                <input type="date" id="fechaDesde">
+            </div>
+            <div>
+                <label for="fechaHasta">Hasta:</label>
+                <input type="date" id="fechaHasta">
+            </div>
+            <button onclick="cargarDashboard()">Aplicar Filtros</button>
+            <button onclick="exportarDatos()" style="background: #10b981;">Exportar CSV</button>
+        </div>
+
+        <div id="loading" class="loading">
+            Cargando datos...
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="dashboard-content" style="display: none;">
+            <!-- Métricas principales -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <h3>Total Recursos</h3>
+                    <div class="metric-value" id="totalRecursos">-</div>
+                    <div class="metric-trend neutral">
+                        <span id="publicadosInfo">-</span> publicados
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <h3>Descargas Totales</h3>
+                    <div class="metric-value" id="totalDescargas">-</div>
+                    <div class="metric-trend" id="trendDescargas">
+                        <span id="trendDescargasValor">-</span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <h3>Usuarios Activos</h3>
+                    <div class="metric-value" id="usuariosActivos">-</div>
+                    <div class="metric-trend" id="trendUsuarios">
+                        <span id="trendUsuariosValor">-</span>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <h3>Calificación Promedio</h3>
+                    <div class="metric-value" id="calificacionPromedio">-</div>
+                    <div class="metric-trend neutral">
+                        ⭐ de 5 estrellas
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="charts-grid">
+                <div class="chart-card full-width">
+                    <h2>Descargas en el Tiempo</h2>
+                    <div class="chart-container tall">
+                        <canvas id="chartDescargasTiempo"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h2>Distribución por Categoría</h2>
+                    <div class="chart-container">
+                        <canvas id="chartCategorias"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h2>Distribución por Tipo</h2>
+                    <div class="chart-container">
+                        <canvas id="chartTipos"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tablas de datos -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h2>Top 5 Recursos Más Descargados</h2>
+                    <div class="table-container">
+                        <table class="data-table" id="tableMasDescargados">
+                            <thead>
+                                <tr>
+                                    <th>Recurso</th>
+                                    <th>Categoría</th>
+                                    <th>Descargas</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h2>Top 5 Mejor Calificados</h2>
+                    <div class="table-container">
+                        <table class="data-table" id="tableMejorCalificados">
+                            <thead>
+                                <tr>
+                                    <th>Recurso</th>
+                                    <th>Calificación</th>
+                                    <th>Votos</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h2>Usuarios Más Activos</h2>
+                    <div class="table-container">
+                        <table class="data-table" id="tablaUsuariosActivos">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Descargas</th>
+                                    <th>Recursos Únicos</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h2>Tasa de Conversión (Vista → Descarga)</h2>
+                    <div class="table-container">
+                        <table class="data-table" id="tablaTasaConversion">
+                            <thead>
+                                <tr>
+                                    <th>Recurso</th>
+                                    <th>Vistas</th>
+                                    <th>Descargas</th>
+                                    <th>Conversión</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost/nenis_y_bros/backend/api/v1';
+        let chartInstances = {};
+        let dashboardData = {};
+
+        // Configuración inicial de fechas
+        document.getElementById('fechaHasta').value = new Date().toISOString().split('T')[0];
+        const fechaDesde = new Date();
+        fechaDesde.setDate(fechaDesde.getDate() - 30);
+        document.getElementById('fechaDesde').value = fechaDesde.toISOString().split('T')[0];
+
+        // Cargar dashboard al iniciar
+        window.addEventListener('DOMContentLoaded', () => {
+            cargarDashboard();
+        });
+
+        async function cargarDashboard() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            mostrarLoading(true);
+            ocultarError();
+
+            const fechaDesde = document.getElementById('fechaDesde').value;
+            const fechaHasta = document.getElementById('fechaHasta').value;
+
+            try {
+                const response = await fetch(
+                    `${API_BASE}/recursos/analytics/dashboard?fecha_desde=${fechaDesde}&fecha_hasta=${fechaHasta}`,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = '../auth/login.html';
+                        return;
+                    }
+                    throw new Error('Error al cargar dashboard');
+                }
+
+                const result = await response.json();
+                dashboardData = result.data;
+
+                renderizarDashboard(dashboardData);
+                mostrarLoading(false);
+                document.getElementById('dashboard-content').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarError('Error al cargar el dashboard. Por favor, intenta nuevamente.');
+                mostrarLoading(false);
+            }
+        }
+
+        function renderizarDashboard(data) {
+            // Métricas principales
+            renderizarMetricas(data.estadisticas_generales, data.tendencias);
+
+            // Gráfico de descargas en el tiempo
+            renderizarChartDescargasTiempo(data.descargas_tiempo);
+
+            // Gráfico de categorías
+            renderizarChartCategorias(data.distribucion_categoria);
+
+            // Gráfico de tipos
+            renderizarChartTipos(data.distribucion_tipo);
+
+            // Tablas
+            renderizarTablaMasDescargados(data.mas_descargados);
+            renderizarTablaMejorCalificados(data.mejor_calificados);
+            renderizarTablaUsuariosActivos(data.usuarios_activos);
+        }
+
+        function renderizarMetricas(stats, tendencias) {
+            document.getElementById('totalRecursos').textContent = formatNumber(stats.total_recursos || 0);
+            document.getElementById('publicadosInfo').textContent = `${stats.publicados || 0}`;
+            
+            const descargas = tendencias.actual?.descargas || 0;
+            document.getElementById('totalDescargas').textContent = formatNumber(descargas);
+            
+            const cambioDescargas = tendencias.cambio_porcentual?.descargas || 0;
+            renderizarTendencia('trendDescargas', 'trendDescargasValor', cambioDescargas);
+            
+            const usuarios = tendencias.actual?.usuarios || 0;
+            document.getElementById('usuariosActivos').textContent = formatNumber(usuarios);
+            
+            const cambioUsuarios = tendencias.cambio_porcentual?.usuarios || 0;
+            renderizarTendencia('trendUsuarios', 'trendUsuariosValor', cambioUsuarios);
+            
+            const calificacion = parseFloat(stats.calificacion_promedio_global || 0).toFixed(1);
+            document.getElementById('calificacionPromedio').textContent = calificacion;
+        }
+
+        function renderizarTendencia(containerId, valueId, porcentaje) {
+            const container = document.getElementById(containerId);
+            const valueElement = document.getElementById(valueId);
+            
+            if (porcentaje > 0) {
+                container.className = 'metric-trend up';
+                valueElement.textContent = `↑ ${porcentaje}% vs período anterior`;
+            } else if (porcentaje < 0) {
+                container.className = 'metric-trend down';
+                valueElement.textContent = `↓ ${Math.abs(porcentaje)}% vs período anterior`;
+            } else {
+                container.className = 'metric-trend neutral';
+                valueElement.textContent = 'Sin cambios';
+            }
+        }
+
+        function renderizarChartDescargasTiempo(datos) {
+            const ctx = document.getElementById('chartDescargasTiempo').getContext('2d');
+            
+            if (chartInstances.descargasTiempo) {
+                chartInstances.descargasTiempo.destroy();
+            }
+
+            const labels = datos.map(d => d.periodo);
+            const descargas = datos.map(d => parseInt(d.total_descargas));
+            const usuarios = datos.map(d => parseInt(d.usuarios_unicos));
+
+            chartInstances.descargasTiempo = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Descargas',
+                            data: descargas,
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'Usuarios Únicos',
+                            data: usuarios,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderizarChartCategorias(datos) {
+            const ctx = document.getElementById('chartCategorias').getContext('2d');
+            
+            if (chartInstances.categorias) {
+                chartInstances.categorias.destroy();
+            }
+
+            const labels = datos.map(d => d.nombre);
+            const values = datos.map(d => parseInt(d.total_recursos));
+            const colors = datos.map(d => d.color || '#6366f1');
+
+            chartInstances.categorias = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right'
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderizarChartTipos(datos) {
+            const ctx = document.getElementById('chartTipos').getContext('2d');
+            
+            if (chartInstances.tipos) {
+                chartInstances.tipos.destroy();
+            }
+
+            const labels = datos.map(d => capitalize(d.tipo_recurso));
+            const values = datos.map(d => parseInt(d.total));
+
+            chartInstances.tipos = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Cantidad',
+                        data: values,
+                        backgroundColor: '#8b5cf6',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderizarTablaMasDescargados(datos) {
+            const tbody = document.querySelector('#tableMasDescargados tbody');
+            tbody.innerHTML = datos.map(r => `
+                <tr>
+                    <td>
+                        <strong>${r.titulo}</strong><br>
+                        <small class="badge badge-info">${capitalize(r.tipo_recurso)}</small>
+                    </td>
+                    <td>${r.categoria}</td>
+                    <td><strong>${formatNumber(r.total_descargas)}</strong></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderizarTablaMejorCalificados(datos) {
+            const tbody = document.querySelector('#tableMejorCalificados tbody');
+            tbody.innerHTML = datos.map(r => `
+                <tr>
+                    <td>
+                        <strong>${r.titulo}</strong><br>
+                        <small class="badge badge-info">${capitalize(r.tipo_recurso)}</small>
+                    </td>
+                    <td>
+                        <span style="color: #f59e0b;">⭐ ${parseFloat(r.calificacion_promedio).toFixed(1)}</span>
+                    </td>
+                    <td>${r.total_calificaciones} votos</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderizarTablaUsuariosActivos(datos) {
+            const tbody = document.querySelector('#tablaUsuariosActivos tbody');
+            tbody.innerHTML = datos.map(u => `
+                <tr>
+                    <td>
+                        <strong>${u.nombre}</strong><br>
+                        <small style="color: #6b7280;">${u.email}</small>
+                    </td>
+                    <td><strong>${formatNumber(u.total_descargas)}</strong></td>
+                    <td>${u.recursos_unicos}</td>
+                </tr>
+            `).join('');
+        }
+
+        function exportarDatos() {
+            if (!dashboardData.mas_descargados) {
+                alert('No hay datos para exportar');
+                return;
+            }
+
+            let csv = 'Recursos Más Descargados\n';
+            csv += 'Título,Categoría,Tipo,Descargas,Usuarios Únicos\n';
+            
+            dashboardData.mas_descargados.forEach(r => {
+                csv += `"${r.titulo}","${r.categoria}","${r.tipo_recurso}",${r.total_descargas},${r.usuarios_unicos}\n`;
+            });
+
+            csv += '\n\nMejor Calificados\n';
+            csv += 'Título,Calificación,Total Calificaciones,Descargas\n';
+            
+            dashboardData.mejor_calificados.forEach(r => {
+                csv += `"${r.titulo}",${r.calificacion_promedio},${r.total_calificaciones},${r.total_descargas}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `analytics_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function mostrarLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+
+        function mostrarError(mensaje) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = mensaje;
+            errorDiv.style.display = 'block';
+        }
+
+        function ocultarError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function formatNumber(num) {
+            return new Intl.NumberFormat('es-ES').format(num);
+        }
+
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Configuración raíz del proyecto Nenis y Bros
+
+# Habilitar seguimiento de enlaces simbólicos
+Options +FollowSymLinks
+
+# Página de inicio por defecto
+DirectoryIndex index.html index.php
+
+# Configuración de codificación
+AddDefaultCharset UTF-8
+
+# Habilitar CORS para desarrollo
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
+</IfModule>

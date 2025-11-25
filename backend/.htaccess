@@ -1,0 +1,32 @@
+# Configuración de Apache para redireccionar a index.php
+RewriteEngine On
+
+# Habilitar PATH_INFO para permitir /index.php/api/v1/...
+AcceptPathInfo On
+
+# Redireccionar todo a index.php excepto archivos y directorios existentes
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [QSA,L]
+
+# Seguridad adicional
+<Files ".env">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Prevenir acceso a archivos sensibles
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Deshabilitar listado de directorios
+Options -Indexes
+
+# Headers de seguridad
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>

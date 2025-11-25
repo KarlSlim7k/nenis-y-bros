@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Cursos - Instructor</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f6fa; }
+        .admin-container { display: flex; min-height: 100vh; }
+        .admin-sidebar { width: 260px; background: #2c3e50; color: white; position: fixed; height: 100vh; overflow-y: auto; }
+        .admin-logo { padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .admin-menu { list-style: none; padding: 1rem 0; }
+        .admin-menu li a { display: block; padding: 0.875rem 1.5rem; color: #ecf0f1; text-decoration: none; }
+        .admin-menu li a:hover, .admin-menu li a.active { background: #34495e; border-left: 4px solid #3498db; }
+        .admin-main { margin-left: 260px; flex: 1; padding: 2rem; }
+        .admin-header { background: white; padding: 1.5rem 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .btn-logout { background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+        .content-section { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .course-card { border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; transition: all 0.3s; }
+        .course-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .course-image { width: 100%; height: 160px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+        .course-body { padding: 1.25rem; }
+        .course-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .course-meta { display: flex; gap: 1rem; margin: 0.75rem 0; font-size: 0.85rem; color: #7f8c8d; }
+        .badge { padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem; }
+        .badge-success { background: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-logo"><h1>👨‍🏫 Nenis y Bros</h1><span>Panel Instructor</span></div>
+            <ul class="admin-menu">
+                <li><a href="./dashboard.html">📊 Dashboard</a></li>
+                <li><a href="./estudiantes.html">👥 Mis Estudiantes</a></li>
+                <li><a href="./sesiones.html">🎯 Sesiones de Mentoría</a></li>
+                <li><a href="./disponibilidad-instructor.html">📅 Mi Disponibilidad</a></li>
+                <li><a href="./cursos.html">📚 Mis Cursos</a></li>
+                <li><a href="./mensajes.html">💬 Mensajes</a></li>
+            </ul>
+        </aside>
+        <main class="admin-main">
+            <div class="admin-header">
+                <h2>Mis Cursos</h2>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+            <div class="content-section">
+                <h3 style="margin-bottom: 1.5rem;">Cursos que Imparto</h3>
+                <div class="courses-grid">
+                    <div class="course-card">
+                        <div class="course-image">📚</div>
+                        <div class="course-body">
+                            <div class="course-title">Fundamentos de Emprendimiento</div>
+                            <div class="course-meta">
+                                <span>👥 24 Estudiantes</span>
+                                <span>📊 80% Progreso</span>
+                            </div>
+                            <span class="badge badge-success">Activo</span>
+                        </div>
+                    </div>
+                    <div class="course-card">
+                        <div class="course-image">💼</div>
+                        <div class="course-body">
+                            <div class="course-title">Marketing Digital</div>
+                            <div class="course-meta">
+                                <span>👥 18 Estudiantes</span>
+                                <span>📊 65% Progreso</span>
+                            </div>
+                            <span class="badge badge-success">Activo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!checkAuth() || !isMentor()) window.location.href = ROUTES.login;
+        function logout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            window.location.href = ROUTES.login;
+        }
+        function highlightActiveLink() {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.admin-menu a').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === './' + currentPage) link.classList.add('active');
+            });
+        }
+        document.addEventListener('DOMContentLoaded', highlightActiveLink);
+    </script>
+</body>
+</html>

@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Recurso - Nenis y Bros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: #667eea;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .resource-detail {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .resource-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+        }
+
+        .resource-meta-top {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .resource-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .resource-description {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .resource-stats-header {
+            display: flex;
+            gap: 30px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+        }
+
+        .resource-content {
+            padding: 40px;
+        }
+
+        .content-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .download-section {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 30px;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .download-button {
+            background: white;
+            color: #f5576c;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .download-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .download-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .already-downloaded {
+            background: #10b981;
+        }
+
+        .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .author-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .author-details h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .author-details p {
+            color: #666;
+        }
+
+        .rating-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+        }
+
+        .rating-form {
+            margin-top: 20px;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 10px;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .star {
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.2s;
+        }
+
+        .star.active, .star:hover {
+            color: #fbbf24;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 100px;
+            margin-bottom: 15px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .submit-rating-button {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-rating-button:hover {
+            background: #764ba2;
+        }
+
+        .reviews-list {
+            margin-top: 30px;
+        }
+
+        .review-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .reviewer-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .review-stars {
+            color: #fbbf24;
+        }
+
+        .review-comment {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .related-resources {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .related-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .related-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .related-card-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .related-card-stats {
+            display: flex;
+            gap: 15px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: white;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="catalogo.html" class="back-button">← Volver al catálogo</a>
+
+        <div id="loading" class="loading">Cargando recurso...</div>
+        <div id="resource-detail" style="display: none;"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost/nenis_y_bros/backend/api/v1';
+        const params = new URLSearchParams(window.location.search);
+        const slug = params.get('slug');
+        const token = localStorage.getItem('token');
+        let currentResource = null;
+        let userRating = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!slug) {
+                window.location.href = 'catalogo.html';
+                return;
+            }
+            loadResource();
+        });
+
+        // Load resource details
+        async function loadResource() {
+            try {
+                const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+                const response = await fetch(`${API_BASE}/recursos/slug/${slug}`, { headers });
+                const data = await response.json();
+
+                if (data.success) {
+                    currentResource = data.data;
+                    renderResource();
+                    loadRelatedResources();
+                    if (token) {
+                        loadReviews();
+                    }
+                } else {
+                    showError('Recurso no encontrado');
+                }
+            } catch (error) {
+                console.error('Error loading resource:', error);
+                showError('Error al cargar el recurso');
+            }
+        }
+
+        // Render resource
+        function renderResource() {
+            document.getElementById('loading').style.display = 'none';
+            const container = document.getElementById('resource-detail');
+            container.style.display = 'block';
+
+            const tipoIcons = {
+                'articulo': '📄', 'ebook': '📚', 'plantilla': '📋',
+                'herramienta': '🛠️', 'video': '🎥', 'infografia': '📊', 'podcast': '🎙️'
+            };
+
+            const tags = currentResource.etiquetas ? currentResource.etiquetas.split(', ') : [];
+            const tagsHtml = tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+
+            const downloadSection = token ? `
+                <div class="download-section ${currentResource.ya_descargado ? 'already-downloaded' : ''}">
+                    <h2>${tipoIcons[currentResource.tipo_recurso]} ${currentResource.ya_descargado ? '✓ Ya descargaste este recurso' : 'Descarga este recurso'}</h2>
+                    <p>${currentResource.ya_descargado ? 'Puedes volver a descargarlo cuando quieras' : 'Obtén acceso completo al recurso y gana +5 puntos'}</p>
+                    <button class="download-button" onclick="downloadResource()">
+                        ⬇️ ${currentResource.ya_descargado ? 'Descargar nuevamente' : 'Descargar recurso'}
+                    </button>
+                </div>
+            ` : `
+                <div class="download-section">
+                    <h2>🔒 Inicia sesión para descargar</h2>
+                    <p>Debes estar registrado para acceder a los recursos</p>
+                    <button class="download-button" onclick="window.location.href='../auth/login.html'">
+                        Iniciar sesión
+                    </button>
+                </div>
+            `;
+
+            const ratingSection = token ? `
+                <div class="content-section">
+                    <div class="rating-section">
+                        <h2 class="section-title">⭐ Calificar recurso</h2>
+                        ${currentResource.ya_descargado ? `
+                            <div class="rating-form">
+                                <div class="star-rating" id="star-rating">
+                                    <span class="star" data-rating="1">★</span>
+                                    <span class="star" data-rating="2">★</span>
+                                    <span class="star" data-rating="3">★</span>
+                                    <span class="star" data-rating="4">★</span>
+                                    <span class="star" data-rating="5">★</span>
+                                </div>
+                                <textarea id="review-comment" placeholder="Comparte tu opinión sobre este recurso (opcional)..."></textarea>
+                                <button class="submit-rating-button" onclick="submitRating()">Enviar calificación</button>
+                            </div>
+                        ` : '<p class="alert alert-info">Debes descargar el recurso antes de calificarlo</p>'}
+                        <div class="reviews-list" id="reviews-list"></div>
+                    </div>
+                </div>
+            ` : '';
+
+            container.innerHTML = `
+                <div class="resource-detail">
+                    <div class="resource-header">
+                        <div class="resource-meta-top">
+                            <span class="badge">${tipoIcons[currentResource.tipo_recurso]} ${currentResource.tipo_recurso}</span>
+                            <span class="badge">📚 ${currentResource.categoria_nombre}</span>
+                            <span class="badge">📊 ${currentResource.nivel}</span>
+                            <span class="badge">${currentResource.tipo_acceso === 'gratuito' ? '🆓 Gratuito' : '💎 Premium'}</span>
+                        </div>
+                        <h1 class="resource-title">${currentResource.titulo}</h1>
+                        <p class="resource-description">${currentResource.descripcion}</p>
+                        <div class="resource-stats-header">
+                            <div class="stat-item">⬇️ ${currentResource.total_descargas} descargas</div>
+                            <div class="stat-item">👁️ ${currentResource.total_vistas} vistas</div>
+                            <div class="stat-item">⭐ ${parseFloat(currentResource.calificacion_promedio).toFixed(1)} (${currentResource.total_calificaciones} reseñas)</div>
+                        </div>
+                    </div>
+
+                    <div class="resource-content">
+                        <div id="alert-container"></div>
+
+                        ${downloadSection}
+
+                        <div class="content-section">
+                            <h2 class="section-title">📝 Acerca de este recurso</h2>
+                            <p>${currentResource.contenido_texto || currentResource.descripcion}</p>
+                        </div>
+
+                        <div class="content-section">
+                            <h2 class="section-title">🏷️ Etiquetas</h2>
+                            <div class="tags-list">${tagsHtml || '<p class="alert alert-info">Sin etiquetas</p>'}</div>
+                        </div>
+
+                        <div class="content-section">
+                            <h2 class="section-title">👤 Autor</h2>
+                            <div class="author-info">
+                                <div class="author-avatar">${currentResource.autor_nombre ? currentResource.autor_nombre[0].toUpperCase() : 'A'}</div>
+                                <div class="author-details">
+                                    <h3>${currentResource.autor_nombre} ${currentResource.autor_apellido || ''}</h3>
+                                    <p>Publicado el ${new Date(currentResource.fecha_publicacion).toLocaleDateString('es-ES')}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        ${ratingSection}
+
+                        <div class="content-section">
+                            <h2 class="section-title">🔗 Recursos relacionados</h2>
+                            <div class="related-resources" id="related-resources"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (token && currentResource.ya_descargado) {
+                setupStarRating();
+            }
+        }
+
+        // Setup star rating
+        function setupStarRating() {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    userRating = parseInt(this.dataset.rating);
+                    updateStars();
+                });
+                star.addEventListener('mouseover', function() {
+                    const rating = parseInt(this.dataset.rating);
+                    stars.forEach((s, idx) => {
+                        s.classList.toggle('active', idx < rating);
+                    });
+                });
+            });
+
+            document.getElementById('star-rating').addEventListener('mouseleave', updateStars);
+        }
+
+        function updateStars() {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((s, idx) => {
+                s.classList.toggle('active', idx < userRating);
+            });
+        }
+
+        // Download resource
+        async function downloadResource() {
+            if (!token) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/recursos/${currentResource.id_recurso}/descargar`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('✅ ¡Descarga registrada! Has ganado +5 puntos. Redirigiendo...', 'success');
+                    
+                    // Abrir archivo en nueva pestaña
+                    if (data.data.archivo_url) {
+                        setTimeout(() => {
+                            window.open(data.data.archivo_url, '_blank');
+                            currentResource.ya_descargado = true;
+                            renderResource();
+                        }, 1500);
+                    }
+                } else {
+                    showAlert('❌ ' + (data.message || 'Error al descargar'), 'error');
+                }
+            } catch (error) {
+                console.error('Error downloading:', error);
+                showAlert('❌ Error al procesar descarga', 'error');
+            }
+        }
+
+        // Submit rating
+        async function submitRating() {
+            if (userRating === 0) {
+                showAlert('⚠️ Por favor selecciona una calificación', 'error');
+                return;
+            }
+
+            const comment = document.getElementById('review-comment').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/recursos/${currentResource.id_recurso}/calificar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        calificacion: userRating,
+                        comentario: comment
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('✅ ¡Calificación enviada! Has ganado +3 puntos', 'success');
+                    setTimeout(() => loadResource(), 2000);
+                } else {
+                    showAlert('❌ ' + (data.message || 'Error al enviar calificación'), 'error');
+                }
+            } catch (error) {
+                console.error('Error submitting rating:', error);
+                showAlert('❌ Error al enviar calificación', 'error');
+            }
+        }
+
+        // Load reviews
+        async function loadReviews() {
+            try {
+                const response = await fetch(`${API_BASE}/recursos/${currentResource.id_recurso}/calificaciones?limite=5`);
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    renderReviews(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading reviews:', error);
+            }
+        }
+
+        // Render reviews
+        function renderReviews(reviews) {
+            const container = document.getElementById('reviews-list');
+            if (!container) return;
+
+            let html = '<h3 style="margin-bottom: 15px;">Últimas reseñas</h3>';
+            reviews.forEach(review => {
+                const stars = '★'.repeat(review.calificacion) + '☆'.repeat(5 - review.calificacion);
+                html += `
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="reviewer-name">${review.nombre} ${review.apellido || ''}</span>
+                            <span class="review-stars">${stars}</span>
+                        </div>
+                        ${review.comentario ? `<p class="review-comment">${review.comentario}</p>` : ''}
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Load related resources
+        async function loadRelatedResources() {
+            try {
+                const response = await fetch(`${API_BASE}/recursos/${currentResource.id_recurso}/relacionados?limite=4`);
+                const data = await response.json();
+
+                if (data.success && data.data.length > 0) {
+                    renderRelatedResources(data.data);
+                }
+            } catch (error) {
+                console.error('Error loading related:', error);
+            }
+        }
+
+        // Render related resources
+        function renderRelatedResources(resources) {
+            const container = document.getElementById('related-resources');
+            let html = '';
+
+            resources.forEach(recurso => {
+                html += `
+                    <div class="related-card" onclick="window.location.href='recurso-detalle.html?slug=${recurso.slug}'">
+                        <div class="related-card-title">${recurso.titulo}</div>
+                        <div class="related-card-stats">
+                            <span>⬇️ ${recurso.total_descargas}</span>
+                            <span>⭐ ${parseFloat(recurso.calificacion_promedio).toFixed(1)}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html || '<p class="alert alert-info">No hay recursos relacionados</p>';
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const container = document.getElementById('alert-container');
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        function showError(message) {
+            document.getElementById('loading').innerHTML = `<div class="alert alert-error">${message}</div>`;
+        }
+    </script>
+</body>
+</html>

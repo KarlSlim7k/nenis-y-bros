@@ -1,0 +1,17 @@
+{
+  "name": "nenis-y-bros-frontend",
+  "version": "1.0.0",
+  "description": "Frontend del sistema de formación empresarial Nenis y Bros",
+  "main": "index.html",
+  "scripts": {
+    "dev": "echo 'Este es un proyecto estático - usa un servidor local'",
+    "build": "echo 'No se requiere build para este proyecto estático'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["formacion", "empresarial", "frontend", "static"],
+  "author": "Nenis y Bros",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realizar Diagnóstico - Nenis y Bros</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/diagnosticos.css">
+    <style>
+        /* Admin Container Layout */
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .admin-logo {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .admin-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .admin-menu li {
+            margin: 5px 0;
+        }
+
+        .admin-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .admin-menu a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .admin-menu a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left: 4px solid #667eea;
+        }
+
+        .admin-menu a span:first-child {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .admin-main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+            width: calc(100% - 260px);
+        }
+
+        .wizard-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .wizard-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .wizard-header h1 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .wizard-header .tipo-nombre {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        /* Barra de progreso */
+        .progress-section {
+            margin-bottom: 2rem;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        /* Navegación por áreas */
+        .areas-nav {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .area-tab {
+            flex: 1;
+            min-width: 120px;
+            padding: 0.8rem 1rem;
+            background: #ecf0f1;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .area-tab:hover {
+            background: #d5dbdb;
+        }
+
+        .area-tab.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .area-tab.completed {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .area-tab .area-check {
+            margin-left: 0.3rem;
+        }
+
+        /* Contenido del área */
+        .area-content {
+            display: none;
+        }
+
+        .area-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .area-header {
+            margin-bottom: 2rem;
+        }
+
+        .area-header h2 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .area-header .area-descripcion {
+            color: #7f8c8d;
+            line-height: 1.6;
+        }
+
+        /* Preguntas */
+        .pregunta-item {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #3498db;
+        }
+
+        .pregunta-header {
+            display: flex;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .pregunta-numero {
+            background: #3498db;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            margin-right: 1rem;
+        }
+
+        .pregunta-texto {
+            flex: 1;
+            color: #2c3e50;
+            font-size: 1.05rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .pregunta-ayuda {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        /* Opciones de respuesta */
+        .respuesta-options {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .respuesta-option {
+            flex: 1;
+            min-width: 100px;
+            padding: 0.8rem 1rem;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .respuesta-option:hover {
+            border-color: #3498db;
+            background: #ebf5fb;
+        }
+
+        .respuesta-option.selected {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .respuesta-label {
+            display: block;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 0.3rem;
+        }
+
+        .respuesta-option.selected .respuesta-label {
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* Navegación del wizard */
+        .wizard-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dbdb;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #27ae60;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Loading y mensajes */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-info {
+            background: #d6eaf8;
+            color: #1f618d;
+            border-left: 4px solid #3498db;
+        }
+
+        .alert-warning {
+            background: #fcf3cf;
+            color: #7d6608;
+            border-left: 4px solid #f1c40f;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #2ecc71;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .wizard-container {
+                padding: 1rem;
+                margin: 1rem;
+            }
+
+            .areas-nav {
+                flex-wrap: nowrap;
+            }
+
+            .area-tab {
+                font-size: 0.85rem;
+                padding: 0.6rem 0.8rem;
+            }
+
+            .respuesta-options {
+                flex-direction: column;
+            }
+
+            .respuesta-option {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <a href="./dashboard.html" class="admin-logo">🚀 Nenis y Bros</a>
+            <ul class="admin-menu">
+                <li><a href="./dashboard.html"><span>📊</span> Dashboard</a></li>
+                <li><a href="./diagnosticos.html" class="active"><span>📋</span> Diagnósticos</a></li>
+                <li><a href="./mi-progreso.html"><span>📈</span> Mi Progreso</a></li>
+                <li><a href="./perfil-empresarial.html"><span>🏢</span> Mi Empresa</a></li>
+                <li><a href="./mis-logros.html"><span>🏆</span> Mis Logros</a></li>
+                <li><a href="./ranking.html"><span>🥇</span> Ranking</a></li>
+                <li><a href="./vitrina-productos.html"><span>🛍️</span> Vitrina de Productos</a></li>
+                <li><a href="./mis-productos.html"><span>📦</span> Mis Productos</a></li>
+                <li><a href="./chat.html"><span>💬</span> Chat</a></li>
+                <li><a href="./notificaciones.html"><span>🔔</span> Notificaciones</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="wizard-container">
+                <!-- Header -->
+                <div class="wizard-header">
+                    <h1>Diagnóstico Empresarial</h1>
+                    <div class="tipo-nombre" id="tipoNombre">Cargando...</div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-section">
+                    <div class="progress-info">
+                        <span id="progressText">0 de 0 preguntas respondidas</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loadingState" class="loading">
+                    <div class="spinner"></div>
+                    <p>Cargando diagnóstico...</p>
+                </div>
+
+                <!-- Wizard Content -->
+                <div id="wizardContent" style="display: none;">
+                    <!-- Areas Navigation -->
+                    <div class="areas-nav" id="areasNav"></div>
+
+                    <!-- Areas Content -->
+            <div id="areasContent"></div>
+
+            <!-- Navigation Buttons -->
+            <div class="wizard-navigation">
+                <button class="btn btn-secondary" id="btnAnterior" onclick="navegarArea(-1)">
+                    ← Anterior
+                </button>
+                <button class="btn btn-secondary" id="btnGuardar" onclick="guardarProgreso()" style="display: none;">
+                    💾 Guardar Progreso
+                </button>
+                <button class="btn btn-primary" id="btnSiguiente" onclick="navegarArea(1)">
+                    Siguiente →
+                </button>
+                <button class="btn btn-success" id="btnFinalizar" onclick="finalizarDiagnostico()" style="display: none;">
+                    ✓ Finalizar Diagnóstico
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        let diagnosticoId = null;
+        let diagnosticoData = null;
+        let areas = [];
+        let preguntasPorArea = {};
+        let respuestas = {};
+        let areaActualIndex = 0;
+
+        // Obtener ID del diagnóstico de la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        diagnosticoId = urlParams.get('id');
+
+        if (!diagnosticoId) {
+            alert('No se especificó un diagnóstico');
+            window.location.href = 'diagnosticos.html';
+        }
+
+        // Cargar diagnóstico al iniciar
+        document.addEventListener('DOMContentLoaded', async () => {
+            requireAuth();
+            await cargarDiagnostico();
+        });
+
+        async function cargarDiagnostico() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/diagnosticos/${diagnosticoId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Error al cargar diagnóstico');
+
+                diagnosticoData = await response.json();
+                
+                if (!diagnosticoData.preguntas || diagnosticoData.preguntas.length === 0) {
+                    throw new Error('El diagnóstico no tiene preguntas disponibles');
+                }
+
+                // Actualizar header
+                document.getElementById('tipoNombre').textContent = diagnosticoData.tipo_nombre || 'Diagnóstico';
+
+                // Organizar preguntas por área
+                organizarPreguntas();
+
+                // Cargar respuestas existentes
+                await cargarRespuestas();
+
+                // Renderizar wizard
+                renderizarWizard();
+
+                // Mostrar contenido
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('wizardContent').style.display = 'block';
+
+                // Actualizar progreso
+                actualizarProgreso();
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingState').innerHTML = `
+                    <div class="alert alert-warning">
+                        <strong>Error:</strong> ${error.message}
+                        <br><br>
+                        <button class="btn btn-primary" onclick="window.location.href='diagnosticos.html'">
+                            Volver a Diagnósticos
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function organizarPreguntas() {
+            // Agrupar preguntas por área
+            diagnosticoData.preguntas.forEach(pregunta => {
+                const areaId = pregunta.id_area;
+                const areaNombre = pregunta.area_nombre || `Área ${areaId}`;
+                
+                if (!preguntasPorArea[areaId]) {
+                    preguntasPorArea[areaId] = {
+                        id: areaId,
+                        nombre: areaNombre,
+                        descripcion: pregunta.area_descripcion || '',
+                        preguntas: []
+                    };
+                    areas.push(preguntasPorArea[areaId]);
+                }
+                
+                preguntasPorArea[areaId].preguntas.push(pregunta);
+            });
+
+            // Ordenar áreas y preguntas
+            areas.sort((a, b) => a.id - b.id);
+            areas.forEach(area => {
+                area.preguntas.sort((a, b) => (a.orden || 0) - (b.orden || 0));
+            });
+        }
+
+        async function cargarRespuestas() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/diagnosticos/${diagnosticoId}/respuestas`, {
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && Array.isArray(data)) {
+                        data.forEach(resp => {
+                            respuestas[resp.id_pregunta] = parseFloat(resp.respuesta_valor) || 0;
+                        });
+                    }
+                }
+            } catch (error) {
+                console.log('No hay respuestas previas:', error);
+            }
+        }
+
+        function renderizarWizard() {
+            // Renderizar tabs de áreas
+            const areasNav = document.getElementById('areasNav');
+            areasNav.innerHTML = areas.map((area, index) => `
+                <button class="area-tab ${index === 0 ? 'active' : ''}" 
+                        onclick="cambiarArea(${index})"
+                        id="areaTab${index}">
+                    ${area.nombre}
+                    <span class="area-check" style="display: none;">✓</span>
+                </button>
+            `).join('');
+
+            // Renderizar contenido de áreas
+            const areasContent = document.getElementById('areasContent');
+            areasContent.innerHTML = areas.map((area, areaIndex) => `
+                <div class="area-content ${areaIndex === 0 ? 'active' : ''}" id="area${areaIndex}">
+                    <div class="area-header">
+                        <h2>${area.nombre}</h2>
+                        ${area.descripcion ? `<p class="area-descripcion">${area.descripcion}</p>` : ''}
+                    </div>
+                    ${area.preguntas.map((pregunta, pregIndex) => `
+                        <div class="pregunta-item">
+                            <div class="pregunta-header">
+                                <div class="pregunta-numero">${pregIndex + 1}</div>
+                                <div class="pregunta-texto">${pregunta.pregunta_texto}</div>
+                            </div>
+                            ${pregunta.ayuda_texto ? `<div class="pregunta-ayuda">${pregunta.ayuda_texto}</div>` : ''}
+                            <div class="respuesta-options">
+                                ${generarOpciones(pregunta)}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+        }
+
+        function generarOpciones(pregunta) {
+            const escalaMax = parseInt(pregunta.escala_maxima) || 5;
+            const opciones = [];
+            
+            for (let i = 1; i <= escalaMax; i++) {
+                const selected = respuestas[pregunta.id_pregunta] === i ? 'selected' : '';
+                const label = getEtiquetaOpcion(i, escalaMax);
+                opciones.push(`
+                    <div class="respuesta-option ${selected}" 
+                         onclick="seleccionarRespuesta(${pregunta.id_pregunta}, ${i})">
+                        <div>${i}</div>
+                        <span class="respuesta-label">${label}</span>
+                    </div>
+                `);
+            }
+            
+            return opciones.join('');
+        }
+
+        function getEtiquetaOpcion(valor, max) {
+            if (max === 5) {
+                const labels = ['Muy bajo', 'Bajo', 'Medio', 'Alto', 'Muy alto'];
+                return labels[valor - 1] || '';
+            } else if (max === 10) {
+                if (valor <= 2) return 'Muy bajo';
+                if (valor <= 4) return 'Bajo';
+                if (valor <= 6) return 'Medio';
+                if (valor <= 8) return 'Alto';
+                return 'Muy alto';
+            }
+            return '';
+        }
+
+        async function seleccionarRespuesta(preguntaId, valor) {
+            // Actualizar visualmente
+            const preguntaItem = event.target.closest('.pregunta-item');
+            preguntaItem.querySelectorAll('.respuesta-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.target.closest('.respuesta-option').classList.add('selected');
+
+            // Guardar localmente
+            respuestas[preguntaId] = valor;
+
+            // Guardar en backend
+            try {
+                await fetch(`${API_BASE_URL}/diagnosticos/${diagnosticoId}/respuestas`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id_pregunta: preguntaId,
+                        valor: valor
+                    })
+                });
+
+                actualizarProgreso();
+            } catch (error) {
+                console.error('Error al guardar respuesta:', error);
+            }
+        }
+
+        function actualizarProgreso() {
+            const totalPreguntas = diagnosticoData.preguntas.length;
+            const respondidas = Object.keys(respuestas).length;
+            const porcentaje = Math.round((respondidas / totalPreguntas) * 100);
+
+            document.getElementById('progressText').textContent = 
+                `${respondidas} de ${totalPreguntas} preguntas respondidas`;
+            document.getElementById('progressPercent').textContent = `${porcentaje}%`;
+            document.getElementById('progressBar').style.width = `${porcentaje}%`;
+
+            // Marcar áreas completadas
+            areas.forEach((area, index) => {
+                const preguntasArea = area.preguntas.length;
+                const respondidasArea = area.preguntas.filter(p => respuestas[p.id_pregunta]).length;
+                
+                if (respondidasArea === preguntasArea) {
+                    document.getElementById(`areaTab${index}`).classList.add('completed');
+                    document.querySelector(`#areaTab${index} .area-check`).style.display = 'inline';
+                }
+            });
+        }
+
+        function cambiarArea(index) {
+            areaActualIndex = index;
+            
+            // Actualizar tabs
+            document.querySelectorAll('.area-tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+
+            // Actualizar contenido
+            document.querySelectorAll('.area-content').forEach((content, i) => {
+                content.classList.toggle('active', i === index);
+            });
+
+            // Actualizar botones de navegación
+            actualizarBotonesNavegacion();
+            
+            // Scroll al inicio
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function navegarArea(direccion) {
+            const nuevoIndex = areaActualIndex + direccion;
+            if (nuevoIndex >= 0 && nuevoIndex < areas.length) {
+                cambiarArea(nuevoIndex);
+            }
+        }
+
+        function actualizarBotonesNavegacion() {
+            const btnAnterior = document.getElementById('btnAnterior');
+            const btnSiguiente = document.getElementById('btnSiguiente');
+            const btnFinalizar = document.getElementById('btnFinalizar');
+
+            btnAnterior.style.display = areaActualIndex === 0 ? 'none' : 'inline-flex';
+            btnSiguiente.style.display = areaActualIndex === areas.length - 1 ? 'none' : 'inline-flex';
+            btnFinalizar.style.display = areaActualIndex === areas.length - 1 ? 'inline-flex' : 'none';
+        }
+
+        async function guardarProgreso() {
+            alert('Progreso guardado automáticamente');
+        }
+
+        async function finalizarDiagnostico() {
+            const totalPreguntas = diagnosticoData.preguntas.length;
+            const respondidas = Object.keys(respuestas).length;
+
+            if (respondidas < totalPreguntas) {
+                if (!confirm(`Has respondido ${respondidas} de ${totalPreguntas} preguntas. ¿Deseas finalizar de todos modos?`)) {
+                    return;
+                }
+            }
+
+            if (!confirm('¿Estás seguro de finalizar el diagnóstico? Se calcularán los resultados.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/diagnosticos/${diagnosticoId}/finalizar`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Error al finalizar diagnóstico');
+
+                alert('¡Diagnóstico finalizado! Redirigiendo a resultados...');
+                window.location.href = `diagnostico-resultados.html?id=${diagnosticoId}`;
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al finalizar el diagnóstico: ' + error.message);
+            }
+        }
+
+        // Inicializar botones
+        actualizarBotonesNavegacion();
+
+        // Función para resaltar el link activo en el sidebar
+        function highlightActiveLink() {
+            const currentPath = window.location.pathname;
+            const links = document.querySelectorAll('.admin-menu a');
+            links.forEach(link => {
+                const linkPath = new URL(link.href).pathname;
+                if (currentPath.includes(linkPath.split('/').pop())) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // Ejecutar al cargar
+        document.addEventListener('DOMContentLoaded', highlightActiveLink);
+    </script>
+        </div>
+        </main>
+    </div>
+</body>
+</html>

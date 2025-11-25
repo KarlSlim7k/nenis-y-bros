@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Recursos - Nenis y Bros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .content-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .resources-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .resource-item {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .resource-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .resource-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            flex-shrink: 0;
+        }
+
+        .resource-info {
+            flex: 1;
+        }
+
+        .resource-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .resource-meta {
+            display: flex;
+            gap: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+
+        .resource-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .resource-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .action-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .download-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .download-btn:hover {
+            background: #764ba2;
+        }
+
+        .view-btn {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .view-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .browse-btn {
+            background: #667eea;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .browse-btn:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .pagination button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #764ba2;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 1.5rem;
+            color: #666;
+        }
+
+        .download-date {
+            color: #999;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📚 Mis Recursos</h1>
+            <div class="header-stats">
+                <div class="stat-box">
+                    <div class="stat-number" id="total-descargas">0</div>
+                    <div class="stat-label">Recursos descargados</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" onclick="changeTab('descargas')">
+                ⬇️ Mis Descargas
+            </div>
+            <div class="tab" onclick="window.location.href='catalogo.html'">
+                🔍 Explorar Catálogo
+            </div>
+        </div>
+
+        <!-- Content Card -->
+        <div class="content-card">
+            <div id="loading" class="loading">Cargando recursos...</div>
+            <div id="content" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost/nenis_y_bros/backend/api/v1';
+        const token = localStorage.getItem('token');
+        let currentPage = 1;
+
+        // Check auth
+        if (!token) {
+            window.location.href = '../auth/login.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMyDownloads();
+        });
+
+        // Load my downloads
+        async function loadMyDownloads() {
+            try {
+                const response = await fetch(`${API_BASE}/recursos/mis-descargas?pagina=${currentPage}&limite=10`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('content').style.display = 'block';
+                    
+                    // Update stats
+                    document.getElementById('total-descargas').textContent = data.data.total;
+                    
+                    // Render resources
+                    if (data.data.recursos.length > 0) {
+                        renderDownloads(data.data.recursos);
+                        renderPagination(data.data);
+                    } else {
+                        renderEmptyState();
+                    }
+                } else if (response.status === 401) {
+                    localStorage.removeItem('token');
+                    window.location.href = '../auth/login.html';
+                } else {
+                    showError('Error al cargar recursos');
+                }
+            } catch (error) {
+                console.error('Error loading downloads:', error);
+                document.getElementById('loading').innerHTML = 'Error al cargar recursos';
+            }
+        }
+
+        // Render downloads
+        function renderDownloads(recursos) {
+            const content = document.getElementById('content');
+            
+            const tipoIcons = {
+                'articulo': '📄',
+                'ebook': '📚',
+                'plantilla': '📋',
+                'herramienta': '🛠️',
+                'video': '🎥',
+                'infografia': '📊',
+                'podcast': '🎙️'
+            };
+
+            let html = '<div class="resources-list">';
+            
+            recursos.forEach(recurso => {
+                const downloadDate = new Date(recurso.fecha_descarga).toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                html += `
+                    <div class="resource-item">
+                        <div class="resource-icon">
+                            ${tipoIcons[recurso.tipo_recurso] || '📄'}
+                        </div>
+                        <div class="resource-info">
+                            <div class="resource-title">${recurso.titulo}</div>
+                            <div class="resource-meta">
+                                <span>📚 ${recurso.categoria_nombre}</span>
+                                <span>📊 ${recurso.nivel}</span>
+                                <span>⭐ ${parseFloat(recurso.calificacion_promedio || 0).toFixed(1)}</span>
+                            </div>
+                            <div class="resource-description">${recurso.descripcion.substring(0, 150)}...</div>
+                            <div class="download-date">Descargado el ${downloadDate}</div>
+                        </div>
+                        <div class="resource-actions">
+                            ${recurso.archivo_url ? `
+                                <button class="action-btn download-btn" onclick="downloadAgain('${recurso.archivo_url}', '${recurso.archivo_nombre}')">
+                                    ⬇️ Descargar
+                                </button>
+                            ` : ''}
+                            <button class="action-btn view-btn" onclick="viewResource('${recurso.slug}')">
+                                👁️ Ver detalle
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            content.innerHTML = html;
+        }
+
+        // Render empty state
+        function renderEmptyState() {
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📚</div>
+                    <h2>Aún no has descargado recursos</h2>
+                    <p>Explora nuestro catálogo y descarga contenido educativo para impulsar tu emprendimiento</p>
+                    <button class="browse-btn" onclick="window.location.href='catalogo.html'">
+                        🔍 Explorar Catálogo
+                    </button>
+                </div>
+            `;
+        }
+
+        // Download again
+        function downloadAgain(url, filename) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename || 'recurso';
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // View resource
+        function viewResource(slug) {
+            window.location.href = `recurso-detalle.html?slug=${slug}`;
+        }
+
+        // Render pagination
+        function renderPagination(data) {
+            if (data.total_paginas <= 1) return;
+
+            const content = document.getElementById('content');
+            let paginationHtml = '<div class="pagination">';
+            
+            paginationHtml += `
+                <button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
+                    ← Anterior
+                </button>
+            `;
+
+            for (let i = 1; i <= data.total_paginas; i++) {
+                if (i === 1 || i === data.total_paginas || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    paginationHtml += `
+                        <button ${i === currentPage ? 'disabled' : ''} onclick="changePage(${i})">
+                            ${i}
+                        </button>
+                    `;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    paginationHtml += '<span>...</span>';
+                }
+            }
+
+            paginationHtml += `
+                <button ${currentPage === data.total_paginas ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
+                    Siguiente →
+                </button>
+            `;
+
+            paginationHtml += '</div>';
+            content.innerHTML += paginationHtml;
+        }
+
+        // Change page
+        function changePage(page) {
+            currentPage = page;
+            document.getElementById('content').style.display = 'none';
+            document.getElementById('loading').style.display = 'block';
+            loadMyDownloads();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Change tab
+        function changeTab(tab) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'descargas') {
+                loadMyDownloads();
+            }
+        }
+
+        function showError(message) {
+            document.getElementById('loading').innerHTML = `<div class="empty-state"><h2>${message}</h2></div>`;
+        }
+    </script>
+</body>
+</html>

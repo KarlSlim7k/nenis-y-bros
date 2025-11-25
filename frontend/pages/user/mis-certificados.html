@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Certificados | Nenis y Bros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+
+        /* Admin Container Layout */
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .admin-logo {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .admin-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .admin-menu li {
+            margin: 5px 0;
+        }
+
+        .admin-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .admin-menu a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .admin-menu a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left: 4px solid #667eea;
+        }
+
+        .admin-menu a span:first-child {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .admin-main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+            width: calc(100% - 260px);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            margin: 0 0 10px 0;
+        }
+
+        .page-header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .certificados-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .certificado-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .certificado-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+
+        .certificado-header {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .certificado-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .certificado-body {
+            padding: 25px;
+        }
+
+        .certificado-titulo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .certificado-info {
+            color: #718096;
+            margin-bottom: 15px;
+        }
+
+        .certificado-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .certificado-actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #764ba2;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #718096;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <a href="./dashboard.html" class="admin-logo">🚀 Nenis y Bros</a>
+            <ul class="admin-menu">
+                <li><a href="./dashboard.html"><span>📊</span> Dashboard</a></li>
+                <li><a href="./diagnosticos.html"><span>📋</span> Diagnósticos</a></li>
+                <li><a href="./mi-progreso.html"><span>📈</span> Mi Progreso</a></li>
+                <li><a href="./perfil-empresarial.html"><span>🏢</span> Mi Empresa</a></li>
+                <li><a href="./mis-logros.html"><span>🏆</span> Mis Logros</a></li>
+                <li><a href="./ranking.html"><span>🥇</span> Ranking</a></li>
+                <li><a href="./vitrina-productos.html"><span>🛍️</span> Vitrina de Productos</a></li>
+                <li><a href="./mis-productos.html"><span>📦</span> Mis Productos</a></li>
+                <li><a href="./chat.html"><span>💬</span> Chat</a></li>
+                <li><a href="./notificaciones.html"><span>🔔</span> Notificaciones</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="page-header">
+                <h1>🎓 Mis Certificados</h1>
+                <p>Certificados de cursos completados y logros alcanzados</p>
+            </div>
+
+            <div class="certificados-grid" id="certificados-grid">
+                <!-- Se cargará dinámicamente -->
+            </div>
+
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <div class="empty-state-icon">🎓</div>
+                <h3>Aún no tienes certificados</h3>
+                <p>Completa cursos para obtener certificados que validen tus conocimientos</p>
+                <a href="../cursos/catalogo.html" class="btn btn-primary">Explorar Cursos</a>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script>
+        // Verificar autenticación
+        if (!checkAuth() || !(isEmprendedor() || isEmpresario())) {
+            window.location.href = '/nenis_y_bros/frontend/pages/auth/login.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            highlightActiveLink();
+            cargarCertificados();
+        });
+
+        function highlightActiveLink() {
+            const currentPath = window.location.pathname;
+            const links = document.querySelectorAll('.admin-menu a');
+            links.forEach(link => {
+                const linkPath = new URL(link.href).pathname;
+                if (currentPath.includes(linkPath.split('/').pop())) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        async function cargarCertificados() {
+            try {
+                const response = await fetchAPI('/certificados/mis-certificados');
+                if (response.success && response.data.length > 0) {
+                    renderizarCertificados(response.data);
+                } else {
+                    document.getElementById('empty-state').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error al cargar certificados:', error);
+                document.getElementById('empty-state').style.display = 'block';
+            }
+        }
+
+        function renderizarCertificados(certificados) {
+            const grid = document.getElementById('certificados-grid');
+            grid.innerHTML = certificados.map(cert => `
+                <div class="certificado-card">
+                    <div class="certificado-header">
+                        <div class="certificado-icon">🎓</div>
+                    </div>
+                    <div class="certificado-body">
+                        <h3 class="certificado-titulo">${cert.curso_nombre}</h3>
+                        <div class="certificado-info">
+                            <div class="certificado-info-item">
+                                📅 Emitido: ${new Date(cert.fecha_emision).toLocaleDateString('es-MX')}
+                            </div>
+                            <div class="certificado-info-item">
+                                🔑 Código: ${cert.codigo_verificacion}
+                            </div>
+                        </div>
+                        <div class="certificado-actions">
+                            <a href="${API_BASE_URL}/certificados/${cert.id}/download" 
+                               class="btn btn-primary" target="_blank">
+                                📥 Descargar
+                            </a>
+                            <a href="./verificar-certificado.html?codigo=${cert.codigo_verificacion}" 
+                               class="btn btn-secondary">
+                                ✓ Verificar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat | Nenis y Bros</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; color: #2c3e50; }
+        
+        /* Admin Layout */
+        .admin-container { display: flex; min-height: 100vh; }
+        .admin-sidebar { width: 260px; background: #2c3e50; color: white; position: fixed; height: 100vh; overflow-y: auto; z-index: 1000; }
+        .admin-logo { padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .admin-logo h1 { font-size: 1.5rem; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .admin-logo span { font-size: 0.85rem; opacity: 0.8; display: block; margin-top: 0.25rem; }
+        .admin-menu { list-style: none; padding: 1rem 0; }
+        .admin-menu li { margin: 0; }
+        .admin-menu a { display: block; padding: 0.875rem 1.5rem; color: rgba(255,255,255,0.8); text-decoration: none; transition: all 0.3s; border-left: 4px solid transparent; }
+        .admin-menu a:hover { background: rgba(255,255,255,0.1); color: white; }
+        .admin-menu a.active { background: rgba(255,255,255,0.1); color: white; border-left-color: #667eea; }
+        .admin-main { margin-left: 260px; flex: 1; padding: 30px; }
+
+        /* Chat Specific Styles */
+        .chat-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            height: calc(100vh - 60px);
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            overflow: hidden;
+        }
+
+        /* Lista de conversaciones */
+        .conversations-sidebar {
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .conversations-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .conversations-header h2 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .conversations-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .conversation-item {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .conversation-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .conversation-item.active {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #2d3748;
+        }
+
+        .conversation-preview {
+            font-size: 13px;
+            color: #718096;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Área de chat */
+        .chat-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-header-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .chat-header-info h3 {
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+
+        .chat-header-status {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f9fafb;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .message.sent {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            max-width: 60%;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .message.sent .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .chat-input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 24px;
+            font-size: 14px;
+            resize: none;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-send {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .btn-send:hover {
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #718096;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-sidebar { width: 200px; }
+            .admin-main { margin-left: 200px; padding: 20px; }
+            .chat-container { grid-template-columns: 1fr; }
+            .conversations-sidebar { display: none; } /* Hide sidebar on mobile for now or toggle */
+            .conversations-sidebar.active { display: flex; position: absolute; z-index: 10; width: 100%; height: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <div class="admin-logo">
+                <h1>🚀 Nenis y Bros</h1>
+                <span>Panel Emprendedor</span>
+            </div>
+            <ul class="admin-menu">
+                <li><a href="./dashboard.html">📊 Dashboard</a></li>
+                <li><a href="./diagnosticos.html">📋 Diagnósticos</a></li>
+                <li><a href="./mi-progreso.html">📈 Mi Progreso</a></li>
+                <li><a href="./perfil-empresarial.html">🏢 Mi Empresa</a></li>
+                <li><a href="./mis-logros.html">🏆 Mis Logros</a></li>
+                <li><a href="./ranking.html">🥇 Ranking</a></li>
+                <li><a href="./vitrina-productos.html">🛍️ Vitrina de Productos</a></li>
+                <li><a href="./mis-productos.html">📦 Mis Productos</a></li>
+                <li><a href="./chat.html" class="active">💬 Chat</a></li>
+                <li><a href="./notificaciones.html">🔔 Notificaciones</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="chat-container">
+                <!-- Lista de conversaciones -->
+                <div class="conversations-sidebar">
+                    <div class="conversations-header">
+                        <h2>💬 Mensajes</h2>
+                        <small>Chatea con instructores y mentores</small>
+                    </div>
+                    <div class="conversations-list" id="conversations-list">
+                        <!-- Se cargará dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Área de chat -->
+                <div class="chat-area">
+                    <div class="empty-state" id="empty-chat">
+                        <div class="empty-state-icon">💬</div>
+                        <p>Selecciona una conversación para comenzar</p>
+                    </div>
+
+                    <div id="active-chat" style="display: none; height: 100%; display: flex; flex-direction: column;">
+                        <div class="chat-header" id="chat-header">
+                            <!-- Se cargará dinámicamente -->
+                        </div>
+                        <div class="messages-container" id="messages-container">
+                            <!-- Mensajes se cargarán dinámicamente -->
+                        </div>
+                        <div class="chat-input-area">
+                            <textarea 
+                                id="message-input" 
+                                class="chat-input" 
+                                placeholder="Escribe un mensaje..."
+                                rows="1"
+                                onkeypress="handleKeyPress(event)"></textarea>
+                            <button class="btn-send" onclick="enviarMensaje()">📤</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script>
+        // Verificar autenticación y rol
+        if (checkAuth()) {
+            // Debug: Mostrar rol actual en consola
+            const user = getAuthUser();
+            console.log('👤 Usuario actual:', user);
+            console.log('🔑 Rol:', user ? user.tipo_usuario : 'No usuario');
+            
+            // Permitir acceso a Emprendedores, Empresarios y Mentores (Instructores)
+            if (!(isEmprendedor() || isEmpresario() || isMentor())) {
+                // Debug: Alertar si el rol no coincide para entender por qué falla
+                alert(`Acceso denegado.\nTu rol detectado es: ${user ? user.tipo_usuario : 'Ninguno'}\nRoles permitidos: emprendedor, empresario, mentor`);
+                window.location.href = '../auth/login.html';
+            }
+        }
+        // Si checkAuth() devuelve false, ya inició la redirección al login con el parámetro redirect correcto
+
+        let conversacionActual = null;
+        let updateInterval = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            highlightActiveLink();
+            cargarConversaciones();
+        });
+
+        function highlightActiveLink() {
+            const currentPath = window.location.pathname;
+            const links = document.querySelectorAll('.admin-menu a');
+            links.forEach(link => {
+                const linkPath = new URL(link.href).pathname;
+                if (currentPath.includes(linkPath.split('/').pop())) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        async function cargarConversaciones() {
+            try {
+                const response = await fetchAPI('/chat/conversaciones');
+                if (response.success) {
+                    renderizarConversaciones(response.data);
+                }
+            } catch (error) {
+                console.error('Error al cargar conversaciones:', error);
+            }
+        }
+
+        function renderizarConversaciones(conversaciones) {
+            const list = document.getElementById('conversations-list');
+            if (conversaciones.length === 0) {
+                list.innerHTML = '<p style="padding: 20px; text-align: center; color: #718096;">No hay conversaciones</p>';
+                return;
+            }
+
+            list.innerHTML = conversaciones.map(conv => `
+                <div class="conversation-item" onclick="abrirConversacion(${conv.id}, '${conv.nombre}')">
+                    <div class="conversation-name">${conv.nombre}</div>
+                    <div class="conversation-preview">${conv.ultimo_mensaje || 'Sin mensajes'}</div>
+                </div>
+            `).join('');
+        }
+
+        async function abrirConversacion(id, nombre) {
+            conversacionActual = id;
+            document.getElementById('empty-chat').style.display = 'none';
+            document.getElementById('active-chat').style.display = 'flex';
+
+            // Actualizar header
+            const header = document.getElementById('chat-header');
+            header.innerHTML = `
+                <div class="chat-header-avatar">${nombre.charAt(0).toUpperCase()}</div>
+                <div class="chat-header-info">
+                    <h3>${nombre}</h3>
+                    <div class="chat-header-status">En línea</div>
+                </div>
+            `;
+
+            // Resaltar conversación activa
+            document.querySelectorAll('.conversation-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Cargar mensajes
+            await cargarMensajes(id);
+
+            // Iniciar actualización automática
+            if (updateInterval) clearInterval(updateInterval);
+            updateInterval = setInterval(() => cargarMensajes(id), 5000);
+        }
+
+        async function cargarMensajes(conversacionId) {
+            try {
+                const response = await fetchAPI(`/chat/conversaciones/${conversacionId}/mensajes`);
+                if (response.success) {
+                    renderizarMensajes(response.data);
+                }
+            } catch (error) {
+                console.error('Error al cargar mensajes:', error);
+            }
+        }
+
+        function renderizarMensajes(mensajes) {
+            const container = document.getElementById('messages-container');
+            const user = getAuthUser();
+            
+            container.innerHTML = mensajes.map(msg => {
+                const esMio = msg.usuario_id === user.id;
+                return `
+                    <div class="message ${esMio ? 'sent' : ''}">
+                        <div class="message-avatar">${msg.nombre.charAt(0).toUpperCase()}</div>
+                        <div class="message-content">
+                            <div class="message-bubble">${msg.contenido}</div>
+                            <div class="message-time">${new Date(msg.fecha_envio).toLocaleString('es-MX')}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function enviarMensaje() {
+            if (!conversacionActual) return;
+
+            const input = document.getElementById('message-input');
+            const contenido = input.value.trim();
+            
+            if (!contenido) return;
+
+            try {
+                const response = await fetchAPI(`/chat/conversaciones/${conversacionActual}/mensajes`, 'POST', {
+                    contenido: contenido
+                });
+
+                if (response.success) {
+                    input.value = '';
+                    await cargarMensajes(conversacionActual);
+                }
+            } catch (error) {
+                console.error('Error al enviar mensaje:', error);
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                enviarMensaje();
+            }
+        }
+    </script>
+</body>
+</html>

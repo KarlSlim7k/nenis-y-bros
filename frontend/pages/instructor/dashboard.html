@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Instructor - Nenis y Bros</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <style>
+        .mentor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px var(--secondary-glow);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">🎓</span>
+            <span class="text-gradient">Nenis y Bros <small
+                    style="font-size: 0.8rem; color: var(--text-muted); opacity: 0.8;">| Mentor</small></span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link active">Dashboard</a></li>
+            <li><a href="./sesiones.html" class="nav-link">Mis Sesiones</a></li>
+            <li><a href="./estudiantes.html" class="nav-link">Estudiantes</a></li>
+            <li><a href="./recursos.html" class="nav-link">Recursos</a></li>
+            <li><a href="./calendario.html" class="nav-link">Calendario</a></li>
+        </ul>
+        <div class="admin-user">
+            <div class="mentor-avatar-glow user-avatar">M</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Mentor</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Instructor</div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
+        </div>
+    </nav>
+
+    <header class="hero-section">
+        <h1 class="hero-welcome">Panel de <span class="text-gradient">Mentoría</span> 🎓</h1>
+        <p class="hero-subtitle">Gestiona tus sesiones, estudiantes y recursos educativos.</p>
+    </header>
+
+    <main class="dashboard-grid">
+        <!-- Stats Row -->
+        <div class="col-span-12">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+                <div class="stat-card-modern">
+                    <div class="stat-icon-box" style="color: var(--accent);">👥</div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Estudiantes Activos</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;">24</div>
+                    </div>
+                </div>
+                <div class="stat-card-modern">
+                    <div class="stat-icon-box" style="color: var(--success);">📅</div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Sesiones Este Mes</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;">18</div>
+                    </div>
+                </div>
+                <div class="stat-card-modern">
+                    <div class="stat-icon-box" style="color: var(--warning);">⭐</div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Valoración Promedio</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;">4.8</div>
+                    </div>
+                </div>
+                <div class="stat-card-modern">
+                    <div class="stat-icon-box" style="color: var(--secondary);">🕐</div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Horas Totales</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;">156</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Sessions -->
+        <div class="col-span-8">
+            <div class="glass-panel" style="padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1.25rem; font-weight: 600;">Próximas Sesiones</h3>
+                    <a href="./sesiones.html"
+                        style="color: var(--primary); text-decoration: none; font-size: 0.9rem;">Ver todas →</a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-modern">
+                        <thead>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Tema</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 600;">María González</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">maria@example.com</div>
+                                </td>
+                                <td>Plan de Negocios</td>
+                                <td style="color: var(--text-muted);">Hoy, 15:00</td>
+                                <td><span
+                                        style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem;">Confirmada</span>
+                                </td>
+                                <td><button class="btn-outline"
+                                        style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">Iniciar</button></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 600;">Carlos Ruiz</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">carlos@example.com</div>
+                                </td>
+                                <td>Marketing Digital</td>
+                                <td style="color: var(--text-muted);">Mañana, 10:00</td>
+                                <td><span
+                                        style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem;">Pendiente</span>
+                                </td>
+                                <td><button class="btn-outline"
+                                        style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">Ver</button></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 600;">Ana Martínez</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">ana@example.com</div>
+                                </td>
+                                <td>Finanzas Básicas</td>
+                                <td style="color: var(--text-muted);">26 Nov, 14:00</td>
+                                <td><span
+                                        style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem;">Confirmada</span>
+                                </td>
+                                <td><button class="btn-outline"
+                                        style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">Ver</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="col-span-4">
+            <div class="glass-panel" style="padding: 2rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem;">Actividad Reciente</h3>
+                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="width: 2px; background: var(--border-light); position: relative;">
+                        <div
+                            style="width: 10px; height: 10px; background: var(--success); border-radius: 50%; position: absolute; left: -4px; top: 5px; box-shadow: 0 0 10px var(--success);">
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Sesión completada</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Con Juan Pérez -
+                            Hace 2h</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="width: 2px; background: var(--border-light); position: relative;">
+                        <div
+                            style="width: 10px; height: 10px; background: var(--primary); border-radius: 50%; position: absolute; left: -4px; top: 5px; box-shadow: 0 0 10px var(--primary);">
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Nueva valoración</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">5 estrellas -
+                            Hace 5h</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 1rem;">
+                    <div style="width: 2px; background: var(--border-light); position: relative;">
+                        <div
+                            style="width: 10px; height: 10px; background: var(--warning); border-radius: 50%; position: absolute; left: -4px; top: 5px; box-shadow: 0 0 10px var(--warning);">
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Solicitud de sesión</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Laura Torres -
+                            Hace 1d</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="glass-panel" style="padding: 2rem; margin-top: 2rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem;">Acciones Rápidas</h3>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <button class="btn-modern" style="width: 100%;">📅 Agendar Sesión</button>
+                    <button class="btn-outline" style="width: 100%;">📝 Crear Recurso</button>
+                    <button class="btn-outline" style="width: 100%;">👥 Ver Estudiantes</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!checkAuth() || !isMentor()) {
+            window.location.href = ROUTES.login;
+        }
+
+        function logout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            window.location.href = ROUTES.login;
+        }
+
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Mentor';
+                const avatar = document.querySelector('.mentor-avatar-glow');
+                if (avatar && user.nombre) {
+                    avatar.textContent = user.nombre.charAt(0).toUpperCase();
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDatosUsuario();
+        });
+    </script>
+</body>
+
+</html>

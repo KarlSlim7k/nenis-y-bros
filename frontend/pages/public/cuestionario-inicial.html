@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Inicial - Nenis y Bros</title>
+    <link rel="stylesheet" href="../../assets/css/onboarding.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <h1>🚀 Nenis y Bros</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../../index.html" class="btn btn-text">Volver al Inicio</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="wizard-container">
+            <div class="wizard-header">
+                <div class="step-counter">Pregunta <span id="currentStep">1</span> de <span id="totalSteps">12</span></div>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressBar" style="width: 8%"></div>
+                    </div>
+                </div>
+                <div class="category-badge" id="categoryBadge">Experiencia</div>
+            </div>
+
+            <div class="wizard-content" id="wizardContent">
+                <!-- Loading State -->
+                <div id="loadingState" class="loading-state">
+                    <div class="spinner"></div>
+                    <p class="loading-text">Cargando preguntas...</p>
+                </div>
+
+                <!-- Question Container -->
+                <div id="questionContainer" class="question-container" style="display: none;">
+                    <h2 class="question-title" id="questionText">¿Pregunta?</h2>
+                    <div class="options-grid" id="optionsGrid">
+                        <!-- Options will be injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="wizard-footer">
+                <button class="btn btn-text btn-nav" id="prevBtn" style="visibility: hidden;">
+                    <span class="btn-icon">←</span> Anterior
+                </button>
+                <button class="btn btn-primary btn-nav" id="nextBtn" disabled>
+                    Siguiente <span class="btn-icon">→</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/onboarding.js"></script>
+</body>
+
+</html>

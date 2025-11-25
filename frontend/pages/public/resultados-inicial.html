@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tus Resultados - Nenis y Bros</title>
+    <link rel="stylesheet" href="../../assets/css/onboarding.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <h1>🚀 Nenis y Bros</h1>
+            </div>
+            <div class="nav-links">
+                <a href="../../../index.html" class="btn btn-text">Volver al Inicio</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container section">
+        <div class="results-header">
+            <h2>🎯 Tu Perfil Emprendedor</h2>
+            <p>Basado en tus respuestas, hemos analizado tu nivel actual</p>
+
+            <div id="levelBadge" class="level-badge">
+                <span>✨</span> Calculando...
+            </div>
+
+            <div class="chart-container">
+                <canvas id="radarChart"></canvas>
+            </div>
+
+            <div id="levelDescription" class="level-description">
+                <p>Analizando tus resultados...</p>
+            </div>
+        </div>
+
+        <div class="section-header text-center">
+            <h3>📚 Cursos Recomendados para Ti</h3>
+            <p>Comienza tu camino con esta selección personalizada</p>
+        </div>
+
+        <div class="recommendations-grid" id="coursesGrid">
+            <!-- Courses injected via JS -->
+        </div>
+
+        <div class="cta-box">
+            <div class="cta-content">
+                <h2>🚀 ¡No pierdas tu progreso!</h2>
+                <p>Regístrate ahora para guardar tus resultados y acceder a tus cursos recomendados.</p>
+                <button onclick="goToRegister()" class="btn btn-lg btn-white">
+                    Registrarme y Empezar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/resultados-onboarding.js"></script>
+</body>
+
+</html>

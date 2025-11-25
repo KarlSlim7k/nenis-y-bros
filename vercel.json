@@ -1,0 +1,69 @@
+{
+  "version": 2,
+  "name": "nenis-y-bros",
+  "routes": [
+    {
+      "src": "/frontend/assets/(.*)",
+      "dest": "/frontend/assets/$1"
+    },
+    {
+      "src": "/frontend/components/(.*)",
+      "dest": "/frontend/components/$1"
+    },
+    {
+      "src": "/frontend/pages/(.*)",
+      "dest": "/frontend/pages/$1"
+    },
+    {
+      "src": "/login",
+      "dest": "/frontend/pages/auth/login.html"
+    },
+    {
+      "src": "/registro",
+      "dest": "/frontend/pages/auth/registro.html"
+    },
+    {
+      "src": "/dashboard",
+      "dest": "/frontend/pages/user/dashboard.html"
+    },
+    {
+      "src": "/perfil",
+      "dest": "/frontend/pages/user/perfil-empresarial.html"
+    },
+    {
+      "src": "/diagnostico",
+      "dest": "/frontend/pages/user/diagnosticos.html"
+    },
+    {
+      "src": "/productos",
+      "dest": "/frontend/pages/user/vitrina-productos.html"
+    },
+    {
+      "src": "/logros",
+      "dest": "/frontend/pages/user/mis-logros.html"
+    },
+    {
+      "src": "/mentoria",
+      "dest": "/frontend/pages/user/mentoria-ai.html"
+    },
+    {
+      "src": "/",
+      "dest": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
+    }
+  ]
+}

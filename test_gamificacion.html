@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, device-width=1.0">
+    <title>Test Gamificación</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 10px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        pre {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .links a {
+            display: block;
+            margin: 10px 0;
+            color: #667eea;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Test Sistema de Gamificación</h1>
+    
+    <div class="section">
+        <h2>1️⃣ Login</h2>
+        <p>Token actual: <span id="token">No hay token</span></p>
+        <button onclick="doLogin()">Hacer Login</button>
+        <button onclick="clearToken()">Borrar Token</button>
+        <pre id="loginResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>2️⃣ Probar API</h2>
+        <button onclick="testDashboard()">Dashboard</button>
+        <button onclick="testRanking()">Ranking</button>
+        <button onclick="testLogros()">Mis Logros</button>
+        <button onclick="testNotificaciones()">Notificaciones</button>
+        <pre id="apiResult"></pre>
+    </div>
+
+    <div class="section">
+        <h2>3️⃣ Páginas Frontend</h2>
+        <div class="links">
+            <a href="frontend/pages/user/mi-progreso.html" target="_blank">📊 Mi Progreso (Dashboard)</a>
+            <a href="frontend/pages/user/ranking.html" target="_blank">🏆 Ranking Global</a>
+            <a href="frontend/pages/user/mis-logros.html" target="_blank">🎖️ Mis Logros</a>
+            <a href="frontend/pages/user/notificaciones.html" target="_blank">🔔 Notificaciones</a>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost/nenis_y_bros/backend/index.php/api/v1';
+        
+        function getToken() {
+            return localStorage.getItem('token') || '';
+        }
+        
+        function setToken(token) {
+            localStorage.setItem('token', token);
+            document.getElementById('token').textContent = token.substring(0, 30) + '...';
+        }
+        
+        function clearToken() {
+            localStorage.removeItem('token');
+            document.getElementById('token').textContent = 'No hay token';
+            alert('Token eliminado');
+        }
+        
+        // Cargar token si existe
+        window.onload = function() {
+            const token = getToken();
+            if (token) {
+                document.getElementById('token').textContent = token.substring(0, 30) + '...';
+            }
+        };
+        
+        async function doLogin() {
+            try {
+                const response = await fetch(API_URL + '/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'gamificacion@test.com',
+                        password: 'Test123!'
+                    })
+                });
+                
+                const data = await response.json();
+                document.getElementById('loginResult').textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success) {
+                    setToken(data.data.token);
+                    alert('Login exitoso!');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            } catch (error) {
+                document.getElementById('loginResult').textContent = 'Error: ' + error.message;
+            }
+        }
+        
+        async function testDashboard() {
+            await testEndpoint('/gamificacion/dashboard', 'GET');
+        }
+        
+        async function testRanking() {
+            await testEndpoint('/gamificacion/ranking?tipo=puntos', 'GET');
+        }
+        
+        async function testLogros() {
+            await testEndpoint('/gamificacion/logros/mis-logros', 'GET');
+        }
+        
+        async function testNotificaciones() {
+            await testEndpoint('/gamificacion/notificaciones', 'GET');
+        }
+        
+        async function testEndpoint(endpoint, method) {
+            const token = getToken();
+            if (!token) {
+                alert('Primero debes hacer login');
+                return;
+            }
+            
+            try {
+                const response = await fetch(API_URL + endpoint, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                
+                const data = await response.json();
+                document.getElementById('apiResult').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('apiResult').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

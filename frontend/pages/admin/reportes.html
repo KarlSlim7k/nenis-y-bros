@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <style>
+        .admin-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px var(--primary-glow);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .chart-placeholder {
+            width: 100%;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">🛡️</span>
+            <span class="text-gradient">Nenis y Bros <small
+                    style="font-size: 0.8rem; color: var(--text-muted); opacity: 0.8;">| Admin</small></span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./usuarios.html" class="nav-link">Usuarios</a></li>
+            <li><a href="./cursos.html" class="nav-link">Cursos</a></li>
+            <li><a href="./comunicados.html" class="nav-link">Comunicados</a></li>
+            <li><a href="./reportes.html" class="nav-link active">Reportes</a></li>
+            <li><a href="./configuracion.html" class="nav-link">Configuración</a></li>
+        </ul>
+        <div class="admin-user">
+            <div class="admin-avatar-glow user-avatar">A</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Administrador
+                </div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
+        </div>
+    </nav>
+
+    <header class="hero-section">
+        <h1 class="hero-welcome">Reportes y <span class="text-gradient">Estadísticas</span> 📊</h1>
+        <p class="hero-subtitle">Análisis detallado del rendimiento de la plataforma.</p>
+    </header>
+
+    <main class="dashboard-grid">
+        <!-- Filtros -->
+        <div class="col-span-12">
+            <div class="glass-panel" style="padding: 1.5rem; display: flex; gap: 1rem; align-items: center;">
+                <span style="color: var(--text-muted);">Rango de Fecha:</span>
+                <select class="form-select" style="width: auto;">
+                    <option>Últimos 7 días</option>
+                    <option>Último mes</option>
+                    <option>Este año</option>
+                </select>
+                <button class="btn-modern" style="padding: 0.5rem 1.5rem;">Generar Reporte</button>
+                <button class="btn-outline" style="padding: 0.5rem 1.5rem;">📥 Exportar PDF</button>
+            </div>
+        </div>
+
+        <!-- Chart 1 -->
+        <div class="col-span-8">
+            <div class="glass-panel" style="padding: 2rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem;">Crecimiento de Usuarios</h3>
+                <div class="chart-placeholder">
+                    [Gráfico de Línea: Usuarios Nuevos vs Activos]
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 2 -->
+        <div class="col-span-4">
+            <div class="glass-panel" style="padding: 2rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem;">Distribución por Rol</h3>
+                <div class="chart-placeholder" style="height: 300px;">
+                    [Gráfico de Pastel]
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="col-span-12">
+            <div class="glass-panel" style="padding: 2rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem;">Cursos Más Populares</h3>
+                <div class="table-responsive">
+                    <table class="table-modern">
+                        <thead>
+                            <tr>
+                                <th>Curso</th>
+                                <th>Inscritos</th>
+                                <th>Completados</th>
+                                <th>Valoración</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Marketing Digital 101</td>
+                                <td>120</td>
+                                <td>45</td>
+                                <td style="color: #fbbf24;">★★★★☆ (4.5)</td>
+                            </tr>
+                            <tr>
+                                <td>Finanzas para No Financieros</td>
+                                <td>85</td>
+                                <td>30</td>
+                                <td style="color: #fbbf24;">★★★★★ (4.8)</td>
+                            </tr>
+                            <tr>
+                                <td>Liderazgo Efectivo</td>
+                                <td>60</td>
+                                <td>15</td>
+                                <td style="color: #fbbf24;">★★★★☆ (4.2)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!checkAuth() || !isAdmin()) window.location.href = ROUTES.login;
+
+        function logout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            window.location.href = ROUTES.login;
+        }
+    </script>
+</body>
+
+</html>

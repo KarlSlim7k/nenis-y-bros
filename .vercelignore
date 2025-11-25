@@ -1,0 +1,45 @@
+# Backend PHP (no soportado en Vercel)
+backend/
+
+# Base de datos
+db/
+
+# Herramientas de desarrollo
+tools/
+
+# Uploads (archivos subidos por usuarios)
+uploads/
+
+# Archivos de prueba
+test*.html
+test*.php
+test*.ps1
+
+# Documentación de desarrollo
+docs/
+*.md
+
+# Archivos de configuración local
+.env
+.env.local
+.env.*.local
+.env.railway
+
+# Logs
+*.log
+backend/logs/
+
+# Sessions
+backend/sessions/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+Dockerfile
+.dockerignore

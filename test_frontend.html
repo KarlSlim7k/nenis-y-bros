@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Frontend - Nenis y Bros</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f9fafb;
+        }
+        .test-section {
+            background: white;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        h1 { color: #1f2937; }
+        h2 { 
+            color: #3b82f6; 
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        button:hover { background: #2563eb; }
+        .result {
+            background: #f3f4f6;
+            padding: 1rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        .success { color: #10b981; font-weight: 600; }
+        .error { color: #ef4444; font-weight: 600; }
+        .info { color: #6b7280; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Frontend - Fase 3</h1>
+    
+    <div class="test-section" style="background: #dbeafe; border-left: 4px solid #3b82f6;">
+        <h2 style="color: #1e40af; border: none; margin: 0 0 0.5rem 0;">📋 Instrucciones de Uso</h2>
+        <ol style="margin: 0; padding-left: 1.5rem; color: #1e40af;">
+            <li><strong>Primero:</strong> Haz clic en "Register Test" para crear un usuario nuevo</li>
+            <li><strong>Luego:</strong> Haz clic en "Create Perfil" para crear tu perfil empresarial</li>
+            <li><strong>Después:</strong> Prueba "Get Tipos Diagnóstico" para ver los diagnósticos disponibles</li>
+            <li><strong>Finalmente:</strong> Haz clic en "Iniciar Diagnóstico" y navega a las páginas del frontend</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h2>1. Configuración</h2>
+        <p class="info">URL Base de API: <strong id="apiUrl"></strong></p>
+        <p class="info">Autenticado: <strong id="authStatus">No</strong></p>
+        <p class="info">Usuario: <strong id="userName">-</strong></p>
+        <p class="info">Token: <strong id="tokenInfo" style="font-size: 0.8em; word-break: break-all;">-</strong></p>
+        <div style="margin-top: 1rem;">
+            <button onclick="updateAuthStatus()" style="background: #6b7280;">Actualizar Estado</button>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test de Conexión API</h2>
+        <button onclick="testHealth()">Test Health Endpoint</button>
+        <button onclick="testDirect()">Test Direct Access</button>
+        <div id="healthResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Test de Autenticación</h2>
+        <button onclick="testLogin()">Login Test</button>
+        <button onclick="testRegister()">Register Test</button>
+        <button onclick="testLogout()">Logout</button>
+        <div id="authResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Test de Perfil Empresarial</h2>
+        <button onclick="testGetPerfil()">Get Mi Perfil</button>
+        <button onclick="testCreatePerfil()">Create Perfil</button>
+        <button onclick="testUpdatePerfil()">Update Perfil</button>
+        <div id="perfilResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Test de Diagnósticos</h2>
+        <button onclick="testGetTipos()">Get Tipos Diagnóstico</button>
+        <button onclick="testMisDiagnosticos()">Get Mis Diagnósticos</button>
+        <button onclick="testIniciarDiagnostico()">Iniciar Diagnóstico</button>
+        <div id="diagnosticoResult" class="result" style="display:none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>6. Navegación</h2>
+        <button onclick="window.location.href='frontend/pages/user/perfil-empresarial.html'">
+            → Ir a Perfil Empresarial
+        </button>
+        <button onclick="window.location.href='frontend/pages/user/diagnosticos.html'">
+            → Ir a Diagnósticos
+        </button>
+    </div>
+
+    <script src="frontend/assets/js/config.js"></script>
+    <script src="frontend/assets/js/api.js"></script>
+    <script src="frontend/assets/js/auth.js"></script>
+    
+    <script>
+        // Mostrar configuración
+        document.getElementById('apiUrl').textContent = API_BASE_URL;
+        
+        function updateAuthStatus() {
+            const isAuth = isAuthenticated();
+            const user = getAuthUser();
+            const token = getAuthToken();
+            document.getElementById('authStatus').textContent = isAuth ? 'Sí ✓' : 'No ✗';
+            document.getElementById('authStatus').style.color = isAuth ? '#10b981' : '#ef4444';
+            document.getElementById('userName').textContent = user ? (user.nombre + ' ' + user.apellido) : '-';
+            document.getElementById('tokenInfo').textContent = token ? token.substring(0, 50) + '...' : '-';
+        }
+        
+        updateAuthStatus();
+
+        // Test Health
+        async function testHealth() {
+            const result = document.getElementById('healthResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Probando...';
+            
+            try {
+                const response = await fetch(API_BASE_URL + '/health');
+                const data = await response.json();
+                result.innerHTML = `<span class="success">✓ API Funcionando</span>\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ Error</span>\n${error.message}`;
+            }
+        }
+
+        // Test Direct
+        async function testDirect() {
+            const result = document.getElementById('healthResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Probando acceso directo...';
+            
+            try {
+                const response = await fetch('/nenis_y_bros/backend/index.php?test=1');
+                const text = await response.text();
+                result.innerHTML = `<span class="info">Respuesta:</span>\n${text.substring(0, 500)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ Error</span>\n${error.message}`;
+            }
+        }
+
+        // Test Login
+        async function testLogin() {
+            const result = document.getElementById('authResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Intentando login...';
+            
+            try {
+                const response = await login('test@example.com', 'password123');
+                result.innerHTML = `<span class="success">✓ Login exitoso</span>\n${JSON.stringify(response, null, 2)}`;
+                updateAuthStatus();
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ Error</span>\n${JSON.stringify(error, null, 2)}`;
+            }
+        }
+
+        // Test Register
+        async function testRegister() {
+            const result = document.getElementById('authResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Intentando registro...';
+            
+            try {
+                const timestamp = Date.now();
+                const response = await register({
+                    nombre: 'Test',
+                    apellido: 'User',
+                    email: 'test' + timestamp + '@example.com',
+                    password: 'password123',
+                    password_confirmation: 'password123',
+                    rol: 'empresa'
+                });
+                result.innerHTML = `<span class="success">✓ Registro exitoso</span>\n${JSON.stringify(response, null, 2)}`;
+                updateAuthStatus();
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ Error</span>\n${JSON.stringify(error, null, 2)}`;
+            }
+        }
+
+        // Test Logout
+        async function testLogout() {
+            await logout();
+            updateAuthStatus();
+        }
+
+        // Test Get Perfil
+        async function testGetPerfil() {
+            const result = document.getElementById('perfilResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Obteniendo perfil...';
+            
+            try {
+                const response = await apiGet('/perfiles/mi-perfil');
+                result.innerHTML = `<span class="success">✓ Perfil obtenido</span>\n${JSON.stringify(response, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ Error</span>\n${JSON.stringify(error, null, 2)}`;
+            }
+        }
+
+        // Test Create Perfil
+        async function testCreatePerfil() {
+            const result = document.getElementById('perfilResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Creando perfil...';
+            
+            try {
+                const response = await apiPost('/perfiles', {
+                    nombre_empresa: 'Test Company ' + Date.now(),
+                    sector: 'Tecnología',
+                    tipo_negocio: 'Emprendimiento',
+                    etapa_negocio: 'Validación',
+                    numero_empleados: 5,
+                    descripcion: 'Empresa de prueba'
+                });
+                result.innerHTML = `<span class="success">✓ Perfil creado</span>\n${JSON.stringify(response, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ Error</span>\n${JSON.stringify(error, null, 2)}`;
+            }
+        }
+
+        // Test Update Perfil
+        async function testUpdatePerfil() {
+            const result = document.getElementById('perfilResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Actualizando perfil...';
+            
+            try {
+                // Primero obtener el perfil actual
+                const perfilResponse = await apiGet('/perfiles/mi-perfil');
+                if (!perfilResponse.data.existe) {
+                    result.innerHTML = '<span class="error">✗ No hay perfil para actualizar</span>';
+                    return;
+                }
+                
+                const perfilId = perfilResponse.data.perfil.id_perfil;
+                const response = await apiPut(`/perfiles/${perfilId}`, {
+                    numero_empleados: 10,
+                    facturacion_anual: 50000
+                });
+                result.innerHTML = `<span class="success">✓ Perfil actualizado</span>\n${JSON.stringify(response, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ Error</span>\n${JSON.stringify(error, null, 2)}`;
+            }
+        }
+
+        // Test Get Tipos
+        async function testGetTipos() {
+            const result = document.getElementById('diagnosticoResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Obteniendo tipos...';
+            
+            try {
+                const response = await apiGet('/diagnosticos/tipos');
+                result.innerHTML = `<span class="success">✓ Tipos obtenidos</span>\n${JSON.stringify(response, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ Error</span>\n${JSON.stringify(error, null, 2)}`;
+            }
+        }
+
+        // Test Mis Diagnósticos
+        async function testMisDiagnosticos() {
+            const result = document.getElementById('diagnosticoResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Obteniendo diagnósticos...';
+            
+            try {
+                const response = await apiGet('/diagnosticos/mis-diagnosticos');
+                result.innerHTML = `<span class="success">✓ Diagnósticos obtenidos</span>\n${JSON.stringify(response, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ Error</span>\n${JSON.stringify(error, null, 2)}`;
+            }
+        }
+
+        // Test Iniciar Diagnóstico
+        async function testIniciarDiagnostico() {
+            const result = document.getElementById('diagnosticoResult');
+            result.style.display = 'block';
+            result.innerHTML = 'Iniciando diagnóstico...';
+            
+            try {
+                const response = await apiPost('/diagnosticos/iniciar', {
+                    id_tipo_diagnostico: 1
+                });
+                result.innerHTML = `<span class="success">✓ Diagnóstico iniciado</span>\n${JSON.stringify(response, null, 2)}`;
+            } catch (error) {
+                result.innerHTML = `<span class="error">✗ Error</span>\n${JSON.stringify(error, null, 2)}`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Conversaciones | Nenis y Bros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+
+        /* Admin Container Layout */
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .admin-logo {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .admin-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .admin-menu li {
+            margin: 5px 0;
+        }
+
+        .admin-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .admin-menu a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .admin-menu a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left: 4px solid #667eea;
+        }
+
+        .admin-menu a span:first-child {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .admin-main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+            width: calc(100% - 260px);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            margin: 0 0 10px 0;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .tab:hover {
+            border-color: #667eea;
+        }
+
+        .conversations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .conversation-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .conversation-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+
+        .conversation-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .conversation-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .conversation-info h3 {
+            font-size: 16px;
+            margin-bottom: 3px;
+            color: #2d3748;
+        }
+
+        .conversation-role {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .conversation-preview {
+            color: #4a5568;
+            font-size: 14px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .conversation-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .conversation-time {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .conversation-badge {
+            background: #667eea;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #718096;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <a href="./dashboard.html" class="admin-logo">🚀 Nenis y Bros</a>
+            <ul class="admin-menu">
+                <li><a href="./dashboard.html"><span>📊</span> Dashboard</a></li>
+                <li><a href="./diagnosticos.html"><span>📋</span> Diagnósticos</a></li>
+                <li><a href="./mi-progreso.html"><span>📈</span> Mi Progreso</a></li>
+                <li><a href="./perfil-empresarial.html"><span>🏢</span> Mi Empresa</a></li>
+                <li><a href="./mis-logros.html"><span>🏆</span> Mis Logros</a></li>
+                <li><a href="./ranking.html"><span>🥇</span> Ranking</a></li>
+                <li><a href="./vitrina-productos.html"><span>🛍️</span> Vitrina de Productos</a></li>
+                <li><a href="./mis-productos.html"><span>📦</span> Mis Productos</a></li>
+                <li><a href="./chat.html"><span>💬</span> Chat</a></li>
+                <li><a href="./notificaciones.html"><span>🔔</span> Notificaciones</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="page-header">
+                <h1>💬 Mis Conversaciones</h1>
+                <p>Conversaciones con instructores y mentores</p>
+            </div>
+
+            <div class="tabs">
+                <button class="tab active" onclick="filtrarConversaciones('todas')">Todas</button>
+                <button class="tab" onclick="filtrarConversaciones('no_leidas')">No leídas</button>
+                <button class="tab" onclick="filtrarConversaciones('activas')">Activas</button>
+            </div>
+
+            <div class="conversations-grid" id="conversations-grid">
+                <!-- Se cargará dinámicamente -->
+            </div>
+
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <div class="empty-state-icon">💬</div>
+                <h3>No tienes conversaciones</h3>
+                <p>Inicia una conversación con tus instructores</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script>
+        // Verificar autenticación
+        if (!checkAuth() || !(isEmprendedor() || isEmpresario())) {
+            window.location.href = '/nenis_y_bros/frontend/pages/auth/login.html';
+        }
+
+        let todasConversaciones = [];
+        let filtroActual = 'todas';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            highlightActiveLink();
+            cargarConversaciones();
+        });
+
+        function highlightActiveLink() {
+            const currentPath = window.location.pathname;
+            const links = document.querySelectorAll('.admin-menu a');
+            links.forEach(link => {
+                const linkPath = new URL(link.href).pathname;
+                if (currentPath.includes(linkPath.split('/').pop())) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        async function cargarConversaciones() {
+            try {
+                const response = await fetchAPI('/chat/conversaciones');
+                if (response.success) {
+                    todasConversaciones = response.data;
+                    renderizarConversaciones();
+                } else {
+                    document.getElementById('empty-state').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error al cargar conversaciones:', error);
+                document.getElementById('empty-state').style.display = 'block';
+            }
+        }
+
+        function filtrarConversaciones(filtro) {
+            filtroActual = filtro;
+            
+            // Actualizar tabs
+            document.querySelectorAll('.tab').forEach((tab, index) => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            renderizarConversaciones();
+        }
+
+        function renderizarConversaciones() {
+            const grid = document.getElementById('conversations-grid');
+            const emptyState = document.getElementById('empty-state');
+
+            // Filtrar conversaciones
+            let conversacionesFiltradas = todasConversaciones;
+            if (filtroActual === 'no_leidas') {
+                conversacionesFiltradas = todasConversaciones.filter(c => c.no_leidos > 0);
+            } else if (filtroActual === 'activas') {
+                conversacionesFiltradas = todasConversaciones.filter(c => c.activa);
+            }
+
+            if (conversacionesFiltradas.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            grid.innerHTML = conversacionesFiltradas.map(conv => `
+                <div class="conversation-card" onclick="abrirConversacion(${conv.id})">
+                    <div class="conversation-header">
+                        <div class="conversation-avatar">
+                            ${conv.nombre.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="conversation-info">
+                            <h3>${conv.nombre}</h3>
+                            <div class="conversation-role">${conv.rol || 'Instructor'}</div>
+                        </div>
+                    </div>
+                    <div class="conversation-preview">
+                        ${conv.ultimo_mensaje || 'Sin mensajes aún'}
+                    </div>
+                    <div class="conversation-footer">
+                        <span class="conversation-time">
+                            ${conv.ultima_fecha ? new Date(conv.ultima_fecha).toLocaleDateString('es-MX') : ''}
+                        </span>
+                        ${conv.no_leidos > 0 ? `<span class="conversation-badge">${conv.no_leidos} nuevos</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function abrirConversacion(id) {
+            window.location.href = `./chat.html?conversacion=${id}`;
+        }
+    </script>
+</body>
+</html>

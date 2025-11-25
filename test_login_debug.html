@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Login - Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .info-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .info-box h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .info-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #f9f9f9;
+            border-left: 4px solid #3498db;
+        }
+        .info-item strong {
+            color: #2c3e50;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .btn-danger {
+            background: #e74c3c;
+        }
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="info-box">
+        <h2>🔍 Debug de Autenticación</h2>
+        <div id="userInfo"></div>
+        <div style="margin-top: 20px;">
+            <button onclick="testLogin()">Test Login Admin</button>
+            <button onclick="checkLocalStorage()">Verificar localStorage</button>
+            <button onclick="clearStorage()" class="btn-danger">Limpiar Storage</button>
+            <button onclick="redirectToAdmin()">Ir a Admin Dashboard</button>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h2>📋 Logs</h2>
+        <pre id="logs" style="background: #2c3e50; color: #ecf0f1; padding: 15px; border-radius: 4px; max-height: 400px; overflow-y: auto;"></pre>
+    </div>
+
+    <script src="../../frontend/assets/js/config.js"></script>
+    <script>
+        const logsEl = document.getElementById('logs');
+        const userInfoEl = document.getElementById('userInfo');
+
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const prefix = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+            logsEl.textContent += `[${timestamp}] ${prefix} ${message}\n`;
+            logsEl.scrollTop = logsEl.scrollHeight;
+            console.log(message);
+        }
+
+        function displayUserInfo() {
+            const token = localStorage.getItem('nyd_auth_token');
+            const userStr = localStorage.getItem('nyd_user_data');
+            
+            if (!token || !userStr) {
+                userInfoEl.innerHTML = '<div class="info-item">❌ No hay sesión activa</div>';
+                return;
+            }
+
+            try {
+                const user = JSON.parse(userStr);
+                userInfoEl.innerHTML = `
+                    <div class="info-item"><strong>ID:</strong> ${user.id_usuario}</div>
+                    <div class="info-item"><strong>Nombre:</strong> ${user.nombre} ${user.apellido}</div>
+                    <div class="info-item"><strong>Email:</strong> ${user.email}</div>
+                    <div class="info-item" style="border-left-color: #e74c3c;"><strong>Tipo Usuario:</strong> ${user.tipo_usuario}</div>
+                    <div class="info-item"><strong>Estado:</strong> ${user.estado}</div>
+                    <div class="info-item"><strong>Token:</strong> ${token.substring(0, 50)}...</div>
+                `;
+                log(`Usuario cargado: ${user.nombre} (${user.tipo_usuario})`, 'success');
+            } catch (e) {
+                userInfoEl.innerHTML = '<div class="info-item">❌ Error al parsear usuario</div>';
+                log(`Error: ${e.message}`, 'error');
+            }
+        }
+
+        async function testLogin() {
+            log('Intentando login con admin@test.com...');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'admin@test.com',
+                        password: 'Password123!'
+                    })
+                });
+
+                const data = await response.json();
+                log(`Respuesta recibida: ${JSON.stringify(data, null, 2)}`);
+
+                if (data.success) {
+                    localStorage.setItem('nyd_auth_token', data.data.token);
+                    localStorage.setItem('nyd_user_data', JSON.stringify(data.data.user));
+                    log(`✅ Login exitoso! Tipo: ${data.data.user.tipo_usuario}`, 'success');
+                    displayUserInfo();
+                } else {
+                    log(`❌ Login falló: ${data.message}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        function checkLocalStorage() {
+            log('Verificando localStorage...');
+            const token = localStorage.getItem('nyd_auth_token');
+            const user = localStorage.getItem('nyd_user_data');
+            
+            if (token && user) {
+                const userData = JSON.parse(user);
+                log(`Token presente: ${token.substring(0, 30)}...`);
+                log(`Usuario: ${userData.nombre} - Tipo: ${userData.tipo_usuario}`, 'success');
+            } else {
+                log('No hay datos en localStorage', 'error');
+            }
+            
+            displayUserInfo();
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('nyd_auth_token');
+            localStorage.removeItem('nyd_user_data');
+            log('localStorage limpiado', 'success');
+            displayUserInfo();
+        }
+
+        function redirectToAdmin() {
+            const userStr = localStorage.getItem('nyd_user_data');
+            if (!userStr) {
+                log('No hay usuario. Haz login primero.', 'error');
+                return;
+            }
+
+            const user = JSON.parse(userStr);
+            log(`Tipo de usuario: ${user.tipo_usuario}`);
+
+            if (user.tipo_usuario === 'administrador') {
+                const url = '/nenis_y_bros/frontend/pages/admin/dashboard.html';
+                log(`Redirigiendo a: ${url}`, 'success');
+                window.location.href = url;
+            } else {
+                log(`Usuario no es administrador (es: ${user.tipo_usuario})`, 'error');
+            }
+        }
+
+        // Cargar info al inicio
+        window.onload = function() {
+            log('Página de debug cargada');
+            displayUserInfo();
+        };
+    </script>
+</body>
+</html>

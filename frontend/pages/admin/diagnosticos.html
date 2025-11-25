@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnósticos - Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f6fa; }
+        .admin-container { display: flex; min-height: 100vh; }
+        .admin-sidebar { width: 260px; background: #2c3e50; color: white; position: fixed; height: 100vh; overflow-y: auto; }
+        .admin-logo { padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .admin-menu { list-style: none; padding: 1rem 0; }
+        .admin-menu li a { display: block; padding: 0.875rem 1.5rem; color: #ecf0f1; text-decoration: none; }
+        .admin-menu li a:hover, .admin-menu li a.active { background: #34495e; border-left: 4px solid #3498db; }
+        .admin-main { margin-left: 260px; flex: 1; padding: 2rem; }
+        .admin-header { background: white; padding: 1.5rem 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .content-section { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 8px; }
+        .stat-value { font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; }
+        .btn-logout { background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-logo"><h1>🚀 Nenis y Bros</h1></div>
+            <ul class="admin-menu">
+                <li><a href="./dashboard.html" data-page="dashboard">📊 Dashboard</a></li>
+                <li><a href="./usuarios.html" data-page="usuarios">👥 Usuarios</a></li>
+                <li><a href="./cursos.html" data-page="cursos">📚 Cursos</a></li>
+                <li><a href="./diagnosticos.html" data-page="diagnosticos">📋 Diagnósticos</a></li>
+                <li><a href="./productos.html" data-page="productos">🛍️ Productos</a></li>
+                <li><a href="./recursos.html" data-page="recursos">📖 Recursos</a></li>
+                <li><a href="./auditoria.html" data-page="auditoria">🔍 Auditoría</a></li>
+                <li><a href="./configuracion.html" data-page="configuracion">⚙️ Configuración</a></li>
+            </ul>
+        </aside>
+        <main class="admin-main">
+            <div class="admin-header">
+                <h2>Gestión de Diagnósticos</h2>
+                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card"><div class="stat-value" id="totalDiag">0</div><div>Total Diagnósticos</div></div>
+                <div class="stat-card"><div class="stat-value" id="completados">0</div><div>Completados</div></div>
+                <div class="stat-card"><div class="stat-value" id="promedio">0</div><div>Puntuación Promedio</div></div>
+            </div>
+            <div class="content-section">
+                <h3>Historial de Diagnósticos</h3>
+                <p style="color: #7f8c8d; margin-top: 1rem;">📊 Funcionalidad de reportes en desarrollo</p>
+            </div>
+        </main>
+    </div>
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!checkAuth() || !isAdmin()) window.location.href = ROUTES.login;
+
+        // Resaltar enlace activo del sidebar
+        function highlightActiveLink() {
+            const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
+            const links = document.querySelectorAll('.admin-menu a');
+            links.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === './' + currentPage || 
+                    link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        }
+        highlightActiveLink();
+
+        function logout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            window.location.href = ROUTES.login;
+        }
+    </script>
+</body>
+</html>
