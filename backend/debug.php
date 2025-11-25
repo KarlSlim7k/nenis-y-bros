@@ -9,6 +9,13 @@ header('Access-Control-Allow-Origin: *');
 $debug = [
     'timestamp' => date('Y-m-d H:i:s'),
     'php_version' => PHP_VERSION,
+    'server_vars' => [
+        'REQUEST_URI' => $_SERVER['REQUEST_URI'] ?? 'NOT SET',
+        'SCRIPT_NAME' => $_SERVER['SCRIPT_NAME'] ?? 'NOT SET',
+        'PATH_INFO' => $_SERVER['PATH_INFO'] ?? 'NOT SET',
+        'DOCUMENT_ROOT' => $_SERVER['DOCUMENT_ROOT'] ?? 'NOT SET',
+        'PHP_SELF' => $_SERVER['PHP_SELF'] ?? 'NOT SET',
+    ],
     'env_vars' => [],
     'db_test' => null,
     'errors' => []
@@ -64,12 +71,18 @@ $criticalFiles = [
     'config/database.php',
     'routes/Router.php',
     'routes/api.php',
-    'index.php'
+    'index.php',
+    '.htaccess'
 ];
 
 $debug['files'] = [];
 foreach ($criticalFiles as $file) {
     $debug['files'][$file] = file_exists(__DIR__ . '/' . $file) ? 'EXISTS' : 'MISSING';
+}
+
+// Verificar contenido de .htaccess
+if (file_exists(__DIR__ . '/.htaccess')) {
+    $debug['htaccess_content'] = file_get_contents(__DIR__ . '/.htaccess');
 }
 
 echo json_encode($debug, JSON_PRETTY_PRINT);
