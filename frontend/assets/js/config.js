@@ -8,8 +8,8 @@
 const API_BASE_URL = (() => {
     // En producción (Vercel), usar variable de entorno o URL del backend desplegado
     if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        // URL del backend en Railway (actualizar con tu URL real de Railway)
-        return 'https://nenis-y-bros-backend-production.up.railway.app/api/v1';
+        // URL del backend en Railway
+        return 'https://nenis-y-bros-production.up.railway.app/api/v1';
     }
     // En desarrollo local
     return '/nenis_y_bros/backend/index.php/api/v1';
