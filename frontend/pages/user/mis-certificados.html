@@ -267,7 +267,7 @@
     <script>
         // Verificar autenticación
         if (!checkAuth() || !(isEmprendedor() || isEmpresario())) {
-            window.location.href = '/nenis_y_bros/frontend/pages/auth/login.html';
+            window.location.href = ROUTES.login;
         }
 
         document.addEventListener('DOMContentLoaded', () => {

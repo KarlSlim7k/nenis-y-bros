@@ -4,16 +4,16 @@
  * ============================================================================
  */
 
+// Detectar si estamos en producción o desarrollo
+const IS_PRODUCTION = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+
+// Base path para rutas del frontend
+const BASE_PATH = IS_PRODUCTION ? '' : '/nenis_y_bros';
+
 // URL base de la API - Configuración dinámica para desarrollo y producción
-const API_BASE_URL = (() => {
-    // En producción (Vercel), usar variable de entorno o URL del backend desplegado
-    if (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        // URL del backend en Railway
-        return 'https://nenis-y-bros-production.up.railway.app/api/v1';
-    }
-    // En desarrollo local
-    return '/nenis_y_bros/backend/index.php/api/v1';
-})();
+const API_BASE_URL = IS_PRODUCTION 
+    ? 'https://nenis-y-bros-production.up.railway.app/api/v1'
+    : '/nenis_y_bros/backend/index.php/api/v1';
 
 // Configuración de autenticación
 const AUTH_TOKEN_KEY = 'nyd_auth_token';
@@ -35,40 +35,40 @@ const APP_CONFIG = {
 // Rutas de navegación
 const ROUTES = {
     // Públicas
-    home: '/nenis_y_bros/index.html',
-    login: '/nenis_y_bros/frontend/pages/auth/login.html',
-    register: '/nenis_y_bros/frontend/pages/auth/register.html',
+    home: `${BASE_PATH}/index.html`,
+    login: `${BASE_PATH}/frontend/pages/auth/login.html`,
+    register: `${BASE_PATH}/frontend/pages/auth/register.html`,
 
     // Usuario/Emprendedor - Páginas que existen
-    emprendedorDashboard: '/nenis_y_bros/frontend/pages/user/dashboard.html',
-    diagnosticos: '/nenis_y_bros/frontend/pages/user/diagnosticos.html',
-    perfilEmpresarial: '/nenis_y_bros/frontend/pages/user/perfil-empresarial.html',
-    diagnosticoWizard: '/nenis_y_bros/frontend/pages/user/diagnostico-wizard.html',
-    diagnosticoResultados: '/nenis_y_bros/frontend/pages/user/diagnostico-resultados.html',
-    miProgreso: '/nenis_y_bros/frontend/pages/user/mi-progreso.html',
-    misLogros: '/nenis_y_bros/frontend/pages/user/mis-logros.html',
-    misCertificados: '/nenis_y_bros/frontend/pages/user/mis-certificados.html',
-    ranking: '/nenis_y_bros/frontend/pages/user/ranking.html',
-    notificaciones: '/nenis_y_bros/frontend/pages/user/notificaciones.html',
-    vitrinaProductos: '/nenis_y_bros/frontend/pages/user/vitrina-productos.html',
-    misProductos: '/nenis_y_bros/frontend/pages/user/mis-productos.html',
-    chat: '/nenis_y_bros/frontend/pages/user/chat.html',
-    evaluacion: '/nenis_y_bros/frontend/pages/user/evaluacion.html',
-    evaluacionResultados: '/nenis_y_bros/frontend/pages/user/evaluacion-resultados.html',
-    verificarCertificado: '/nenis_y_bros/frontend/pages/user/verificar-certificado.html',
+    emprendedorDashboard: `${BASE_PATH}/frontend/pages/user/dashboard.html`,
+    diagnosticos: `${BASE_PATH}/frontend/pages/user/diagnosticos.html`,
+    perfilEmpresarial: `${BASE_PATH}/frontend/pages/user/perfil-empresarial.html`,
+    diagnosticoWizard: `${BASE_PATH}/frontend/pages/user/diagnostico-wizard.html`,
+    diagnosticoResultados: `${BASE_PATH}/frontend/pages/user/diagnostico-resultados.html`,
+    miProgreso: `${BASE_PATH}/frontend/pages/user/mi-progreso.html`,
+    misLogros: `${BASE_PATH}/frontend/pages/user/mis-logros.html`,
+    misCertificados: `${BASE_PATH}/frontend/pages/user/mis-certificados.html`,
+    ranking: `${BASE_PATH}/frontend/pages/user/ranking.html`,
+    notificaciones: `${BASE_PATH}/frontend/pages/user/notificaciones.html`,
+    vitrinaProductos: `${BASE_PATH}/frontend/pages/user/vitrina-productos.html`,
+    misProductos: `${BASE_PATH}/frontend/pages/user/mis-productos.html`,
+    chat: `${BASE_PATH}/frontend/pages/user/chat.html`,
+    evaluacion: `${BASE_PATH}/frontend/pages/user/evaluacion.html`,
+    evaluacionResultados: `${BASE_PATH}/frontend/pages/user/evaluacion-resultados.html`,
+    verificarCertificado: `${BASE_PATH}/frontend/pages/user/verificar-certificado.html`,
 
     // Admin
-    adminDashboard: '/nenis_y_bros/frontend/pages/admin/dashboard.html',
-    adminUsers: '/nenis_y_bros/frontend/pages/admin/users.html',
-    adminCourses: '/nenis_y_bros/frontend/pages/admin/courses.html',
+    adminDashboard: `${BASE_PATH}/frontend/pages/admin/dashboard.html`,
+    adminUsers: `${BASE_PATH}/frontend/pages/admin/users.html`,
+    adminCourses: `${BASE_PATH}/frontend/pages/admin/courses.html`,
 
     // Instructor/Mentor
-    instructorDashboard: '/nenis_y_bros/frontend/pages/instructor/dashboard.html',
-    instructorEstudiantes: '/nenis_y_bros/frontend/pages/instructor/estudiantes.html',
-    instructorSesiones: '/nenis_y_bros/frontend/pages/instructor/sesiones.html',
-    instructorDisponibilidad: '/nenis_y_bros/frontend/pages/instructor/disponibilidad-instructor.html',
-    instructorCursos: '/nenis_y_bros/frontend/pages/instructor/cursos.html',
-    instructorMensajes: '/nenis_y_bros/frontend/pages/instructor/mensajes.html'
+    instructorDashboard: `${BASE_PATH}/frontend/pages/instructor/dashboard.html`,
+    instructorEstudiantes: `${BASE_PATH}/frontend/pages/instructor/estudiantes.html`,
+    instructorSesiones: `${BASE_PATH}/frontend/pages/instructor/sesiones.html`,
+    instructorDisponibilidad: `${BASE_PATH}/frontend/pages/instructor/disponibilidad-instructor.html`,
+    instructorCursos: `${BASE_PATH}/frontend/pages/instructor/cursos.html`,
+    instructorMensajes: `${BASE_PATH}/frontend/pages/instructor/mensajes.html`
 };
 
 // Mensajes comunes

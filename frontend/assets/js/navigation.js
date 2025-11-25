@@ -6,73 +6,77 @@
 
 /**
  * Obtiene el menú de navegación según el tipo de usuario
+ * Nota: BASE_PATH se define en config.js que debe cargarse antes
  */
 function getMenuItems(tipoUsuario) {
+    // Asegurar que BASE_PATH existe (fallback por si config.js no cargó)
+    const bp = typeof BASE_PATH !== 'undefined' ? BASE_PATH : '';
+    
     const baseMenu = {
         administrador: [
             { section: 'Administración', items: [
-                { icon: '📊', text: 'Dashboard', url: '/nenis_y_bros/frontend/pages/admin/dashboard.html' },
-                { icon: '👥', text: 'Usuarios', url: '/nenis_y_bros/frontend/pages/admin/usuarios.html' },
-                { icon: '📚', text: 'Cursos', url: '/nenis_y_bros/frontend/pages/admin/cursos.html' },
-                { icon: '📋', text: 'Diagnósticos', url: '/nenis_y_bros/frontend/pages/admin/diagnosticos.html' },
-                { icon: '🛍️', text: 'Productos', url: '/nenis_y_bros/frontend/pages/admin/productos.html' },
-                { icon: '📖', text: 'Recursos', url: '/nenis_y_bros/frontend/pages/admin/recursos.html' },
-                { icon: '🔍', text: 'Auditoría', url: '/nenis_y_bros/frontend/pages/admin/auditoria.html' },
-                { icon: '⚙️', text: 'Configuración', url: '/nenis_y_bros/frontend/pages/admin/configuracion.html' }
+                { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/admin/dashboard.html` },
+                { icon: '👥', text: 'Usuarios', url: `${bp}/frontend/pages/admin/usuarios.html` },
+                { icon: '📚', text: 'Cursos', url: `${bp}/frontend/pages/admin/cursos.html` },
+                { icon: '📋', text: 'Diagnósticos', url: `${bp}/frontend/pages/admin/diagnosticos.html` },
+                { icon: '🛍️', text: 'Productos', url: `${bp}/frontend/pages/admin/productos.html` },
+                { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/admin/recursos.html` },
+                { icon: '🔍', text: 'Auditoría', url: `${bp}/frontend/pages/admin/auditoria.html` },
+                { icon: '⚙️', text: 'Configuración', url: `${bp}/frontend/pages/admin/configuracion.html` }
             ]}
         ],
         mentor: [
             { section: 'Principal', items: [
-                { icon: '📊', text: 'Dashboard', url: '/nenis_y_bros/frontend/pages/instructor/dashboard.html' },
-                { icon: '📚', text: 'Mis Cursos', url: '/nenis_y_bros/frontend/pages/instructor/cursos.html' },
-                { icon: '👥', text: 'Mis Alumnos', url: '/nenis_y_bros/frontend/pages/instructor/alumnos.html' },
-                { icon: '💬', text: 'Mensajes', url: '/nenis_y_bros/frontend/pages/user/mis-conversaciones.html' }
+                { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/instructor/dashboard.html` },
+                { icon: '📚', text: 'Mis Cursos', url: `${bp}/frontend/pages/instructor/cursos.html` },
+                { icon: '👥', text: 'Mis Alumnos', url: `${bp}/frontend/pages/instructor/alumnos.html` },
+                { icon: '💬', text: 'Mensajes', url: `${bp}/frontend/pages/user/mis-conversaciones.html` }
             ]},
             { section: 'Mentoría', items: [
-                { icon: '🤖', text: 'Mentoría AI', url: '/nenis_y_bros/frontend/pages/user/mentoria-ai.html' },
-                { icon: '📅', text: 'Disponibilidad', url: '/nenis_y_bros/frontend/pages/instructor/disponibilidad.html' }
+                { icon: '🤖', text: 'Mentoría AI', url: `${bp}/frontend/pages/user/mentoria-ai.html` },
+                { icon: '📅', text: 'Disponibilidad', url: `${bp}/frontend/pages/instructor/disponibilidad.html` }
             ]}
         ],
         empresario: [
             { section: 'Principal', items: [
-                { icon: '📊', text: 'Diagnósticos', url: '/nenis_y_bros/frontend/pages/user/diagnosticos.html' },
-                { icon: '📈', text: 'Mi Progreso', url: '/nenis_y_bros/frontend/pages/user/mi-progreso.html' },
-                { icon: '🏢', text: 'Mi Empresa', url: '/nenis_y_bros/frontend/pages/user/perfil-empresarial.html' }
+                { icon: '📊', text: 'Diagnósticos', url: `${bp}/frontend/pages/user/diagnosticos.html` },
+                { icon: '📈', text: 'Mi Progreso', url: `${bp}/frontend/pages/user/mi-progreso.html` },
+                { icon: '🏢', text: 'Mi Empresa', url: `${bp}/frontend/pages/user/perfil-empresarial.html` }
             ]},
             { section: 'Formación', items: [
-                { icon: '📚', text: 'Cursos', url: '/nenis_y_bros/frontend/pages/cursos/catalogo.html' },
-                { icon: '📖', text: 'Recursos', url: '/nenis_y_bros/frontend/pages/recursos/biblioteca.html' },
-                { icon: '🎓', text: 'Certificados', url: '/nenis_y_bros/frontend/pages/user/mis-certificados.html' }
+                { icon: '📚', text: 'Cursos', url: `${bp}/frontend/pages/cursos/catalogo.html` },
+                { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/recursos/biblioteca.html` },
+                { icon: '🎓', text: 'Certificados', url: `${bp}/frontend/pages/user/mis-certificados.html` }
             ]},
             { section: 'Productos', items: [
-                { icon: '🛍️', text: 'Mis Productos', url: '/nenis_y_bros/frontend/pages/user/mis-productos.html' },
-                { icon: '➕', text: 'Publicar', url: '/nenis_y_bros/frontend/pages/user/publicar-producto.html' },
-                { icon: '🏪', text: 'Vitrina', url: '/nenis_y_bros/frontend/pages/user/vitrina-productos.html' }
+                { icon: '🛍️', text: 'Mis Productos', url: `${bp}/frontend/pages/user/mis-productos.html` },
+                { icon: '➕', text: 'Publicar', url: `${bp}/frontend/pages/user/publicar-producto.html` },
+                { icon: '🏪', text: 'Vitrina', url: `${bp}/frontend/pages/user/vitrina-productos.html` }
             ]},
             { section: 'Gamificación', items: [
-                { icon: '🏆', text: 'Mis Logros', url: '/nenis_y_bros/frontend/pages/user/mis-logros.html' },
-                { icon: '🥇', text: 'Ranking', url: '/nenis_y_bros/frontend/pages/user/ranking.html' },
-                { icon: '🔔', text: 'Notificaciones', url: '/nenis_y_bros/frontend/pages/user/notificaciones.html' }
+                { icon: '🏆', text: 'Mis Logros', url: `${bp}/frontend/pages/user/mis-logros.html` },
+                { icon: '🥇', text: 'Ranking', url: `${bp}/frontend/pages/user/ranking.html` },
+                { icon: '🔔', text: 'Notificaciones', url: `${bp}/frontend/pages/user/notificaciones.html` }
             ]}
         ],
         emprendedor: [
             { section: 'Principal', items: [
-                { icon: '📊', text: 'Diagnósticos', url: '/nenis_y_bros/frontend/pages/user/diagnosticos.html' },
-                { icon: '📈', text: 'Mi Progreso', url: '/nenis_y_bros/frontend/pages/user/mi-progreso.html' }
+                { icon: '📊', text: 'Diagnósticos', url: `${bp}/frontend/pages/user/diagnosticos.html` },
+                { icon: '📈', text: 'Mi Progreso', url: `${bp}/frontend/pages/user/mi-progreso.html` }
             ]},
             { section: 'Formación', items: [
-                { icon: '📚', text: 'Cursos', url: '/nenis_y_bros/frontend/pages/cursos/catalogo.html' },
-                { icon: '📖', text: 'Recursos', url: '/nenis_y_bros/frontend/pages/recursos/biblioteca.html' },
-                { icon: '🤖', text: 'Mentoría AI', url: '/nenis_y_bros/frontend/pages/user/mentoria-ai.html' },
-                { icon: '🎓', text: 'Certificados', url: '/nenis_y_bros/frontend/pages/user/mis-certificados.html' }
+                { icon: '📚', text: 'Cursos', url: `${bp}/frontend/pages/cursos/catalogo.html` },
+                { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/recursos/biblioteca.html` },
+                { icon: '🤖', text: 'Mentoría AI', url: `${bp}/frontend/pages/user/mentoria-ai.html` },
+                { icon: '🎓', text: 'Certificados', url: `${bp}/frontend/pages/user/mis-certificados.html` }
             ]},
             { section: 'Productos', items: [
-                { icon: '🛍️', text: 'Vitrina', url: '/nenis_y_bros/frontend/pages/user/vitrina-productos.html' }
+                { icon: '🛍️', text: 'Vitrina', url: `${bp}/frontend/pages/user/vitrina-productos.html` }
             ]},
             { section: 'Gamificación', items: [
-                { icon: '🏆', text: 'Mis Logros', url: '/nenis_y_bros/frontend/pages/user/mis-logros.html' },
-                { icon: '🥇', text: 'Ranking', url: '/nenis_y_bros/frontend/pages/user/ranking.html' },
-                { icon: '🔔', text: 'Notificaciones', url: '/nenis_y_bros/frontend/pages/user/notificaciones.html' }
+                { icon: '🏆', text: 'Mis Logros', url: `${bp}/frontend/pages/user/mis-logros.html` },
+                { icon: '🥇', text: 'Ranking', url: `${bp}/frontend/pages/user/ranking.html` },
+                { icon: '🔔', text: 'Notificaciones', url: `${bp}/frontend/pages/user/notificaciones.html` }
             ]}
         ]
     };

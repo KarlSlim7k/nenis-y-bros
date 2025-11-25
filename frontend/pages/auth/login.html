@@ -418,15 +418,15 @@
                 const tipoUsuario = data.data.user.tipo_usuario;
 
                 setTimeout(() => {
-                    if (redirectUrl && redirectUrl.startsWith('/nenis_y_bros')) {
+                    if (redirectUrl && (redirectUrl.startsWith('/nenis_y_bros') || redirectUrl.startsWith('/frontend'))) {
                         window.location.href = redirectUrl;
                     } else {
                         if (tipoUsuario === 'administrador') {
-                            window.location.href = '/nenis_y_bros/frontend/pages/admin/dashboard.html';
+                            window.location.href = ROUTES.adminDashboard;
                         } else if (tipoUsuario === 'mentor') {
-                            window.location.href = '/nenis_y_bros/frontend/pages/instructor/dashboard.html';
+                            window.location.href = ROUTES.instructorDashboard;
                         } else {
-                            window.location.href = '/nenis_y_bros/frontend/pages/user/dashboard.html';
+                            window.location.href = ROUTES.emprendedorDashboard;
                         }
                     }
                 }, 1000);
@@ -455,9 +455,9 @@
             try {
                 const userData = JSON.parse(localStorage.getItem(AUTH_USER_KEY));
                 if (userData.tipo_usuario === 'administrador') {
-                    window.location.href = '/nenis_y_bros/frontend/pages/admin/dashboard.html';
+                    window.location.href = ROUTES.adminDashboard;
                 } else {
-                    window.location.href = '/nenis_y_bros/frontend/pages/user/dashboard.html';
+                    window.location.href = ROUTES.emprendedorDashboard;
                 }
             } catch (e) {
                 // Si hay error parseando, limpiar y continuar en login
