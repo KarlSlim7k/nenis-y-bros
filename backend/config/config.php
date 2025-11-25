@@ -108,11 +108,33 @@ header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
 header('X-XSS-Protection: 1; mode=block');
 
-// CORS (ajustar según necesidades)
+// CORS - Permitir peticiones desde el frontend
+$allowedOrigins = [
+    'https://nenis-y-bros.vercel.app',
+    'https://nenis-y-bros-karlslim7ks-projects.vercel.app',
+    'http://localhost',
+    'http://127.0.0.1'
+];
+
+$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+
+// En desarrollo permitir todo, en producción solo orígenes permitidos
 if (APP_ENV === 'development') {
     header('Access-Control-Allow-Origin: *');
-    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+} elseif (in_array($origin, $allowedOrigins) || strpos($origin, 'vercel.app') !== false) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+} else {
+    header('Access-Control-Allow-Origin: https://nenis-y-bros.vercel.app');
+}
+
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('Access-Control-Allow-Credentials: true');
+
+// Manejar preflight requests (OPTIONS)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    header('HTTP/1.1 200 OK');
+    exit();
 }
 
 return [
