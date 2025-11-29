@@ -276,7 +276,7 @@
             try {
                 const response = await apiGet(url);
                 
-                if (response.success && response.data.data && response.data.data.length > 0) {
+                if (response.success && response.data && response.data.data && response.data.data.length > 0) {
                     grid.innerHTML = response.data.data.map(course => `
                         <a href="curso-detalle.html?id=${course.id_curso}" class="course-card">
                             <div class="course-image">
@@ -312,8 +312,11 @@
             } catch (error) {
                 console.error('Error loading courses:', error);
                 grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--danger);">
-                        <p>Error al cargar los cursos. Por favor intenta más tarde.</p>
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">📚</div>
+                        <h3>Catálogo en mantenimiento</h3>
+                        <p style="color: #666; margin-bottom: 1.5rem;">Estamos preparando nuevos cursos para ti. Por favor intenta más tarde.</p>
+                        <a href="../../../index.html" class="btn btn-primary">Volver al Inicio</a>
                     </div>
                 `;
             }
