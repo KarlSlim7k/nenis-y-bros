@@ -53,6 +53,42 @@ function registerRoutes(Router $router) {
             Response::serverError('Error: ' . $e->getMessage());
         }
     });
+    
+    // DEBUG: Ejecutar migración de renombrado de tablas (TEMPORAL - Eliminar después)
+    $router->post('/debug/migrate-tables', function() {
+        try {
+            $db = Database::getInstance();
+            $results = [];
+            
+            // Verificar si necesita migración
+            try {
+                $db->fetchOne("SELECT 1 FROM modulos_curso LIMIT 1");
+                $needsMigration = true;
+            } catch (Exception $e) {
+                $needsMigration = false;
+            }
+            
+            if (!$needsMigration) {
+                Response::success('No se necesita migración - tablas ya correctas', $results);
+                return;
+            }
+            
+            // Ejecutar renombrado
+            $pdo = $db->getConnection();
+            
+            // Renombrar modulos_curso -> modulos
+            $pdo->exec("RENAME TABLE modulos_curso TO modulos");
+            $results[] = 'modulos_curso -> modulos: OK';
+            
+            // Renombrar inscripciones_curso -> inscripciones  
+            $pdo->exec("RENAME TABLE inscripciones_curso TO inscripciones");
+            $results[] = 'inscripciones_curso -> inscripciones: OK';
+            
+            Response::success('Migración completada exitosamente', $results);
+        } catch (Exception $e) {
+            Response::serverError('Error en migración: ' . $e->getMessage());
+        }
+    });
 
     // =========================================================================
     // RUTAS DE ONBOARDING (Públicas)
