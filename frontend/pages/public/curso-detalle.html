@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Curso - Nenis y Bros</title>
+    <link rel="stylesheet" href="../../assets/css/onboarding.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .course-header {
+            background: var(--gradient);
+            color: white;
+            padding: 120px 0 60px;
+            position: relative;
+        }
+
+        .course-header-content {
+            max-width: 800px;
+        }
+
+        .breadcrumb {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .breadcrumb a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .course-badges {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .badge-outline {
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .course-stats-row {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Layout */
+        .course-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 3rem;
+            margin-top: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Sidebar Card */
+        .enrollment-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 100px;
+            border: 1px solid #eee;
+        }
+
+        .price-tag {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+        }
+
+        .features-list {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+
+        .features-list li {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-light);
+        }
+
+        /* Content */
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        .module-list {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .module-item {
+            border-bottom: 1px solid #eee;
+        }
+
+        .module-header {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .module-content {
+            padding: 0;
+            display: none;
+        }
+
+        .module-content.active {
+            display: block;
+        }
+
+        .lesson-item {
+            padding: 0.75rem 1.5rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .lesson-icon {
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .course-layout {
+                grid-template-columns: 1fr;
+            }
+            .enrollment-card {
+                position: static;
+                margin-bottom: 2rem;
+                order: -1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <a href="../../../index.html" style="text-decoration: none; color: inherit;">
+                    <h1>🚀 Nenis y Bros</h1>
+                </a>
+            </div>
+            <div class="nav-links" id="navLinks">
+                <!-- Will be populated by JS based on auth state -->
+                <a href="catalogo-cursos.html" class="btn btn-text">Cursos</a>
+                <a href="../auth/login.html" class="btn btn-text">Iniciar Sesión</a>
+                <a href="../auth/registro.html" class="btn btn-primary">Registrarse</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="courseContent">
+        <!-- Loading State -->
+        <div style="height: 100vh; display: flex; align-items: center; justify-content: center;">
+            <p>Cargando detalles del curso...</p>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h2>🚀 Nenis y Bros</h2>
+                    <p>Formación empresarial para el mundo real.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Plataforma</h4>
+                        <a href="catalogo-cursos.html">Cursos</a>
+                        <a href="#">Mentores</a>
+                        <a href="#">Precios</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Recursos</h4>
+                        <a href="#">Blog</a>
+                        <a href="#">Guías</a>
+                        <a href="#">Webinars</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Legal</h4>
+                        <a href="#">Privacidad</a>
+                        <a href="#">Términos</a>
+                        <a href="#">Contacto</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Nenis y Bros. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('id');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            updateNav();
+            if (!courseId) {
+                window.location.href = 'catalogo-cursos.html';
+                return;
+            }
+            await loadCourseDetails();
+        });
+
+        function updateNav() {
+            const navLinks = document.getElementById('navLinks');
+            if (checkAuth()) {
+                navLinks.innerHTML = `
+                    <a href="../user/dashboard.html" class="btn btn-text">Mi Dashboard</a>
+                    <button onclick="logout()" class="btn btn-outline">Cerrar Sesión</button>
+                `;
+            }
+        }
+
+        async function loadCourseDetails() {
+            try {
+                const response = await apiGet(`/courses/${courseId}`);
+                if (!response.success) throw new Error('Course not found');
+                
+                const course = response.data;
+                renderCourse(course);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('courseContent').innerHTML = `
+                    <div class="container" style="padding: 100px 0; text-align: center;">
+                        <h2>Curso no encontrado</h2>
+                        <a href="catalogo-cursos.html" class="btn btn-primary">Volver al catálogo</a>
+                    </div>
+                `;
+            }
+        }
+
+        function renderCourse(course) {
+            const container = document.getElementById('courseContent');
+            const isEnrolled = course.inscrito;
+            
+            container.innerHTML = `
+                <header class="course-header">
+                    <div class="container">
+                        <div class="course-header-content">
+                            <div class="breadcrumb">
+                                <a href="catalogo-cursos.html">Catálogo</a> > <span>${course.titulo}</span>
+                            </div>
+                            <div class="course-badges">
+                                <span class="badge-outline">${course.categoria_nombre || 'General'}</span>
+                                <span class="badge-outline">${capitalize(course.nivel)}</span>
+                            </div>
+                            <h1 style="margin-bottom: 1rem;">${course.titulo}</h1>
+                            <p style="font-size: 1.1rem; opacity: 0.9;">${course.descripcion_corta || course.descripcion}</p>
+                            
+                            <div class="course-stats-row">
+                                <div class="stat-item">
+                                    <span>👤</span>
+                                    <span>Instructor: ${course.instructor_nombre} ${course.instructor_apellido}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>📅</span>
+                                    <span>Actualizado: ${new Date(course.fecha_actualizacion || course.fecha_creacion).toLocaleDateString()}</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span>⭐</span>
+                                    <span>4.8 (120 reseñas)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="container course-layout">
+                    <div class="main-content">
+                        <div class="content-section">
+                            <h2>Lo que aprenderás</h2>
+                            <div style="background: #f8f9fa; padding: 1.5rem; border-radius: 8px; border: 1px solid #eee;">
+                                <p>${course.objetivo_aprendizaje || 'Dominarás los conceptos fundamentales y avanzados de este tema para aplicarlos directamente en tu negocio.'}</p>
+                            </div>
+                        </div>
+
+                        <div class="content-section">
+                            <h2>Contenido del curso</h2>
+                            <p style="margin-bottom: 1rem;">${course.total_modulos || 0} módulos • ${course.total_lecciones || 0} lecciones • ${course.duracion_estimada || 0}h duración total</p>
+                            
+                            <div class="module-list">
+                                ${course.modulos ? course.modulos.map((modulo, index) => `
+                                    <div class="module-item">
+                                        <div class="module-header" onclick="toggleModule(this)">
+                                            <span>Módulo ${index + 1}: ${modulo.titulo}</span>
+                                            <span>▼</span>
+                                        </div>
+                                        <div class="module-content ${index === 0 ? 'active' : ''}">
+                                            ${modulo.lecciones ? modulo.lecciones.map(leccion => `
+                                                <div class="lesson-item">
+                                                    <span class="lesson-icon">${getLessonIcon(leccion.tipo_contenido)}</span>
+                                                    <span>${leccion.titulo}</span>
+                                                    <span style="margin-left: auto; font-size: 0.8rem;">${leccion.duracion_minutos} min</span>
+                                                </div>
+                                            `).join('') : '<div class="lesson-item">Sin lecciones</div>'}
+                                        </div>
+                                    </div>
+                                `).join('') : '<p>No hay módulos disponibles</p>'}
+                            </div>
+                        </div>
+
+                        <div class="content-section">
+                            <h2>Descripción</h2>
+                            <p>${course.descripcion}</p>
+                        </div>
+                    </div>
+
+                    <aside class="sidebar">
+                        <div class="enrollment-card">
+                            <div class="price-tag">
+                                ${course.precio > 0 ? '$' + course.precio : 'Gratis'}
+                            </div>
+                            
+                            ${renderEnrollButton(course)}
+                            
+                            <ul class="features-list">
+                                <li><span>♾️</span> Acceso de por vida</li>
+                                <li><span>📱</span> Acceso en móviles</li>
+                                <li><span>🏆</span> Certificado de finalización</li>
+                                <li><span>📝</span> Recursos descargables</li>
+                            </ul>
+                        </div>
+                    </aside>
+                </div>
+            `;
+        }
+
+        function renderEnrollButton(course) {
+            if (course.inscrito) {
+                return `<a href="../user/leccion.html?courseId=${course.id_curso}" class="btn btn-primary" style="width: 100%;">Continuar Aprendiendo</a>`;
+            }
+            
+            if (!checkAuth()) {
+                return `<a href="../auth/login.html?redirect=course&id=${course.id_curso}" class="btn btn-primary" style="width: 100%;">Inicia sesión para inscribirte</a>`;
+            }
+
+            return `<button onclick="enrollCourse(${course.id_curso})" class="btn btn-gradient" style="width: 100%;">Inscribirme Ahora</button>`;
+        }
+
+        async function enrollCourse(id) {
+            try {
+                const response = await apiPost(`/courses/${id}/enroll`, {});
+                if (response.success) {
+                    alert('¡Inscripción exitosa!');
+                    window.location.reload();
+                } else {
+                    alert('Error al inscribirse: ' + response.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al procesar la inscripción');
+            }
+        }
+
+        function toggleModule(header) {
+            const content = header.nextElementSibling;
+            content.classList.toggle('active');
+        }
+
+        function getLessonIcon(type) {
+            switch(type) {
+                case 'video': return '🎥';
+                case 'quiz': return '❓';
+                default: return '📄';
+            }
+        }
+
+        function capitalize(str) {
+            if (!str) return '';
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+    </script>
+</body>
+</html>

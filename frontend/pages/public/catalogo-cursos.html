@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Cursos - Nenis y Bros</title>
+    <link rel="stylesheet" href="../../assets/css/onboarding.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Estilos específicos para el catálogo */
+        .filters-section {
+            background: white;
+            padding: 2rem 0;
+            border-bottom: 1px solid #eee;
+            position: sticky;
+            top: 70px;
+            z-index: 10;
+        }
+
+        .filters-container {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.5;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-select {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 3rem 0;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .course-image {
+            height: 180px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: rgba(255,255,255,0.2);
+        }
+
+        .course-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .course-category {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-title {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .course-footer {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .instructor-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .instructor-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ddd;
+        }
+
+        .course-price {
+            font-weight: 700;
+            color: var(--success);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <div class="logo">
+                <a href="../../../index.html" style="text-decoration: none; color: inherit;">
+                    <h1>🚀 Nenis y Bros</h1>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="catalogo-cursos.html" class="btn btn-text">Cursos</a>
+                <a href="../auth/login.html" class="btn btn-text">Iniciar Sesión</a>
+                <a href="../auth/registro.html" class="btn btn-primary">Registrarse</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero" style="min-height: 40vh; padding-top: 100px;">
+        <div class="container hero-content" style="text-align: center; display: block;">
+            <span class="badge-hero">Formación Empresarial</span>
+            <h1 style="margin-bottom: 1rem;">Catálogo de Cursos</h1>
+            <p style="max-width: 600px; margin: 0 auto;">Explora nuestra biblioteca de cursos diseñados para emprendedores reales. Desde finanzas básicas hasta marketing digital avanzado.</p>
+        </div>
+    </header>
+
+    <section class="filters-section">
+        <div class="container filters-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="¿Qué quieres aprender hoy?">
+            </div>
+            <div class="filter-group">
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">Todas las categorías</option>
+                    <option value="1">Finanzas</option>
+                    <option value="2">Marketing</option>
+                    <option value="3">Operaciones</option>
+                </select>
+                <select class="filter-select" id="levelFilter">
+                    <option value="">Todos los niveles</option>
+                    <option value="principiante">Principiante</option>
+                    <option value="intermedio">Intermedio</option>
+                    <option value="avanzado">Avanzado</option>
+                </select>
+            </div>
+        </div>
+    </section>
+
+    <section class="section bg-light" style="min-height: 60vh;">
+        <div class="container">
+            <div id="coursesGrid" class="courses-grid">
+                <!-- Loading State -->
+                <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                    <p>Cargando cursos...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h2>🚀 Nenis y Bros</h2>
+                    <p>Formación empresarial para el mundo real.</p>
+                </div>
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Plataforma</h4>
+                        <a href="catalogo-cursos.html">Cursos</a>
+                        <a href="#">Mentores</a>
+                        <a href="#">Precios</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Recursos</h4>
+                        <a href="#">Blog</a>
+                        <a href="#">Guías</a>
+                        <a href="#">Webinars</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Legal</h4>
+                        <a href="#">Privacidad</a>
+                        <a href="#">Términos</a>
+                        <a href="#">Contacto</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Nenis y Bros. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCourses();
+            
+            // Event listeners for filters
+            document.getElementById('searchInput').addEventListener('input', debounce(loadCourses, 500));
+            document.getElementById('categoryFilter').addEventListener('change', loadCourses);
+            document.getElementById('levelFilter').addEventListener('change', loadCourses);
+        });
+
+        async function loadCourses() {
+            const search = document.getElementById('searchInput').value;
+            const category = document.getElementById('categoryFilter').value;
+            const level = document.getElementById('levelFilter').value;
+            
+            let url = '/courses?limit=100'; // Get all for now
+            if (search) url += `&search=${encodeURIComponent(search)}`;
+            if (category) url += `&categoria=${category}`;
+            if (level) url += `&nivel=${level}`;
+
+            const grid = document.getElementById('coursesGrid');
+            
+            try {
+                const response = await apiGet(url);
+                
+                if (response.success && response.data.data && response.data.data.length > 0) {
+                    grid.innerHTML = response.data.data.map(course => `
+                        <a href="curso-detalle.html?id=${course.id_curso}" class="course-card">
+                            <div class="course-image">
+                                ${course.icono || '📚'}
+                            </div>
+                            <div class="course-content">
+                                <div class="course-category">${course.categoria_nombre || 'General'}</div>
+                                <h3 class="course-title">${course.titulo}</h3>
+                                <div class="course-meta">
+                                    <span>⏱️ ${course.duracion_estimada || 0}h</span>
+                                    <span>📊 ${capitalize(course.nivel)}</span>
+                                </div>
+                                <div class="course-footer">
+                                    <div class="instructor-info">
+                                        <div class="instructor-avatar"></div>
+                                        <span>${course.instructor_nombre} ${course.instructor_apellido}</span>
+                                    </div>
+                                    <div class="course-price">
+                                        ${course.precio > 0 ? '$' + course.precio : 'Gratis'}
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    `).join('');
+                } else {
+                    grid.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                            <h3>No se encontraron cursos</h3>
+                            <p>Intenta ajustar tus filtros de búsqueda.</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading courses:', error);
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--danger);">
+                        <p>Error al cargar los cursos. Por favor intenta más tarde.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function capitalize(str) {
+            if (!str) return '';
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+    </script>
+</body>
+</html>
