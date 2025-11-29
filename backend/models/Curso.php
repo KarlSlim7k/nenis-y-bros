@@ -60,7 +60,7 @@ class Curso {
         $query = "SELECT 
             c.*,
             cat.nombre as categoria_nombre,
-            cat.slug as categoria_slug,
+            cat.color as categoria_color,
             u.nombre as instructor_nombre,
             u.apellido as instructor_apellido,
             u.email as instructor_email,
@@ -156,7 +156,6 @@ class Curso {
         $query = "SELECT 
             c.*,
             cat.nombre as categoria_nombre,
-            cat.slug as categoria_slug,
             cat.color as categoria_color,
             u.nombre as instructor_nombre,
             u.apellido as instructor_apellido,
