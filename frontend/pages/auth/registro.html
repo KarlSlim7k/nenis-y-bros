@@ -426,8 +426,9 @@
         </div>
     </div>
 
+    <script src="../../assets/js/config.js"></script>
     <script>
-        const API_URL = 'http://localhost/nenis_y_bros/api/v1';
+        // Usar API_BASE_URL de config.js para soporte de producción y desarrollo
 
         // Elementos del formulario
         const form = document.getElementById('registerForm');
@@ -513,7 +514,7 @@
             submitBtn.innerHTML = '<span class="spinner"></span> Creando cuenta...';
 
             try {
-                const response = await fetch(`${API_URL}/auth/register`, {
+                const response = await fetch(`${API_BASE_URL}/auth/register`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
