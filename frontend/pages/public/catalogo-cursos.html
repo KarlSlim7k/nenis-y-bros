@@ -275,9 +275,13 @@
             
             try {
                 const response = await apiGet(url);
+                console.log('API Response:', response); // Debug
                 
-                if (response.success && response.data && response.data.data && response.data.data.length > 0) {
-                    grid.innerHTML = response.data.data.map(course => `
+                // La estructura es: response.message.data (los cursos están en message)
+                const courses = response.message?.data || response.data?.data || [];
+                
+                if (response.success && courses.length > 0) {
+                    grid.innerHTML = courses.map(course => `
                         <a href="curso-detalle.html?id=${course.id_curso}" class="course-card">
                             <div class="course-image">
                                 ${course.icono || '📚'}
@@ -286,13 +290,13 @@
                                 <div class="course-category">${course.categoria_nombre || 'General'}</div>
                                 <h3 class="course-title">${course.titulo}</h3>
                                 <div class="course-meta">
-                                    <span>⏱️ ${course.duracion_estimada || 0}h</span>
+                                    <span>⏱️ ${course.duracion_horas || 0}h</span>
                                     <span>📊 ${capitalize(course.nivel)}</span>
                                 </div>
                                 <div class="course-footer">
                                     <div class="instructor-info">
                                         <div class="instructor-avatar"></div>
-                                        <span>${course.instructor_nombre} ${course.instructor_apellido}</span>
+                                        <span>${course.instructor_nombre || ''} ${course.instructor_apellido || ''}</span>
                                     </div>
                                     <div class="course-price">
                                         ${course.precio > 0 ? '$' + course.precio : 'Gratis'}
