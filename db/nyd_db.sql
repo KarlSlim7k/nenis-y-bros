@@ -150,10 +150,10 @@ CREATE TABLE cursos (
 ) ENGINE=InnoDB COMMENT='Cursos de formación empresarial';
 
 -- ============================================================================
--- TABLA: modulos_curso
+-- TABLA: modulos
 -- Descripción: Módulos que componen cada curso
 -- ============================================================================
-CREATE TABLE modulos_curso (
+CREATE TABLE modulos (
     id_modulo INT AUTO_INCREMENT PRIMARY KEY,
     id_curso INT NOT NULL,
     
@@ -188,15 +188,15 @@ CREATE TABLE lecciones (
     
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     
-    FOREIGN KEY (id_modulo) REFERENCES modulos_curso(id_modulo) ON DELETE CASCADE,
+    FOREIGN KEY (id_modulo) REFERENCES modulos(id_modulo) ON DELETE CASCADE,
     INDEX idx_modulo_orden (id_modulo, orden)
 ) ENGINE=InnoDB COMMENT='Lecciones de cada módulo';
 
 -- ============================================================================
--- TABLA: inscripciones_curso
+-- TABLA: inscripciones
 -- Descripción: Registro de usuarios inscritos en cursos
 -- ============================================================================
-CREATE TABLE inscripciones_curso (
+CREATE TABLE inscripciones (
     id_inscripcion INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
     id_curso INT NOT NULL,
@@ -240,7 +240,7 @@ CREATE TABLE progreso_lecciones (
     puntuacion DECIMAL(5,2),
     intentos INT DEFAULT 0,
     
-    FOREIGN KEY (id_inscripcion) REFERENCES inscripciones_curso(id_inscripcion) ON DELETE CASCADE,
+    FOREIGN KEY (id_inscripcion) REFERENCES inscripciones(id_inscripcion) ON DELETE CASCADE,
     FOREIGN KEY (id_leccion) REFERENCES lecciones(id_leccion) ON DELETE CASCADE,
     UNIQUE KEY uk_inscripcion_leccion (id_inscripcion, id_leccion),
     INDEX idx_completada (completada)
@@ -631,7 +631,7 @@ SELECT
     COUNT(DISTINCT lu.id_logro) AS logros_obtenidos,
     u.fecha_registro
 FROM usuarios u
-LEFT JOIN inscripciones_curso ic ON u.id_usuario = ic.id_usuario
+LEFT JOIN inscripciones ic ON u.id_usuario = ic.id_usuario
 LEFT JOIN puntos_usuarios pu ON u.id_usuario = pu.id_usuario AND pu.tipo_transaccion = 'ganancia'
 LEFT JOIN logros_usuarios lu ON u.id_usuario = lu.id_usuario
 GROUP BY u.id_usuario;
@@ -649,7 +649,7 @@ SELECT
     COUNT(DISTINCT CASE WHEN ic.estado = 'completado' THEN ic.id_usuario END) AS completados
 FROM cursos c
 LEFT JOIN categorias_cursos cat ON c.id_categoria = cat.id_categoria
-LEFT JOIN inscripciones_curso ic ON c.id_curso = ic.id_curso
+LEFT JOIN inscripciones ic ON c.id_curso = ic.id_curso
 WHERE c.estado = 'publicado'
 GROUP BY c.id_curso
 ORDER BY c.total_inscritos DESC;
@@ -682,5 +682,5 @@ ORDER BY p.fecha_publicacion DESC;
 
 -- Índices compuestos para consultas frecuentes
 CREATE INDEX idx_curso_estado_categoria ON cursos(estado, id_categoria);
-CREATE INDEX idx_inscripcion_usuario_estado ON inscripciones_curso(id_usuario, estado);
+CREATE INDEX idx_inscripcion_usuario_estado ON inscripciones(id_usuario, estado);
 CREATE INDEX idx_producto_estado_categoria ON productos_vitrina(estado, id_categoria_producto);
