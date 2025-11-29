@@ -29,6 +29,30 @@ function registerRoutes(Router $router) {
             'timestamp' => date('Y-m-d H:i:s')
         ]);
     });
+    
+    // DEBUG: Diagnóstico de tablas (TEMPORAL - Eliminar después)
+    $router->get('/debug/tables', function() {
+        try {
+            $db = Database::getInstance();
+            $result = ['tables' => []];
+            
+            $tablesToCheck = ['cursos', 'categorias_cursos', 'modulos', 'modulos_curso', 
+                              'lecciones', 'inscripciones', 'inscripciones_curso', 'progreso_lecciones'];
+            
+            foreach ($tablesToCheck as $table) {
+                try {
+                    $count = $db->fetchOne("SELECT COUNT(*) as total FROM $table");
+                    $result['tables'][$table] = ['exists' => true, 'count' => $count['total']];
+                } catch (Exception $e) {
+                    $result['tables'][$table] = ['exists' => false];
+                }
+            }
+            
+            Response::success('Diagnóstico completado', $result);
+        } catch (Exception $e) {
+            Response::serverError('Error: ' . $e->getMessage());
+        }
+    });
 
     // =========================================================================
     // RUTAS DE ONBOARDING (Públicas)
