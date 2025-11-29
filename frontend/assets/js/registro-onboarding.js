@@ -93,9 +93,9 @@ function setupForm() {
             // Limpiar localStorage del onboarding
             localStorage.removeItem('onboarding_results');
 
-            // Guardar token y datos de usuario
-            localStorage.setItem('auth_token', response.data.token);
-            localStorage.setItem('user_data', JSON.stringify(response.data.user));
+            // Guardar token y datos de usuario (usando las claves de config.js)
+            localStorage.setItem(AUTH_TOKEN_KEY, response.data.token);
+            localStorage.setItem(AUTH_USER_KEY, JSON.stringify(response.data.user));
 
             // Redirigir al dashboard después de un momento
             setTimeout(() => {

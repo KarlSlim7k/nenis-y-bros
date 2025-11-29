@@ -525,9 +525,9 @@
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    // Guardar token y datos de usuario
-                    localStorage.setItem('token', data.data.token);
-                    localStorage.setItem('user', JSON.stringify(data.data.user));
+                    // Guardar token y datos de usuario (usando las claves de config.js)
+                    localStorage.setItem(AUTH_TOKEN_KEY, data.data.token);
+                    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(data.data.user));
                     
                     // Mostrar mensaje de éxito
                     showAlert('success', '¡Registro exitoso! Redirigiendo...');
