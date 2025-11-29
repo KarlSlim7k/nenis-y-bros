@@ -30,139 +30,125 @@ function registerRoutes(Router $router) {
         ]);
     });
     
-    // DEBUG: Diagnóstico de tablas (TEMPORAL - Eliminar después)
-    $router->get('/debug/tables', function() {
+    // TEMPORAL: Seed de datos de prueba para cursos
+    $router->post('/admin/seed-cursos', function() {
         try {
             $db = Database::getInstance();
-            $result = ['tables' => []];
+            $results = [];
             
-            $tablesToCheck = ['cursos', 'categorias_cursos', 'modulos', 'modulos_curso', 
-                              'lecciones', 'inscripciones', 'inscripciones_curso', 'progreso_lecciones'];
+            // 1. Crear categorías si no existen
+            $categorias = [
+                ['nombre' => 'Emprendimiento', 'descripcion' => 'Cursos para iniciar y hacer crecer tu negocio', 'color' => '#FF6B6B'],
+                ['nombre' => 'Finanzas', 'descripcion' => 'Gestión financiera y contabilidad', 'color' => '#4ECDC4'],
+                ['nombre' => 'Marketing', 'descripcion' => 'Estrategias de marketing y ventas', 'color' => '#45B7D1'],
+                ['nombre' => 'Liderazgo', 'descripcion' => 'Desarrollo de habilidades de liderazgo', 'color' => '#96CEB4'],
+            ];
             
-            foreach ($tablesToCheck as $table) {
+            foreach ($categorias as $cat) {
                 try {
-                    $count = $db->fetchOne("SELECT COUNT(*) as total FROM $table");
-                    $result['tables'][$table] = ['exists' => true, 'count' => $count['total']];
+                    $exists = $db->fetchOne("SELECT id_categoria FROM categorias_cursos WHERE nombre = ?", [$cat['nombre']]);
+                    if (!$exists) {
+                        $db->insert("INSERT INTO categorias_cursos (nombre, descripcion, color) VALUES (?, ?, ?)", 
+                            [$cat['nombre'], $cat['descripcion'], $cat['color']]);
+                        $results[] = "Categoría '{$cat['nombre']}' creada";
+                    }
                 } catch (Exception $e) {
-                    $result['tables'][$table] = ['exists' => false];
+                    $results[] = "Error categoría: " . $e->getMessage();
                 }
             }
             
-            Response::success('Diagnóstico completado', $result);
+            // 2. Obtener IDs de categorías
+            $catEmprendimiento = $db->fetchOne("SELECT id_categoria FROM categorias_cursos WHERE nombre = 'Emprendimiento'");
+            $catFinanzas = $db->fetchOne("SELECT id_categoria FROM categorias_cursos WHERE nombre = 'Finanzas'");
+            $catMarketing = $db->fetchOne("SELECT id_categoria FROM categorias_cursos WHERE nombre = 'Marketing'");
+            $catLiderazgo = $db->fetchOne("SELECT id_categoria FROM categorias_cursos WHERE nombre = 'Liderazgo'");
+            
+            // 3. Obtener un instructor (admin o cualquier usuario)
+            $instructor = $db->fetchOne("SELECT id_usuario FROM usuarios WHERE tipo_usuario IN ('administrador', 'mentor') LIMIT 1");
+            if (!$instructor) {
+                $instructor = $db->fetchOne("SELECT id_usuario FROM usuarios LIMIT 1");
+            }
+            $instructorId = $instructor ? $instructor['id_usuario'] : 1;
+            
+            // 4. Insertar cursos de ejemplo
+            $cursos = [
+                [
+                    'id_categoria' => $catEmprendimiento['id_categoria'] ?? 1,
+                    'titulo' => 'Fundamentos de Emprendimiento Digital',
+                    'descripcion' => 'Aprende los conceptos básicos para iniciar tu propio negocio digital. Este curso cubre desde la generación de ideas hasta la validación de mercado.',
+                    'nivel' => 'principiante',
+                    'duracion_horas' => 8,
+                    'estado' => 'publicado'
+                ],
+                [
+                    'id_categoria' => $catEmprendimiento['id_categoria'] ?? 1,
+                    'titulo' => 'Plan de Negocios Avanzado',
+                    'descripcion' => 'Desarrolla un plan de negocios profesional y completo. Incluye análisis financiero, estrategias de marketing y proyecciones.',
+                    'nivel' => 'intermedio',
+                    'duracion_horas' => 10,
+                    'estado' => 'publicado'
+                ],
+                [
+                    'id_categoria' => $catFinanzas['id_categoria'] ?? 2,
+                    'titulo' => 'Contabilidad Básica para Emprendedores',
+                    'descripcion' => 'Domina los conceptos esenciales de contabilidad para llevar las finanzas de tu negocio de forma eficiente.',
+                    'nivel' => 'principiante',
+                    'duracion_horas' => 7,
+                    'estado' => 'publicado'
+                ],
+                [
+                    'id_categoria' => $catMarketing['id_categoria'] ?? 3,
+                    'titulo' => 'Marketing en Redes Sociales',
+                    'descripcion' => 'Estrategias efectivas para promocionar tu negocio en Facebook, Instagram, LinkedIn y TikTok.',
+                    'nivel' => 'principiante',
+                    'duracion_horas' => 6,
+                    'estado' => 'publicado'
+                ],
+                [
+                    'id_categoria' => $catLiderazgo['id_categoria'] ?? 4,
+                    'titulo' => 'Liderazgo y Gestión de Equipos',
+                    'descripcion' => 'Desarrolla habilidades de liderazgo efectivo para inspirar y motivar a tu equipo de trabajo.',
+                    'nivel' => 'intermedio',
+                    'duracion_horas' => 9,
+                    'estado' => 'publicado'
+                ]
+            ];
+            
+            foreach ($cursos as $curso) {
+                try {
+                    $exists = $db->fetchOne("SELECT id_curso FROM cursos WHERE titulo = ?", [$curso['titulo']]);
+                    if (!$exists) {
+                        $cursoId = $db->insert(
+                            "INSERT INTO cursos (id_categoria, id_instructor, titulo, descripcion, nivel, duracion_horas, estado, fecha_publicacion) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())",
+                            [$curso['id_categoria'], $instructorId, $curso['titulo'], $curso['descripcion'], $curso['nivel'], $curso['duracion_horas'], $curso['estado']]
+                        );
+                        $results[] = "Curso '{$curso['titulo']}' creado (ID: $cursoId)";
+                        
+                        // Crear módulos y lecciones para el curso
+                        for ($m = 1; $m <= 3; $m++) {
+                            $moduloId = $db->insert(
+                                "INSERT INTO modulos (id_curso, titulo, descripcion, orden) VALUES (?, ?, ?, ?)",
+                                [$cursoId, "Módulo $m: Contenido esencial", "Descripción del módulo $m", $m]
+                            );
+                            
+                            for ($l = 1; $l <= 3; $l++) {
+                                $db->insert(
+                                    "INSERT INTO lecciones (id_modulo, titulo, contenido, tipo_contenido, orden, duracion_minutos) VALUES (?, ?, ?, 'texto', ?, ?)",
+                                    [$moduloId, "Lección $m.$l", "Contenido de la lección $m.$l del curso", $l, 15]
+                                );
+                            }
+                        }
+                    } else {
+                        $results[] = "Curso '{$curso['titulo']}' ya existe";
+                    }
+                } catch (Exception $e) {
+                    $results[] = "Error curso '{$curso['titulo']}': " . $e->getMessage();
+                }
+            }
+            
+            Response::success('Seed completado', ['actions' => $results]);
         } catch (Exception $e) {
-            Response::serverError('Error: ' . $e->getMessage());
-        }
-    });
-    
-    // DEBUG: Ejecutar migración de renombrado de tablas (TEMPORAL - Eliminar después)
-    $router->post('/debug/migrate-tables', function() {
-        try {
-            $db = Database::getInstance();
-            $results = [];
-            
-            // Verificar si necesita migración
-            try {
-                $db->fetchOne("SELECT 1 FROM modulos_curso LIMIT 1");
-                $needsMigration = true;
-            } catch (Exception $e) {
-                $needsMigration = false;
-            }
-            
-            if (!$needsMigration) {
-                Response::success('No se necesita migración - tablas ya correctas', $results);
-                return;
-            }
-            
-            // Ejecutar renombrado
-            $pdo = $db->getConnection();
-            
-            // Renombrar modulos_curso -> modulos
-            $pdo->exec("RENAME TABLE modulos_curso TO modulos");
-            $results[] = 'modulos_curso -> modulos: OK';
-            
-            // Renombrar inscripciones_curso -> inscripciones  
-            $pdo->exec("RENAME TABLE inscripciones_curso TO inscripciones");
-            $results[] = 'inscripciones_curso -> inscripciones: OK';
-            
-            Response::success('Migración completada exitosamente', $results);
-        } catch (Exception $e) {
-            Response::serverError('Error en migración: ' . $e->getMessage());
-        }
-    });
-    
-    // DEBUG: Test de cursos con error detallado
-    $router->get('/debug/test-courses', function() {
-        try {
-            $db = Database::getInstance();
-            $results = [];
-            
-            // Test 1: Consulta básica a cursos
-            try {
-                $cursos = $db->fetchAll("SELECT * FROM cursos LIMIT 5");
-                $results['cursos_query'] = ['success' => true, 'count' => count($cursos)];
-            } catch (Exception $e) {
-                $results['cursos_query'] = ['success' => false, 'error' => $e->getMessage()];
-            }
-            
-            // Test 2: Consulta con JOIN a categorias
-            try {
-                $test = $db->fetchAll("SELECT c.*, cat.nombre as categoria FROM cursos c LEFT JOIN categorias_cursos cat ON c.id_categoria = cat.id_categoria LIMIT 5");
-                $results['cursos_with_categoria'] = ['success' => true, 'count' => count($test)];
-            } catch (Exception $e) {
-                $results['cursos_with_categoria'] = ['success' => false, 'error' => $e->getMessage()];
-            }
-            
-            // Test 3: Consulta con subquery a modulos
-            try {
-                $test = $db->fetchAll("SELECT c.id_curso, c.titulo, (SELECT COUNT(*) FROM modulos WHERE id_curso = c.id_curso) as total_modulos FROM cursos c LIMIT 5");
-                $results['cursos_with_modulos'] = ['success' => true, 'count' => count($test)];
-            } catch (Exception $e) {
-                $results['cursos_with_modulos'] = ['success' => false, 'error' => $e->getMessage()];
-            }
-            
-            // Test 4: Listar columnas de tabla cursos
-            try {
-                $columns = $db->fetchAll("SHOW COLUMNS FROM cursos");
-                $results['cursos_columns'] = array_column($columns, 'Field');
-            } catch (Exception $e) {
-                $results['cursos_columns'] = ['error' => $e->getMessage()];
-            }
-            
-            // Test 5: Columnas de categorias_cursos
-            try {
-                $columns = $db->fetchAll("SHOW COLUMNS FROM categorias_cursos");
-                $results['categorias_columns'] = array_column($columns, 'Field');
-            } catch (Exception $e) {
-                $results['categorias_columns'] = ['error' => $e->getMessage()];
-            }
-            
-            // Test 6: Query EXACTA del modelo Curso->findAll
-            try {
-                $test = $db->fetchAll("SELECT 
-                    c.*,
-                    cat.nombre as categoria_nombre,
-                    cat.slug as categoria_slug,
-                    cat.color as categoria_color,
-                    u.nombre as instructor_nombre,
-                    u.apellido as instructor_apellido,
-                    (SELECT COUNT(*) FROM modulos WHERE id_curso = c.id_curso) as total_modulos,
-                    (SELECT COUNT(*) FROM lecciones l 
-                     INNER JOIN modulos m ON l.id_modulo = m.id_modulo 
-                     WHERE m.id_curso = c.id_curso) as total_lecciones
-                FROM cursos c
-                LEFT JOIN categorias_cursos cat ON c.id_categoria = cat.id_categoria
-                LEFT JOIN usuarios u ON c.id_instructor = u.id_usuario
-                WHERE c.estado = 'publicado'
-                ORDER BY c.fecha_creacion DESC
-                LIMIT 10 OFFSET 0");
-                $results['full_query'] = ['success' => true, 'count' => count($test)];
-            } catch (Exception $e) {
-                $results['full_query'] = ['success' => false, 'error' => $e->getMessage()];
-            }
-            
-            Response::success('Tests completados', $results);
-        } catch (Exception $e) {
-            Response::serverError('Error general: ' . $e->getMessage());
+            Response::serverError('Error en seed: ' . $e->getMessage());
         }
     });
 
