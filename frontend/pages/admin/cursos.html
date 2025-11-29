@@ -56,11 +56,44 @@
         .btn-info { background: #17a2b8; color: white; }
         .btn-warning { background: #ffc107; color: #212529; }
         .btn-danger { background: #dc3545; color: white; }
+        .btn-success { background: #28a745; color: white; }
         
         .loading { text-align: center; padding: 3rem; color: #7f8c8d; }
         .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 1rem; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .empty-state { text-align: center; padding: 3rem; color: #95a5a6; }
+        
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; border-radius: 12px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem; border-bottom: 1px solid #eee; }
+        .modal-header h3 { margin: 0; color: #2c3e50; }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #95a5a6; }
+        .modal-close:hover { color: #2c3e50; }
+        .modal-body { padding: 1.5rem; }
+        .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid #eee; display: flex; justify-content: flex-end; gap: 1rem; }
+        
+        /* Form */
+        .form-group { margin-bottom: 1.25rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: #2c3e50; }
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1rem; 
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { 
+            outline: none; border-color: #3498db; box-shadow: 0 0 0 3px rgba(52,152,219,0.1); 
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-error { color: #e74c3c; font-size: 0.85rem; margin-top: 0.25rem; }
+        
+        .btn-secondary { background: #95a5a6; color: white; border: none; padding: 0.625rem 1.25rem; border-radius: 4px; cursor: pointer; }
+        .btn-secondary:hover { background: #7f8c8d; }
+        
+        /* Alert */
+        .alert { padding: 1rem; border-radius: 6px; margin-bottom: 1rem; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
     </style>
 </head>
 <body>
@@ -74,7 +107,7 @@
             <ul class="admin-menu">
                 <li><a href="./dashboard.html" data-page="dashboard">📊 Dashboard</a></li>
                 <li><a href="./usuarios.html" data-page="usuarios">👥 Usuarios</a></li>
-                <li><a href="./cursos.html" data-page="cursos">📚 Cursos</a></li>
+                <li><a href="./cursos.html" data-page="cursos" class="active">📚 Cursos</a></li>
                 <li><a href="./diagnosticos.html" data-page="diagnosticos">📋 Diagnósticos</a></li>
                 <li><a href="./productos.html" data-page="productos">🛍️ Productos</a></li>
                 <li><a href="./recursos.html" data-page="recursos">📖 Recursos</a></li>
@@ -97,15 +130,18 @@
             <div class="content-section">
                 <div class="section-header">
                     <h3>Todos los Cursos</h3>
-                    <button class="btn-primary" onclick="alert('Funcionalidad de creación en desarrollo')">➕ Nuevo Curso</button>
+                    <button class="btn-primary" onclick="abrirModalNuevoCurso()">➕ Nuevo Curso</button>
                 </div>
+
+                <!-- Alert para mensajes -->
+                <div id="alertContainer"></div>
 
                 <!-- Filtros -->
                 <div class="filters">
                     <input type="text" class="filter-input" id="searchInput" placeholder="Buscar por título...">
                     <select class="filter-select" id="estadoFilter">
                         <option value="">Todos los estados</option>
-                        <option value="activo">Activo</option>
+                        <option value="publicado">Publicado</option>
                         <option value="borrador">Borrador</option>
                         <option value="archivado">Archivado</option>
                     </select>
@@ -120,47 +156,162 @@
         </main>
     </div>
 
+    <!-- Modal Nuevo Curso -->
+    <div class="modal-overlay" id="modalNuevoCurso">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>➕ Crear Nuevo Curso</h3>
+                <button class="modal-close" onclick="cerrarModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formNuevoCurso">
+                    <div class="form-group">
+                        <label for="titulo">Título del Curso *</label>
+                        <input type="text" id="titulo" name="titulo" required minlength="5" maxlength="200" placeholder="Ej: Fundamentos de Marketing Digital">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="id_categoria">Categoría *</label>
+                            <select id="id_categoria" name="id_categoria" required>
+                                <option value="">Seleccionar categoría</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="nivel">Nivel</label>
+                            <select id="nivel" name="nivel">
+                                <option value="principiante">Principiante</option>
+                                <option value="intermedio">Intermedio</option>
+                                <option value="avanzado">Avanzado</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="descripcion">Descripción</label>
+                        <textarea id="descripcion" name="descripcion" placeholder="Describe el contenido y objetivos del curso..."></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="duracion_horas">Duración (horas)</label>
+                            <input type="number" id="duracion_horas" name="duracion_horas" min="1" max="200" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="estado">Estado</label>
+                            <select id="estado" name="estado">
+                                <option value="borrador">Borrador</option>
+                                <option value="publicado">Publicado</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="precio">Precio (0 = Gratis)</label>
+                            <input type="number" id="precio" name="precio" min="0" step="0.01" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="es_gratuito">¿Es gratuito?</label>
+                            <select id="es_gratuito" name="es_gratuito">
+                                <option value="1">Sí, es gratis</option>
+                                <option value="0">No, tiene costo</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                <button class="btn-primary" onclick="crearCurso()">Crear Curso</button>
+            </div>
+        </div>
+    </div>
+
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script src="../../assets/js/api.js"></script>
     <script>
+        // Verificar autenticación
         if (!checkAuth() || !isAdmin()) {
-            alert('Acceso denegado.');
+            alert('Acceso denegado. Debes ser administrador.');
             window.location.href = ROUTES.login;
         }
 
-        document.addEventListener('DOMContentLoaded', cargarCursos);
+        // Cargar cursos y categorías al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarCursos();
+            cargarCategorias();
+        });
 
+        // Cargar categorías para el select
+        async function cargarCategorias() {
+            try {
+                const response = await apiGet('/courses/categories');
+                const categorias = response.message?.data || response.data || [];
+                
+                const select = document.getElementById('id_categoria');
+                select.innerHTML = '<option value="">Seleccionar categoría</option>';
+                
+                if (Array.isArray(categorias)) {
+                    categorias.forEach(cat => {
+                        select.innerHTML += `<option value="${cat.id_categoria}">${cat.nombre}</option>`;
+                    });
+                }
+            } catch (error) {
+                console.log('No se pudieron cargar categorías, usando predeterminadas');
+                // Categorías predeterminadas si falla
+                const select = document.getElementById('id_categoria');
+                select.innerHTML = `
+                    <option value="">Seleccionar categoría</option>
+                    <option value="1">Emprendimiento</option>
+                    <option value="2">Finanzas</option>
+                    <option value="3">Marketing</option>
+                    <option value="4">Liderazgo</option>
+                `;
+            }
+        }
+
+        // Cargar cursos
         async function cargarCursos() {
             const container = document.getElementById('cursosContent');
             const search = document.getElementById('searchInput').value;
             const estado = document.getElementById('estadoFilter').value;
 
-            let url = '/courses?';
-            if (search) url += `search=${encodeURIComponent(search)}&`;
-            if (estado) url += `estado=${estado}&`;
+            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando cursos...</p></div>';
+
+            let url = '/courses?all=1'; // all=1 para ver todos como admin
+            if (search) url += `&search=${encodeURIComponent(search)}`;
+            if (estado) url += `&estado=${estado}`;
 
             try {
                 const response = await apiGet(url);
+                console.log('Cursos response:', response);
                 
-                if (response.success && response.data.cursos && response.data.cursos.length > 0) {
+                // Manejar estructura de respuesta
+                const cursos = response.message?.data || response.data?.data || [];
+                
+                if (cursos.length > 0) {
                     container.innerHTML = `
                         <div class="courses-grid">
-                            ${response.data.cursos.map(curso => `
+                            ${cursos.map(curso => `
                                 <div class="course-card">
-                                    <div class="course-image">${curso.icono || '📚'}</div>
+                                    <div class="course-image" style="background: ${getGradient(curso.id_categoria)}">${curso.icono || '📚'}</div>
                                     <div class="course-body">
                                         <div class="course-title">${curso.titulo}</div>
                                         <div class="course-meta">
                                             <span>⏱️ ${curso.duracion_horas || 0}h</span>
                                             <span>👥 ${curso.total_inscritos || 0} alumnos</span>
+                                            <span>📖 ${curso.total_lecciones || 0} lecciones</span>
                                         </div>
-                                        <div class="course-description">${(curso.descripcion || '').substring(0, 100)}...</div>
+                                        <div class="course-description">${(curso.descripcion || 'Sin descripción').substring(0, 100)}${curso.descripcion?.length > 100 ? '...' : ''}</div>
                                         <div class="course-footer">
                                             <span class="badge ${getBadgeClass(curso.estado)}">${curso.estado}</span>
                                             <div>
-                                                <button class="btn-sm btn-info" onclick="verCurso(${curso.id_curso})">Ver</button>
-                                                <button class="btn-sm btn-warning" onclick="editarCurso(${curso.id_curso})">Editar</button>
+                                                <button class="btn-sm btn-info" onclick="verCurso(${curso.id_curso})">👁️</button>
+                                                <button class="btn-sm btn-success" onclick="cambiarEstado(${curso.id_curso}, '${curso.estado}')" title="Cambiar estado">
+                                                    ${curso.estado === 'publicado' ? '📝' : '✅'}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -169,39 +320,127 @@
                         </div>
                     `;
                 } else {
-                    container.innerHTML = '<div class="empty-state"><p>📚 No hay cursos disponibles</p></div>';
+                    container.innerHTML = '<div class="empty-state"><p>📚 No hay cursos disponibles</p><p>¡Crea tu primer curso!</p></div>';
                 }
             } catch (error) {
                 console.error('Error:', error);
-                container.innerHTML = '<div class="empty-state"><p style="color:#e74c3c;">Error al cargar cursos</p></div>';
+                container.innerHTML = '<div class="empty-state"><p style="color:#e74c3c;">Error al cargar cursos</p><p>' + (error.message || '') + '</p></div>';
             }
         }
 
+        // Gradientes por categoría
+        function getGradient(catId) {
+            const gradients = {
+                1: 'linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%)',
+                2: 'linear-gradient(135deg, #4ECDC4 0%, #44A08D 100%)',
+                3: 'linear-gradient(135deg, #45B7D1 0%, #2C7FB8 100%)',
+                4: 'linear-gradient(135deg, #96CEB4 0%, #6B8E23 100%)'
+            };
+            return gradients[catId] || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        }
+
         function getBadgeClass(estado) {
-            return estado === 'activo' ? 'badge-success' : estado === 'borrador' ? 'badge-warning' : 'badge-danger';
+            switch(estado) {
+                case 'publicado': return 'badge-success';
+                case 'borrador': return 'badge-warning';
+                default: return 'badge-danger';
+            }
         }
 
-        function verCurso(id) {
-            window.location.href = `../cursos/detalle.html?id=${id}`;
+        // Modal functions
+        function abrirModalNuevoCurso() {
+            document.getElementById('formNuevoCurso').reset();
+            document.getElementById('modalNuevoCurso').classList.add('active');
         }
 
-        function editarCurso(id) {
-            alert(`Editar curso ${id}\n\nFuncionalidad en desarrollo.`);
+        function cerrarModal() {
+            document.getElementById('modalNuevoCurso').classList.remove('active');
         }
 
-        // Resaltar enlace activo del sidebar
-        function highlightActiveLink() {
-            const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
-            const links = document.querySelectorAll('.admin-menu a');
-            links.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === './' + currentPage || 
-                    link.getAttribute('href') === currentPage) {
-                    link.classList.add('active');
+        // Crear curso
+        async function crearCurso() {
+            const form = document.getElementById('formNuevoCurso');
+            const formData = new FormData(form);
+            
+            const data = {
+                titulo: formData.get('titulo'),
+                id_categoria: parseInt(formData.get('id_categoria')),
+                descripcion: formData.get('descripcion'),
+                nivel: formData.get('nivel'),
+                duracion_horas: parseInt(formData.get('duracion_horas')) || 1,
+                estado: formData.get('estado'),
+                precio: parseFloat(formData.get('precio')) || 0,
+                es_gratuito: parseInt(formData.get('es_gratuito'))
+            };
+
+            // Validaciones básicas
+            if (!data.titulo || data.titulo.length < 5) {
+                mostrarAlert('El título debe tener al menos 5 caracteres', 'error');
+                return;
+            }
+            if (!data.id_categoria) {
+                mostrarAlert('Debes seleccionar una categoría', 'error');
+                return;
+            }
+
+            try {
+                const response = await apiPost('/courses', data);
+                console.log('Crear curso response:', response);
+                
+                if (response.success) {
+                    mostrarAlert('¡Curso creado exitosamente!', 'success');
+                    cerrarModal();
+                    cargarCursos();
+                } else {
+                    mostrarAlert(response.message || 'Error al crear curso', 'error');
                 }
-            });
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarAlert(error.message || 'Error al crear curso', 'error');
+            }
         }
-        highlightActiveLink();
+
+        // Cambiar estado del curso
+        async function cambiarEstado(cursoId, estadoActual) {
+            const nuevoEstado = estadoActual === 'publicado' ? 'borrador' : 'publicado';
+            
+            if (!confirm(`¿Cambiar estado a "${nuevoEstado}"?`)) return;
+
+            try {
+                const response = await apiPut(`/courses/${cursoId}`, { estado: nuevoEstado });
+                
+                if (response.success) {
+                    mostrarAlert(`Curso ${nuevoEstado === 'publicado' ? 'publicado' : 'despublicado'}`, 'success');
+                    cargarCursos();
+                } else {
+                    mostrarAlert(response.message || 'Error al actualizar', 'error');
+                }
+            } catch (error) {
+                mostrarAlert(error.message || 'Error al actualizar', 'error');
+            }
+        }
+
+        // Ver curso
+        function verCurso(id) {
+            window.open(`../public/curso-detalle.html?id=${id}`, '_blank');
+        }
+
+        // Mostrar alertas
+        function mostrarAlert(mensaje, tipo) {
+            const container = document.getElementById('alertContainer');
+            container.innerHTML = `<div class="alert alert-${tipo}">${mensaje}</div>`;
+            setTimeout(() => container.innerHTML = '', 5000);
+        }
+
+        // Cerrar modal con Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') cerrarModal();
+        });
+
+        // Cerrar modal al hacer click fuera
+        document.getElementById('modalNuevoCurso').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal-overlay')) cerrarModal();
+        });
     </script>
 </body>
 </html>

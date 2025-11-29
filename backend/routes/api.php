@@ -126,6 +126,17 @@ function registerRoutes(Router $router) {
     $leccionController = new LeccionController();
     $progresoController = new ProgresoController();
     
+    // Obtener categorías de cursos
+    $router->get('/courses/categories', function() {
+        try {
+            $db = Database::getInstance();
+            $categorias = $db->fetchAll("SELECT * FROM categorias_cursos WHERE activo = 1 ORDER BY orden, nombre");
+            Response::success('Categorías obtenidas', $categorias);
+        } catch (Exception $e) {
+            Response::serverError('Error al obtener categorías');
+        }
+    });
+    
     // Listado y detalle de cursos (público/privado según estado)
     $router->get('/courses', function() use ($cursoController) {
         $cursoController->getCourses();
