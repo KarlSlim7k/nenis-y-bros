@@ -61,12 +61,20 @@ function setupForm() {
             const data = Object.fromEntries(formData.entries());
             
             // Validaciones básicas
-            if (data.nombre.trim().length < 3) {
-                throw new Error('El nombre debe tener al menos 3 caracteres');
+            if (data.nombre.trim().length < 2) {
+                throw new Error('El nombre debe tener al menos 2 caracteres');
             }
             
-            if (data.password.length < 6) {
-                throw new Error('La contraseña debe tener al menos 6 caracteres');
+            if (data.apellido.trim().length < 2) {
+                throw new Error('El apellido debe tener al menos 2 caracteres');
+            }
+            
+            if (data.password.length < 8) {
+                throw new Error('La contraseña debe tener al menos 8 caracteres');
+            }
+            
+            if (data.password !== data.password_confirmation) {
+                throw new Error('Las contraseñas no coinciden');
             }
 
             // Agregar token de onboarding si existe
