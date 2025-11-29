@@ -89,6 +89,50 @@ function registerRoutes(Router $router) {
             Response::serverError('Error en migración: ' . $e->getMessage());
         }
     });
+    
+    // DEBUG: Test de cursos con error detallado
+    $router->get('/debug/test-courses', function() {
+        try {
+            $db = Database::getInstance();
+            $results = [];
+            
+            // Test 1: Consulta básica a cursos
+            try {
+                $cursos = $db->fetchAll("SELECT * FROM cursos LIMIT 5");
+                $results['cursos_query'] = ['success' => true, 'count' => count($cursos)];
+            } catch (Exception $e) {
+                $results['cursos_query'] = ['success' => false, 'error' => $e->getMessage()];
+            }
+            
+            // Test 2: Consulta con JOIN a categorias
+            try {
+                $test = $db->fetchAll("SELECT c.*, cat.nombre as categoria FROM cursos c LEFT JOIN categorias_cursos cat ON c.id_categoria = cat.id_categoria LIMIT 5");
+                $results['cursos_with_categoria'] = ['success' => true, 'count' => count($test)];
+            } catch (Exception $e) {
+                $results['cursos_with_categoria'] = ['success' => false, 'error' => $e->getMessage()];
+            }
+            
+            // Test 3: Consulta con subquery a modulos
+            try {
+                $test = $db->fetchAll("SELECT c.id_curso, c.titulo, (SELECT COUNT(*) FROM modulos WHERE id_curso = c.id_curso) as total_modulos FROM cursos c LIMIT 5");
+                $results['cursos_with_modulos'] = ['success' => true, 'count' => count($test)];
+            } catch (Exception $e) {
+                $results['cursos_with_modulos'] = ['success' => false, 'error' => $e->getMessage()];
+            }
+            
+            // Test 4: Listar columnas de tabla cursos
+            try {
+                $columns = $db->fetchAll("SHOW COLUMNS FROM cursos");
+                $results['cursos_columns'] = array_column($columns, 'Field');
+            } catch (Exception $e) {
+                $results['cursos_columns'] = ['error' => $e->getMessage()];
+            }
+            
+            Response::success('Tests completados', $results);
+        } catch (Exception $e) {
+            Response::serverError('Error general: ' . $e->getMessage());
+        }
+    });
 
     // =========================================================================
     // RUTAS DE ONBOARDING (Públicas)
