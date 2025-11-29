@@ -128,6 +128,38 @@ function registerRoutes(Router $router) {
                 $results['cursos_columns'] = ['error' => $e->getMessage()];
             }
             
+            // Test 5: Columnas de categorias_cursos
+            try {
+                $columns = $db->fetchAll("SHOW COLUMNS FROM categorias_cursos");
+                $results['categorias_columns'] = array_column($columns, 'Field');
+            } catch (Exception $e) {
+                $results['categorias_columns'] = ['error' => $e->getMessage()];
+            }
+            
+            // Test 6: Query EXACTA del modelo Curso->findAll
+            try {
+                $test = $db->fetchAll("SELECT 
+                    c.*,
+                    cat.nombre as categoria_nombre,
+                    cat.slug as categoria_slug,
+                    cat.color as categoria_color,
+                    u.nombre as instructor_nombre,
+                    u.apellido as instructor_apellido,
+                    (SELECT COUNT(*) FROM modulos WHERE id_curso = c.id_curso) as total_modulos,
+                    (SELECT COUNT(*) FROM lecciones l 
+                     INNER JOIN modulos m ON l.id_modulo = m.id_modulo 
+                     WHERE m.id_curso = c.id_curso) as total_lecciones
+                FROM cursos c
+                LEFT JOIN categorias_cursos cat ON c.id_categoria = cat.id_categoria
+                LEFT JOIN usuarios u ON c.id_instructor = u.id_usuario
+                WHERE c.estado = 'publicado'
+                ORDER BY c.fecha_creacion DESC
+                LIMIT 10 OFFSET 0");
+                $results['full_query'] = ['success' => true, 'count' => count($test)];
+            } catch (Exception $e) {
+                $results['full_query'] = ['success' => false, 'error' => $e->getMessage()];
+            }
+            
             Response::success('Tests completados', $results);
         } catch (Exception $e) {
             Response::serverError('Error general: ' . $e->getMessage());
