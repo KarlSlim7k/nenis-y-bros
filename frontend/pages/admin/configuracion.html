@@ -43,12 +43,33 @@
             display: none;
         }
 
+        /* Settings Grid Layout */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .settings-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
         /* Toggle Switch */
         .toggle-switch {
             position: relative;
             width: 50px;
             height: 26px;
             cursor: pointer;
+            flex-shrink: 0;
         }
 
         .toggle-switch input {
@@ -68,6 +89,22 @@
             transition: .4s;
             border-radius: 34px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: var(--primary);
             border-color: var(--primary);
         }
 
@@ -80,12 +117,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 0;
+            padding: 1.25rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 1rem;
         }
 
         .setting-item:last-child {
             border-bottom: none;
+            padding-bottom: 0;
         }
 
         .setting-info h4 {
@@ -98,11 +137,12 @@
         .setting-info p {
             font-size: 0.85rem;
             color: var(--text-muted);
+            margin: 0;
         }
 
         .system-info-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 1.5rem;
             margin-top: 1rem;
         }
@@ -124,6 +164,13 @@
         .info-value {
             font-size: 1.2rem;
             font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
             color: var(--text-main);
         }
     </style>
@@ -168,110 +215,104 @@
     </header>
 
     <!-- Main Content -->
-    <main class="dashboard-grid">
+    <main class="settings-grid">
 
         <!-- General Settings -->
-        <div class="col-span-6">
-            <div class="glass-panel" style="padding: 2rem;">
-                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">General</h3>
+        <div class="glass-panel" style="padding: 2rem;">
+            <h3 class="section-title">General</h3>
 
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h4>Modo Mantenimiento</h4>
-                        <p>Deshabilitar el acceso público al sistema</p>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox">
-                        <span class="toggle-slider"></span>
-                    </label>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Modo Mantenimiento</h4>
+                    <p>Deshabilitar el acceso público al sistema</p>
                 </div>
+                <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
 
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h4>Registro Público</h4>
-                        <p>Permitir que nuevos usuarios se registren</p>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Registro Público</h4>
+                    <p>Permitir que nuevos usuarios se registren</p>
                 </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
 
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h4>Verificación de Email</h4>
-                        <p>Requerir verificación de correo para acceder</p>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Verificación de Email</h4>
+                    <p>Requerir verificación de correo para acceder</p>
                 </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
         </div>
 
         <!-- Notification Settings -->
-        <div class="col-span-6">
-            <div class="glass-panel" style="padding: 2rem;">
-                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">Notificaciones</h3>
+        <div class="glass-panel" style="padding: 2rem;">
+            <h3 class="section-title">Notificaciones</h3>
 
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h4>Email de Bienvenida</h4>
-                        <p>Enviar correo automático al registrarse</p>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Email de Bienvenida</h4>
+                    <p>Enviar correo automático al registrarse</p>
                 </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
 
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h4>Alertas de Seguridad</h4>
-                        <p>Notificar intentos de acceso sospechosos</p>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" checked>
-                        <span class="toggle-slider"></span>
-                    </label>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Alertas de Seguridad</h4>
+                    <p>Notificar intentos de acceso sospechosos</p>
                 </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
 
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h4>Reportes Semanales</h4>
-                        <p>Recibir resumen de actividad por correo</p>
-                    </div>
-                    <label class="toggle-switch">
-                        <input type="checkbox">
-                        <span class="toggle-slider"></span>
-                    </label>
+            <div class="setting-item">
+                <div class="setting-info">
+                    <h4>Reportes Semanales</h4>
+                    <p>Recibir resumen de actividad por correo</p>
                 </div>
+                <label class="toggle-switch">
+                    <input type="checkbox">
+                    <span class="toggle-slider"></span>
+                </label>
             </div>
         </div>
 
         <!-- System Info -->
-        <div class="col-span-12">
-            <div class="glass-panel" style="padding: 2rem;">
-                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">Información del Sistema</h3>
+        <div class="glass-panel full-width" style="padding: 2rem;">
+            <h3 class="section-title">Información del Sistema</h3>
 
-                <div class="system-info-grid">
-                    <div class="info-card">
-                        <div class="info-label">Versión del Sistema</div>
-                        <div class="info-value">1.0.0</div>
-                    </div>
-                    <div class="info-card">
-                        <div class="info-label">Base de Datos</div>
-                        <div class="info-value">MySQL 8.0</div>
-                    </div>
-                    <div class="info-card">
-                        <div class="info-label">PHP Version</div>
-                        <div class="info-value">8.1.0</div>
-                    </div>
-                    <div class="info-card">
-                        <div class="info-label">Estado del Servidor</div>
-                        <div class="info-value" style="color: var(--success);">Online</div>
-                    </div>
+            <div class="system-info-grid">
+                <div class="info-card">
+                    <div class="info-label">Versión del Sistema</div>
+                    <div class="info-value">1.0.0</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Base de Datos</div>
+                    <div class="info-value">MySQL 8.0</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">PHP Version</div>
+                    <div class="info-value">8.1.0</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Estado del Servidor</div>
+                    <div class="info-value" style="color: var(--success);">Online</div>
                 </div>
             </div>
         </div>
