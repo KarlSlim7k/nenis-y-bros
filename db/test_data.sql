@@ -51,6 +51,24 @@ INSERT INTO usuarios (
     'activo'
 );
 
+-- 2b. Usuario Instructor (Mentor para pruebas de login)
+INSERT INTO usuarios (
+    nombre, apellido, email, telefono, password_hash, tipo_usuario, 
+    foto_perfil, biografia, ciudad, pais, estado
+) VALUES (
+    'Instructor',
+    'Demo',
+    'instructor@nenisybros.com',
+    '5551112222',
+    '$2y$12$LQv3c1yycz6dUW6V3Y8wYOqhTvTx8qN9qLvPtQT.pIGE8HlDYBQQe', -- Password123!
+    'mentor',
+    NULL,
+    'Instructor demo para pruebas del sistema',
+    'Ciudad de México',
+    'México',
+    'activo'
+);
+
 -- 3. Usuario Empresario
 INSERT INTO usuarios (
     nombre, apellido, email, telefono, password_hash, tipo_usuario, 
@@ -166,6 +184,7 @@ LIMIT 10;
 -- Usuarios disponibles:
 -- 1. admin@nenisybros.com (Administrador)
 -- 2. carlos.mentor@nenisybros.com (Mentor)
+-- 2b. instructor@nenisybros.com (Instructor/Mentor)
 -- 3. maria.empresaria@test.com (Empresario)
 -- 4. juan.perez@test.com (Emprendedor)
 -- 5. ana.garcia@test.com (Emprendedor)
@@ -173,3 +192,4 @@ LIMIT 10;
 -- 7. inactivo@test.com (Inactivo - para pruebas de estado)
 --
 -- ============================================================================
+
