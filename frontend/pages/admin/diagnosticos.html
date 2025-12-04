@@ -1,82 +1,163 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diagnósticos - Admin</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f5f6fa; }
-        .admin-container { display: flex; min-height: 100vh; }
-        .admin-sidebar { width: 260px; background: #2c3e50; color: white; position: fixed; height: 100vh; overflow-y: auto; }
-        .admin-logo { padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .admin-menu { list-style: none; padding: 1rem 0; }
-        .admin-menu li a { display: block; padding: 0.875rem 1.5rem; color: #ecf0f1; text-decoration: none; }
-        .admin-menu li a:hover, .admin-menu li a.active { background: #34495e; border-left: 4px solid #3498db; }
-        .admin-main { margin-left: 260px; flex: 1; padding: 2rem; }
-        .admin-header { background: white; padding: 1.5rem 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .content-section { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .stat-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 8px; }
-        .stat-value { font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem; }
-        .btn-logout { background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
+        /* Admin Avatar */
+        .admin-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px var(--primary-glow);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Fix Navigation Active State */
+        .nav-link.active {
+            background: var(--gradient-primary);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
     </style>
 </head>
+
 <body>
-    <div class="admin-container">
-        <aside class="admin-sidebar">
-            <div class="admin-logo"><h1>🚀 Nenis y Bros</h1></div>
-            <ul class="admin-menu">
-                <li><a href="./dashboard.html" data-page="dashboard">📊 Dashboard</a></li>
-                <li><a href="./usuarios.html" data-page="usuarios">👥 Usuarios</a></li>
-                <li><a href="./cursos.html" data-page="cursos">📚 Cursos</a></li>
-                <li><a href="./diagnosticos.html" data-page="diagnosticos">📋 Diagnósticos</a></li>
-                <li><a href="./productos.html" data-page="productos">🛍️ Productos</a></li>
-                <li><a href="./recursos.html" data-page="recursos">📖 Recursos</a></li>
-                <li><a href="./auditoria.html" data-page="auditoria">🔍 Auditoría</a></li>
-                <li><a href="./configuracion.html" data-page="configuracion">⚙️ Configuración</a></li>
-            </ul>
-        </aside>
-        <main class="admin-main">
-            <div class="admin-header">
-                <h2>Gestión de Diagnósticos</h2>
-                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">🛡️</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./usuarios.html" class="nav-link">Usuarios</a></li>
+            <li><a href="./cursos.html" class="nav-link">Cursos</a></li>
+            <li><a href="./diagnosticos.html" class="nav-link active">Diagnósticos</a></li>
+            <li><a href="./reportes.html" class="nav-link">Reportes</a></li>
+            <li><a href="./configuracion.html" class="nav-link">Configuración</a></li>
+        </ul>
+
+        <div class="admin-user">
+            <div class="admin-avatar-glow user-avatar">A</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Admin</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Super Admin</div>
             </div>
-            <div class="stat-grid">
-                <div class="stat-card"><div class="stat-value" id="totalDiag">0</div><div>Total Diagnósticos</div></div>
-                <div class="stat-card"><div class="stat-value" id="completados">0</div><div>Completados</div></div>
-                <div class="stat-card"><div class="stat-value" id="promedio">0</div><div>Puntuación Promedio</div></div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                <span style="margin-right: 0.25rem;">🚪</span> Salir
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section">
+        <h1 class="hero-welcome">Gestión de <span class="text-gradient">Diagnósticos</span> 📋</h1>
+        <p class="hero-subtitle">Monitorea el progreso y resultados de las evaluaciones empresariales.</p>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-grid">
+
+        <!-- Stats Row -->
+        <div class="col-span-12">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+                <!-- Stat 1 -->
+                <div class="stat-card-modern">
+                    <div class="stat-icon-box" style="color: var(--accent);">📊</div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Total Diagnósticos</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;" id="totalDiag">0</div>
+                    </div>
+                </div>
+
+                <!-- Stat 2 -->
+                <div class="stat-card-modern">
+                    <div class="stat-icon-box" style="color: var(--success);">✅</div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Completados</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;" id="completados">0</div>
+                    </div>
+                </div>
+
+                <!-- Stat 3 -->
+                <div class="stat-card-modern">
+                    <div class="stat-icon-box" style="color: var(--warning);">⭐</div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Puntuación Promedio</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;" id="promedio">0</div>
+                    </div>
+                </div>
             </div>
-            <div class="content-section">
-                <h3>Historial de Diagnósticos</h3>
-                <p style="color: #7f8c8d; margin-top: 1rem;">📊 Funcionalidad de reportes en desarrollo</p>
+        </div>
+
+        <!-- History Section -->
+        <div class="col-span-12">
+            <div class="glass-panel" style="padding: 2rem;">
+                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">Historial de Diagnósticos</h3>
+
+                <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                    <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">🚧</div>
+                    <p>Funcionalidad de reportes detallados en desarrollo</p>
+                </div>
             </div>
-        </main>
-    </div>
+        </div>
+
+    </main>
+
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
         if (!checkAuth() || !isAdmin()) window.location.href = ROUTES.login;
-
-        // Resaltar enlace activo del sidebar
-        function highlightActiveLink() {
-            const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
-            const links = document.querySelectorAll('.admin-menu a');
-            links.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === './' + currentPage || 
-                    link.getAttribute('href') === currentPage) {
-                    link.classList.add('active');
-                }
-            });
-        }
-        highlightActiveLink();
 
         function logout() {
             localStorage.removeItem(AUTH_TOKEN_KEY);
             localStorage.removeItem(AUTH_USER_KEY);
             window.location.href = ROUTES.login;
         }
+
+        // Cargar datos del usuario
+        const user = getAuthUser();
+        if (user) {
+            document.getElementById('userName').textContent = user.nombre || 'Administrador';
+            const avatar = document.querySelector('.admin-avatar-glow');
+            if (avatar && user.nombre) {
+                avatar.textContent = user.nombre.charAt(0).toUpperCase();
+            }
+        }
+
+        // Simular carga de datos
+        setTimeout(() => {
+            document.getElementById('totalDiag').textContent = '156';
+            document.getElementById('completados').textContent = '89';
+            document.getElementById('promedio').textContent = '8.5';
+        }, 500);
     </script>
 </body>
+
 </html>
