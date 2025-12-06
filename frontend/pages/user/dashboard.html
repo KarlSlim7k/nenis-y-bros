@@ -327,29 +327,42 @@
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/navigation.js"></script>
     <script>
         // Verificar autenticación y rol
         if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) {
             window.location.href = ROUTES.login;
         }
 
-        // Función logout (ya definida en auth.js pero por si acaso)
-        function logout() {
-            localStorage.removeItem(AUTH_TOKEN_KEY);
-            localStorage.removeItem(AUTH_USER_KEY);
-            window.location.href = ROUTES.login;
-        }
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inyectar navegación dinámica basada en el rol
+            injectUserTopNav();
 
-        // Cargar datos del usuario
-        function cargarDatosUsuario() {
-            const user = getAuthUser();
-            if (user) {
-                const nameElements = document.querySelectorAll('.user-name');
-                nameElements.forEach(el => el.textContent = user.nombre || 'Emprendedor');
+            // Cargar estadísticas
+            cargarEstadisticas();
 
-                const avatar = document.querySelector('.user-avatar');
-                if (avatar && user.nombre) {
-                    avatar.textContent = user.nombre.charAt(0).toUpperCase();
+            // Ajustar UI según el rol
+            ajustarInterfazPorRol();
+        });
+
+        // Ajustar interfaz según rol
+        function ajustarInterfazPorRol() {
+            if (isEmprendedor()) {
+                // Ocultar tarjetas relevantes solo para empresarios
+
+                // 1. Ocultar stat de Productos (el 4º stat card)
+                const statCards = document.querySelectorAll('.stat-card-modern');
+                if (statCards.length >= 4) {
+                    statCards[3].style.display = 'none';
+                    // Re-ajustar el grid si es necesario, aunque auto-fit debería manejarlo
+                }
+
+                // Cambiar el saludo si es necesario (ya lo hace el header info, pero el H1 hero-welcome tal vez no)
+                const heroName = document.querySelector('.hero-welcome .user-name');
+                const user = getAuthUser();
+                if (heroName && user) {
+                    heroName.textContent = user.nombre || 'Emprendedor';
                 }
             }
         }
@@ -361,7 +374,11 @@
                 animateValue('statCursos', 0, 5, 1000);
                 animateValue('statDiagnosticos', 0, 3, 1200);
                 animateValue('statLogros', 0, 12, 1500);
-                animateValue('statProductos', 0, 2, 800);
+
+                // Solo animar productos si es empresario
+                if (isEmpresario()) {
+                    animateValue('statProductos', 0, 2, 800);
+                }
             } catch (error) {
                 console.error('Error cargando estadísticas:', error);
             }
@@ -382,12 +399,6 @@
             };
             window.requestAnimationFrame(step);
         }
-
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', () => {
-            cargarDatosUsuario();
-            cargarEstadisticas();
-        });
     </script>
 </body>
 

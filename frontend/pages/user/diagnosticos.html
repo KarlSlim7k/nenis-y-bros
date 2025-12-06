@@ -541,6 +541,7 @@
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/navigation.js"></script>
     <script src="../../assets/js/diagnosticos.js"></script>
     <script>
         // Verificar autenticación
@@ -548,38 +549,10 @@
             window.location.href = ROUTES.login;
         }
 
-        function logout() {
-            localStorage.removeItem(AUTH_TOKEN_KEY);
-            localStorage.removeItem(AUTH_USER_KEY);
-            window.location.href = ROUTES.login;
-        }
-
-        function cargarDatosUsuario() {
-            const user = getAuthUser();
-            if (user) {
-                document.getElementById('userName').textContent = user.nombre || 'Emprendedor';
-                const avatar = document.querySelector('.emprendedor-avatar-glow');
-                if (avatar && user.nombre) {
-                    avatar.textContent = user.nombre.charAt(0).toUpperCase();
-                }
-            }
-        }
-
-        function highlightActiveLink() {
-            const currentPage = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.nav-menu .nav-link').forEach(link => {
-                link.classList.remove('active');
-                const href = link.getAttribute('href');
-                if (href === './' + currentPage) {
-                    link.classList.add('active');
-                }
-            });
-        }
-
         // Inicializar
         document.addEventListener('DOMContentLoaded', function () {
-            cargarDatosUsuario();
-            highlightActiveLink();
+            // Inyectar navegación dinámica
+            injectUserTopNav();
 
             // Mostrar contenedor de diagnósticos (la lógica real está en diagnosticos.js)
             document.getElementById('diagnosticosContainer').style.display = 'block';
