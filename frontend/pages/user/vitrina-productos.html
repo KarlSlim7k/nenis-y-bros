@@ -1,334 +1,343 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vitrina de Productos - Nenis y Bros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f5f6fa; }
-        .admin-container { display: flex; min-height: 100vh; }
-        .admin-sidebar { width: 260px; background: #2c3e50; color: white; position: fixed; height: 100vh; overflow-y: auto; }
-        .admin-logo { padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .admin-logo h1 { font-size: 1.5rem; margin: 0; }
-        .admin-logo span { font-size: 0.85rem; opacity: 0.8; display: block; margin-top: 0.25rem; }
-        .admin-menu { list-style: none; padding: 1rem 0; }
-        .admin-menu a { display: block; padding: 0.875rem 1.5rem; color: rgba(255,255,255,0.8); text-decoration: none; transition: all 0.3s; }
-        .admin-menu a:hover, .admin-menu a.active { background: rgba(255,255,255,0.1); color: white; }
-        .admin-main { margin-left: 260px; flex: 1; padding: 2rem; }
-        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb; }
-        .admin-header h2 { font-size: 1.75rem; color: #2c3e50; }
-        .btn-logout { padding: 0.5rem 1rem; background: #e74c3c; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        .emprendedor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
 
-        /* Filtros */
-        .filters-section { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem; }
-        .filters-title { font-size: 1.1rem; margin-bottom: 1rem; color: #2c3e50; }
-        .filters-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
-        .filter-group { display: flex; flex-direction: column; gap: 0.5rem; }
-        .filter-group label { font-weight: 600; color: #7f8c8d; font-size: 0.9rem; }
-        .filter-group input, .filter-group select { padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 0.9rem; }
-        .filter-group input:focus, .filter-group select:focus { outline: none; border-color: #667eea; }
-        .filter-actions { display: flex; gap: 1rem; justify-content: flex-end; }
-        .btn-filter { padding: 0.75rem 1.5rem; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        .btn-filter:hover { background: #2980b9; }
-        .btn-reset { padding: 0.75rem 1.5rem; background: #95a5a6; color: white; border: none; border-radius: 6px; cursor: pointer; }
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
 
-        /* Categorías */
-        .categories-carousel { margin-bottom: 2rem; overflow-x: auto; padding: 1rem 0; }
-        .categories-list { display: flex; gap: 1rem; }
-        .category-chip { flex-shrink: 0; padding: 0.75rem 1.5rem; background: white; border: 2px solid #e5e7eb; border-radius: 20px; cursor: pointer; transition: all 0.3s; font-weight: 600; white-space: nowrap; }
-        .category-chip:hover { border-color: #667eea; }
-        .category-chip.active { background: #667eea; color: white; border-color: #667eea; }
+        .nav-link.active::after {
+            display: none;
+        }
 
-        /* Productos Grid */
-        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .results-count { font-size: 1rem; color: #7f8c8d; }
-        .results-count strong { color: #667eea; }
-        .sort-select { padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 6px; background: white; }
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .product-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; position: relative; }
-        .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
-        .product-image { width: 100%; height: 200px; object-fit: cover; background: #e5e7eb; }
-        .product-badge { position: absolute; top: 10px; left: 10px; background: #667eea; color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; font-weight: 600; }
-        .product-badge.destacado { background: linear-gradient(135deg, #f093fb, #f5576c); }
-        .product-content { padding: 1rem; }
-        .product-category { color: #667eea; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; }
-        .product-title { font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; color: #2c3e50; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .product-description { color: #7f8c8d; font-size: 0.85rem; margin-bottom: 1rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .product-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e5e7eb; padding-top: 1rem; }
-        .product-price { font-size: 1.3rem; font-weight: bold; color: #667eea; }
-        .product-price small { font-size: 0.6rem; font-weight: 400; color: #7f8c8d; }
-        .product-location { color: #7f8c8d; font-size: 0.8rem; margin-top: 0.5rem; }
-        .product-seller { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid #e5e7eb; }
-        .seller-avatar { width: 24px; height: 24px; border-radius: 50%; background: #e5e7eb; }
-        .seller-name { font-size: 0.8rem; color: #7f8c8d; }
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
 
-        /* Paginación */
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 1rem; margin-top: 2rem; }
-        .pagination button { padding: 0.75rem 1.25rem; border: 2px solid #e5e7eb; background: white; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        .pagination button:hover:not(:disabled) { border-color: #667eea; color: #667eea; }
-        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
 
-        /* Loading & Empty */
-        .loading, .empty-state { text-align: center; padding: 4rem 2rem; }
-        .spinner { display: inline-block; width: 40px; height: 40px; border: 4px solid #e5e7eb; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .empty-state-icon { font-size: 4rem; margin-bottom: 1rem; }
-        .empty-state h3 { margin-bottom: 0.5rem; color: #2c3e50; }
-        .empty-state p { color: #7f8c8d; margin-bottom: 1rem; }
+        .filters-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .filter-select {
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            color: var(--text-main);
+            font-family: inherit;
+            min-width: 150px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background: var(--bg-panel);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-image {
+            height: 180px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .product-body {
+            padding: 1.25rem;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-seller {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-product {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-align: center;
+        }
+
+        .btn-product-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-product-outline {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .filters-section {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="admin-container">
-        <aside class="admin-sidebar">
-            <div class="admin-logo">
-                <h1>🚀 Nenis y Bros</h1>
-                <span>Panel Emprendedor</span>
-            </div>
-            <ul class="admin-menu">
-                <li><a href="./dashboard.html" data-page="dashboard">📊 Dashboard</a></li>
-                <li><a href="./diagnosticos.html" data-page="diagnosticos">📋 Diagnósticos</a></li>
-                <li><a href="./mi-progreso.html" data-page="mi-progreso">📈 Mi Progreso</a></li>
-                <li><a href="./perfil-empresarial.html" data-page="perfil">🏢 Mi Empresa</a></li>
-                <li><a href="./mis-logros.html" data-page="logros">🏆 Mis Logros</a></li>
-                <li><a href="./ranking.html" data-page="ranking">🥇 Ranking</a></li>
-                <li><a href="./vitrina-productos.html" data-page="vitrina">🛍️ Vitrina de Productos</a></li>
-                <li><a href="./mis-productos.html" data-page="productos">📦 Mis Productos</a></li>
-                <li><a href="./chat.html" data-page="chat">💬 Chat</a></li>
-                <li><a href="./notificaciones.html" data-page="notificaciones">🔔 Notificaciones</a></li>
-            </ul>
-        </aside>
-
-        <main class="admin-main">
-            <div class="admin-header">
-                <h2>🛍️ Vitrina de Productos</h2>
-                <div style="display: flex; gap: 1rem; align-items: center;">
-                    <a href="./publicar-producto.html" class="btn-filter">➕ Publicar Producto</a>
-                    <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+    <nav class="modern-nav">
+        <div class="nav-logo"><span style="font-size: 1.8rem;">🚀</span><span class="text-gradient">Nenis y Bros</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="./mi-progreso.html" class="nav-link">Progreso</a></li>
+            <li><a href="./perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
+            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
+            <li><a href="./ranking.html" class="nav-link">Ranking</a></li>
+            <li><a href="./vitrina-productos.html" class="nav-link active">Vitrina</a></li>
+            <li><a href="./mis-productos.html" class="nav-link">Productos</a></li>
+            <li><a href="./chat.html" class="nav-link">Chat</a></li>
+            <li><a href="./notificaciones.html" class="nav-link">🔔</a></li>
+        </ul>
+        <div class="admin-user">
+            <div class="emprendedor-avatar-glow user-avatar">E</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
                 </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
             </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
+        </div>
+    </nav>
 
-            <!-- Categorías -->
-            <div class="categories-carousel">
-                <div class="categories-list" id="categoriesList">
-                    <div class="category-chip active" data-category="">Todas las categorías</div>
-                </div>
-            </div>
+    <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+        <div style="margin-bottom: 2rem;">
+            <h1 class="page-title">Vitrina de <span class="text-gradient">Productos</span> 🛍️</h1>
+            <p class="page-subtitle">Explora productos de otros emprendedores de la comunidad</p>
+        </div>
 
-            <!-- Filtros -->
+        <div class="glass-panel" style="padding: 2rem;">
             <div class="filters-section">
-                <div class="filters-title">🔍 Filtros de Búsqueda</div>
-                <div class="filters-grid">
-                    <div class="filter-group">
-                        <label>Buscar</label>
-                        <input type="text" id="searchInput" placeholder="Buscar productos...">
-                    </div>
-                    <div class="filter-group">
-                        <label>Tipo de Producto</label>
-                        <select id="tipoFilter">
-                            <option value="">Todos</option>
-                            <option value="producto_fisico">Producto Físico</option>
-                            <option value="servicio">Servicio</option>
-                            <option value="producto_digital">Producto Digital</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label>Precio Mínimo</label>
-                        <input type="number" id="precioMin" placeholder="$ 0" min="0">
-                    </div>
-                    <div class="filter-group">
-                        <label>Precio Máximo</label>
-                        <input type="number" id="precioMax" placeholder="$ 10,000" min="0">
-                    </div>
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Buscar productos...">
                 </div>
-                <div class="filter-actions">
-                    <button class="btn-reset" onclick="resetFilters()">Limpiar</button>
-                    <button class="btn-filter" onclick="applyFilters()">Buscar</button>
-                </div>
-            </div>
-
-            <!-- Resultados -->
-            <div class="results-header">
-                <div class="results-count">Se encontraron <strong id="totalResults">0</strong> productos</div>
-                <select class="sort-select" id="sortSelect" onchange="applyFilters()">
-                    <option value="recientes">Más recientes</option>
-                    <option value="precio_asc">Precio: Menor a Mayor</option>
-                    <option value="precio_desc">Precio: Mayor a Menor</option>
+                <select class="filter-select">
+                    <option value="">Todas las categorías</option>
+                    <option value="alimentos">Alimentos</option>
+                    <option value="ropa">Ropa y Accesorios</option>
+                    <option value="tecnologia">Tecnología</option>
+                    <option value="servicios">Servicios</option>
+                </select>
+                <select class="filter-select">
+                    <option value="">Ordenar por</option>
+                    <option value="reciente">Más recientes</option>
+                    <option value="precio-asc">Menor precio</option>
+                    <option value="precio-desc">Mayor precio</option>
                 </select>
             </div>
 
-            <!-- Grid de Productos -->
-            <div id="productsContainer">
-                <div class="loading"><div class="spinner"></div><p>Cargando productos...</p></div>
-            </div>
-
-            <!-- Paginación -->
-            <div class="pagination" id="pagination" style="display: none;">
-                <button id="prevPage" onclick="changePage(-1)">← Anterior</button>
-                <span id="pageInfo">Página 1 de 1</span>
-                <button id="nextPage" onclick="changePage(1)">Siguiente →</button>
-            </div>
-        </main>
-    </div>
-
-    <script src="../../assets/js/config.js"></script>
-    <script src="../../assets/js/auth.js"></script>
-    <script src="../../assets/js/api.js"></script>
-    <script>
-        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
-
-        let currentPage = 1;
-        let totalPages = 1;
-        let currentFilters = {};
-
-        function logout() {
-            localStorage.removeItem(AUTH_TOKEN_KEY);
-            localStorage.removeItem(AUTH_USER_KEY);
-            window.location.href = ROUTES.login;
-        }
-
-        function highlightActiveLink() {
-            const currentPageName = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.admin-menu a').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === './' + currentPageName) link.classList.add('active');
-            });
-        }
-
-        async function loadCategories() {
-            try {
-                const response = await apiGet('/productos/categorias');
-                if (response.success && response.data) {
-                    const container = document.getElementById('categoriesList');
-                    response.data.forEach(cat => {
-                        const chip = document.createElement('div');
-                        chip.className = 'category-chip';
-                        chip.dataset.category = cat.id_categoria;
-                        chip.textContent = `${cat.nombre} (${cat.total_productos || 0})`;
-                        chip.onclick = () => filterByCategory(cat.id_categoria, chip);
-                        container.appendChild(chip);
-                    });
-                }
-            } catch (error) {
-                console.error('Error cargando categorías:', error);
-            }
-        }
-
-        function filterByCategory(categoryId, element) {
-            document.querySelectorAll('.category-chip').forEach(chip => chip.classList.remove('active'));
-            element.classList.add('active');
-            currentFilters.categoria = categoryId || '';
-            currentPage = 1;
-            loadProducts();
-        }
-
-        async function loadProducts() {
-            const container = document.getElementById('productsContainer');
-            container.innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando productos...</p></div>';
-
-            try {
-                const queryParams = new URLSearchParams({
-                    pagina: currentPage,
-                    por_pagina: 12,
-                    orden: document.getElementById('sortSelect').value,
-                    ...currentFilters
-                });
-
-                const response = await apiGet(`/productos?${queryParams}`);
-                if (response.success && response.data) {
-                    const { productos, total, total_paginas } = response.data;
-                    totalPages = total_paginas;
-                    document.getElementById('totalResults').textContent = total;
-
-                    if (productos.length === 0) {
-                        container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📦</div><h3>No se encontraron productos</h3><p>Intenta ajustar los filtros de búsqueda</p></div>';
-                    } else {
-                        container.innerHTML = `<div class="products-grid">${productos.map(p => createProductCard(p)).join('')}</div>`;
-                        if (total_paginas > 1) {
-                            document.getElementById('pagination').style.display = 'flex';
-                            document.getElementById('pageInfo').textContent = `Página ${currentPage} de ${total_paginas}`;
-                            document.getElementById('prevPage').disabled = currentPage === 1;
-                            document.getElementById('nextPage').disabled = currentPage === total_paginas;
-                        } else {
-                            document.getElementById('pagination').style.display = 'none';
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❌</div><h3>Error al cargar productos</h3><p>' + error.message + '</p></div>';
-            }
-        }
-
-        function createProductCard(p) {
-            const imagenUrl = p.imagen_principal || 'https://via.placeholder.com/260x200?text=Sin+Imagen';
-            const precio = parseFloat(p.precio).toFixed(2);
-            const ubicacion = [p.ubicacion_ciudad, p.ubicacion_estado].filter(Boolean).join(', ') || 'Ubicación no especificada';
-            return `
-                <div class="product-card" onclick="window.location.href='producto-detalle.html?id=${p.id_producto}'">
-                    <img src="${imagenUrl}" alt="${p.titulo}" class="product-image" onerror="this.src='https://via.placeholder.com/260x200?text=Sin+Imagen'">
-                    ${p.destacado ? '<div class="product-badge destacado">⭐ Destacado</div>' : ''}
-                    <div class="product-content">
-                        <div class="product-category">${p.categoria_nombre}</div>
-                        <h3 class="product-title">${p.titulo}</h3>
-                        <p class="product-description">${p.descripcion_corta || 'Sin descripción'}</p>
-                        <div class="product-footer">
-                            <div class="product-price">$${precio} <small>${p.moneda}</small></div>
-                        </div>
-                        <div class="product-location">📍 ${ubicacion}</div>
-                        <div class="product-seller">
-                            <div class="seller-avatar"></div>
-                            <div class="seller-name">${p.vendedor_nombre}</div>
-                        </div>
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image"><span class="product-badge">Nuevo</span>🧁</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Cupcakes Artesanales</h3>
+                        <p class="product-seller">Por: Dulces María</p>
+                        <div class="product-price">$150.00</div>
+                        <div class="product-actions"><button class="btn-product btn-product-primary">Ver
+                                Detalles</button><button class="btn-product btn-product-outline">💬</button></div>
                     </div>
                 </div>
-            `;
-        }
+                <div class="product-card">
+                    <div class="product-image">👕</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Playeras Personalizadas</h3>
+                        <p class="product-seller">Por: Custom Prints MX</p>
+                        <div class="product-price">$250.00</div>
+                        <div class="product-actions"><button class="btn-product btn-product-primary">Ver
+                                Detalles</button><button class="btn-product btn-product-outline">💬</button></div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image"><span class="product-badge">Popular</span>🎨</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Diseño de Logos</h3>
+                        <p class="product-seller">Por: Studio Creativo</p>
+                        <div class="product-price">$800.00</div>
+                        <div class="product-actions"><button class="btn-product btn-product-primary">Ver
+                                Detalles</button><button class="btn-product btn-product-outline">💬</button></div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">🌮</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Tacos Gourmet (12 pzas)</h3>
+                        <p class="product-seller">Por: Cocina Don Carlos</p>
+                        <div class="product-price">$180.00</div>
+                        <div class="product-actions"><button class="btn-product btn-product-primary">Ver
+                                Detalles</button><button class="btn-product btn-product-outline">💬</button></div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">📱</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Fundas para Celular</h3>
+                        <p class="product-seller">Por: Tech Covers</p>
+                        <div class="product-price">$199.00</div>
+                        <div class="product-actions"><button class="btn-product btn-product-primary">Ver
+                                Detalles</button><button class="btn-product btn-product-outline">💬</button></div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">🧴</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Jabones Artesanales</h3>
+                        <p class="product-seller">Por: Natural Beauty</p>
+                        <div class="product-price">$85.00</div>
+                        <div class="product-actions"><button class="btn-product btn-product-primary">Ver
+                                Detalles</button><button class="btn-product btn-product-outline">💬</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-        function applyFilters() {
-            currentFilters = {
-                q: document.getElementById('searchInput').value,
-                tipo: document.getElementById('tipoFilter').value,
-                precio_min: document.getElementById('precioMin').value,
-                precio_max: document.getElementById('precioMax').value
-            };
-            Object.keys(currentFilters).forEach(key => { if (!currentFilters[key]) delete currentFilters[key]; });
-            currentPage = 1;
-            loadProducts();
-        }
-
-        function resetFilters() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('tipoFilter').value = '';
-            document.getElementById('precioMin').value = '';
-            document.getElementById('precioMax').value = '';
-            document.getElementById('sortSelect').value = 'recientes';
-            document.querySelectorAll('.category-chip').forEach(chip => chip.classList.remove('active'));
-            document.querySelector('.category-chip[data-category=""]').classList.add('active');
-            currentFilters = {};
-            currentPage = 1;
-            loadProducts();
-        }
-
-        function changePage(direction) {
-            const newPage = currentPage + direction;
-            if (newPage >= 1 && newPage <= totalPages) {
-                currentPage = newPage;
-                loadProducts();
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
+        function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Emprendedor';
+                const avatar = document.querySelector('.emprendedor-avatar-glow');
+                if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
             }
         }
-
-        document.getElementById('searchInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') applyFilters();
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            highlightActiveLink();
-            loadCategories();
-            loadProducts();
-        });
+        document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
     </script>
 </body>
+
 </html>

@@ -1,238 +1,541 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diagnósticos Empresariales - Nenis y Bros</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; color: #2c3e50; }
-        
-        /* Admin Layout */
-        .admin-container { display: flex; min-height: 100vh; }
-        .admin-sidebar { width: 260px; background: #2c3e50; color: white; position: fixed; height: 100vh; overflow-y: auto; z-index: 1000; }
-        .admin-logo { padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .admin-logo h1 { font-size: 1.5rem; margin: 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .admin-logo span { font-size: 0.85rem; opacity: 0.8; display: block; margin-top: 0.25rem; }
-        .admin-menu { list-style: none; padding: 1rem 0; }
-        .admin-menu li { margin: 0; }
-        .admin-menu a { display: block; padding: 0.875rem 1.5rem; color: rgba(255,255,255,0.8); text-decoration: none; transition: all 0.3s; border-left: 4px solid transparent; }
-        .admin-menu a:hover { background: rgba(255,255,255,0.1); color: white; }
-        .admin-menu a.active { background: rgba(255,255,255,0.1); color: white; border-left-color: #667eea; }
-        .admin-main { margin-left: 260px; flex: 1; padding: 30px; }
+        /* Emprendedor Avatar */
+        .emprendedor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Fix Navigation Active State */
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
 
         /* Page Header */
-        .page-header { margin-bottom: 30px; }
-        .page-header h1 { font-size: 2rem; color: #2c3e50; margin-bottom: 0.5rem; }
-        .page-subtitle { color: #7f8c8d; font-size: 1rem; }
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
 
-        /* Cards */
-        .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .card-title { font-size: 1.25rem; color: #2c3e50; font-weight: 600; }
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
 
-        /* Buttons */
-        .btn { padding: 12px 24px; border-radius: 8px; border: none; font-size: 0.95rem; font-weight: 500; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
-        .btn-secondary { background: #95a5a6; color: white; }
-        .btn-secondary:hover { background: #7f8c8d; }
-        .btn-success { background: #27ae60; color: white; }
-        .btn-success:hover { background: #229954; }
-        .btn-sm { padding: 8px 16px; font-size: 0.875rem; }
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
 
-        /* Alerts */
-        .alert-container { position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px; }
-        .alert { padding: 16px 20px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: slideIn 0.3s ease-out; }
-        .alert-success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
-        .alert-error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
-        .alert-info { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        /* Stats Mini Cards */
+        .stats-mini {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
 
-        /* Loading State */
-        .loading-state { text-align: center; padding: 60px 20px; }
-        .spinner { width: 50px; height: 50px; border: 4px solid #f3f3f3; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-state p { color: #7f8c8d; font-size: 1rem; }
+        .stat-mini-card {
+            background: var(--bg-card);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 160px;
+            flex: 1;
+        }
+
+        .stat-mini-icon {
+            font-size: 1.5rem;
+        }
+
+        .stat-mini-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-mini-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Diagnostico Cards Grid */
+        .diagnosticos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .diagnostico-card {
+            background: var(--bg-panel);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .diagnostico-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .diagnostico-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .diagnostico-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .diagnostico-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .diagnostico-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .diagnostico-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .diagnostico-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn-diagnostico {
+            flex: 1;
+            padding: 0.65rem 1rem;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-diagnostico-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-diagnostico-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-diagnostico-outline {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-diagnostico-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Section Title */
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--text-main);
+        }
+
+        /* History List */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            background: rgba(16, 185, 129, 0.05);
+            border-color: rgba(16, 185, 129, 0.2);
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .history-details {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .history-score {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #10b981;
+            margin: 0 1.5rem;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            padding: 0.4rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+        }
+
+        .btn-action:hover {
+            background: rgba(16, 185, 129, 0.25);
+        }
 
         /* Empty State */
-        .empty-state { text-align: center; padding: 60px 20px; }
-        .empty-state-icon { font-size: 4rem; margin-bottom: 20px; }
-        .empty-state-title { font-size: 1.5rem; color: #2c3e50; margin-bottom: 10px; }
-        .empty-state-description { color: #7f8c8d; margin-bottom: 25px; line-height: 1.6; }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
 
-        /* Section */
-        .section { margin-bottom: 30px; }
-        .section-title { font-size: 1.25rem; color: #2c3e50; margin-bottom: 20px; font-weight: 600; }
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
 
-        /* Diagnosticos Grid */
-        .diagnosticos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .diagnostico-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s; border: 2px solid transparent; }
-        .diagnostico-card:hover { transform: translateY(-5px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); border-color: #667eea; }
-        .diagnostico-card.disponible { border-left: 4px solid #27ae60; }
-        .diagnostico-card.realizado { border-left: 4px solid #3498db; }
-        .diagnostico-icon { font-size: 3rem; margin-bottom: 15px; }
-        .diagnostico-title { font-size: 1.2rem; color: #2c3e50; margin-bottom: 10px; font-weight: 600; }
-        .diagnostico-description { color: #7f8c8d; margin-bottom: 15px; font-size: 0.9rem; line-height: 1.5; }
-        .diagnostico-meta { display: flex; gap: 15px; margin-bottom: 15px; font-size: 0.875rem; color: #95a5a6; }
-        .diagnostico-actions { display: flex; gap: 10px; margin-top: 15px; }
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
 
-        /* Diagnosticos History */
-        .history-list { display: flex; flex-direction: column; gap: 15px; }
-        .history-item { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; }
-        .history-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .history-info { flex: 1; }
-        .history-title { font-size: 1.1rem; color: #2c3e50; margin-bottom: 5px; font-weight: 600; }
-        .history-details { display: flex; gap: 20px; font-size: 0.875rem; color: #7f8c8d; }
-        .history-score { font-size: 2rem; font-weight: 700; color: #667eea; margin: 0 20px; }
-        .history-actions { display: flex; gap: 10px; }
+        .empty-state-description {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(16, 185, 129, 0.2);
+            border-top-color: #10b981;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         /* Badges */
-        .badge { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
-        .badge-success { background: #d4edda; color: #155724; }
-        .badge-info { background: #d1ecf1; color: #0c5460; }
-        .badge-warning { background: #fff3cd; color: #856404; }
-        .badge-secondary { background: #e9ecef; color: #495057; }
+        .badge {
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
 
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); text-align: center; }
-        .stat-value { font-size: 2.5rem; font-weight: 700; color: #667eea; margin-bottom: 5px; }
-        .stat-label { color: #7f8c8d; font-size: 0.9rem; }
+        .badge-completado {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-pendiente {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .admin-sidebar { width: 200px; }
-            .admin-main { margin-left: 200px; padding: 20px; }
-            .page-header h1 { font-size: 1.5rem; }
-            .diagnosticos-grid { grid-template-columns: 1fr; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .history-item { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .history-score { margin: 0; }
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .diagnosticos-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .history-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .history-score {
+                margin: 0;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="admin-container">
-        <aside class="admin-sidebar">
-            <div class="admin-logo">
-                <h1>🚀 Nenis y Bros</h1>
-                <span>Panel Emprendedor</span>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">🚀</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./diagnosticos.html" class="nav-link active">Diagnósticos</a></li>
+            <li><a href="./mi-progreso.html" class="nav-link">Progreso</a></li>
+            <li><a href="./perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
+            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
+            <li><a href="./ranking.html" class="nav-link">Ranking</a></li>
+            <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
+            <li><a href="./mis-productos.html" class="nav-link">Productos</a></li>
+            <li><a href="./chat.html" class="nav-link">Chat</a></li>
+            <li><a href="./notificaciones.html" class="nav-link">🔔</a></li>
+        </ul>
+
+        <div class="admin-user">
+            <div class="emprendedor-avatar-glow user-avatar">E</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
             </div>
-            <ul class="admin-menu">
-                <li><a href="./dashboard.html" data-page="dashboard">📊 Dashboard</a></li>
-                <li><a href="./diagnosticos.html" data-page="diagnosticos">📋 Diagnósticos</a></li>
-                <li><a href="./mi-progreso.html" data-page="mi-progreso">📈 Mi Progreso</a></li>
-                <li><a href="./perfil-empresarial.html" data-page="perfil">🏢 Mi Empresa</a></li>
-                <li><a href="./mis-logros.html" data-page="logros">🏆 Mis Logros</a></li>
-                <li><a href="./ranking.html" data-page="ranking">🥇 Ranking</a></li>
-                <li><a href="./vitrina-productos.html" data-page="vitrina">🛍️ Vitrina de Productos</a></li>
-                <li><a href="./mis-productos.html" data-page="productos">📦 Mis Productos</a></li>
-                <li><a href="./chat.html" data-page="chat">💬 Chat</a></li>
-                <li><a href="./notificaciones.html" data-page="notificaciones">🔔 Notificaciones</a></li>
-            </ul>
-        </aside>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                <span style="margin-right: 0.25rem;">🚪</span> Salir
+            </button>
+        </div>
+    </nav>
 
-        <main class="admin-main">
-            <div class="content-wrapper">
-                <!-- Page Header -->
-                <div class="page-header">
-                    <h1>Diagnósticos Empresariales</h1>
-                    <p class="page-subtitle">
-                        Evalúa el estado de tu empresa y recibe recomendaciones personalizadas
-                    </p>
+    <!-- Main Content -->
+    <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Diagnósticos <span class="text-gradient">Empresariales</span> 📋</h1>
+                <p class="page-subtitle">Evalúa el estado de tu empresa y recibe recomendaciones personalizadas</p>
+            </div>
+        </div>
+
+        <!-- Mini Stats -->
+        <div class="stats-mini">
+            <div class="stat-mini-card">
+                <span class="stat-mini-icon">📊</span>
+                <div>
+                    <div class="stat-mini-value" id="totalDiagnosticos">0</div>
+                    <div class="stat-mini-label">Diagnósticos</div>
                 </div>
-
-                <!-- Alert Container -->
-                <div id="alertContainer" class="alert-container"></div>
-
-                <!-- Loading State -->
-                <div id="loadingState" class="loading-state" style="display: none;">
-                    <div class="spinner"></div>
-                    <p>Cargando diagnósticos...</p>
+            </div>
+            <div class="stat-mini-card">
+                <span class="stat-mini-icon">✅</span>
+                <div>
+                    <div class="stat-mini-value" id="completados">0</div>
+                    <div class="stat-mini-label">Completados</div>
                 </div>
+            </div>
+            <div class="stat-mini-card">
+                <span class="stat-mini-icon">📈</span>
+                <div>
+                    <div class="stat-mini-value" id="promedioPuntaje">-</div>
+                    <div class="stat-mini-label">Promedio</div>
+                </div>
+            </div>
+            <div class="stat-mini-card">
+                <span class="stat-mini-icon">🏆</span>
+                <div>
+                    <div class="stat-mini-value" id="mejorPuntaje">-</div>
+                    <div class="stat-mini-label">Mejor Puntaje</div>
+                </div>
+            </div>
+        </div>
 
-                <!-- Perfil Requerido -->
-                <div id="needsPerfil" class="card" style="display: none;">
-                    <div class="empty-state">
-                        <div class="empty-state-icon">⚠️</div>
-                        <h2 class="empty-state-title">Perfil Empresarial Requerido</h2>
-                        <p class="empty-state-description">
-                            Para realizar diagnósticos necesitas primero crear tu perfil empresarial.
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state" style="display: none;">
+            <div class="spinner"></div>
+            <p style="color: var(--text-muted);">Cargando diagnósticos...</p>
+        </div>
+
+        <!-- Perfil Requerido Alert -->
+        <div id="needsPerfil" class="glass-panel" style="padding: 2rem; display: none;">
+            <div class="empty-state">
+                <div class="empty-state-icon">⚠️</div>
+                <h2 class="empty-state-title">Perfil Empresarial Requerido</h2>
+                <p class="empty-state-description">
+                    Para realizar diagnósticos necesitas primero crear tu perfil empresarial.
+                </p>
+                <a href="perfil-empresarial.html" class="btn-diagnostico btn-diagnostico-primary">
+                    Crear Perfil Empresarial
+                </a>
+            </div>
+        </div>
+
+        <!-- Diagnosticos Container -->
+        <div id="diagnosticosContainer" style="display: none;">
+
+            <!-- Diagnósticos Disponibles -->
+            <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                <h2 class="section-title">Diagnósticos Disponibles</h2>
+
+                <div class="diagnosticos-grid" id="tiposDiagnosticoGrid">
+                    <!-- Diagnóstico Financiero -->
+                    <div class="diagnostico-card">
+                        <div class="diagnostico-icon">💰</div>
+                        <h3 class="diagnostico-title">Diagnóstico Financiero</h3>
+                        <p class="diagnostico-description">Evalúa la salud financiera de tu empresa, flujo de caja y
+                            rentabilidad.</p>
+                        <div class="diagnostico-meta">
+                            <span>⏱️ 15 min</span>
+                            <span>📝 20 preguntas</span>
+                        </div>
+                        <div class="diagnostico-actions">
+                            <a href="diagnostico-wizard.html?tipo=financiero"
+                                class="btn-diagnostico btn-diagnostico-primary">Iniciar</a>
+                        </div>
+                    </div>
+
+                    <!-- Diagnóstico Marketing -->
+                    <div class="diagnostico-card">
+                        <div class="diagnostico-icon">📣</div>
+                        <h3 class="diagnostico-title">Diagnóstico de Marketing</h3>
+                        <p class="diagnostico-description">Analiza tus estrategias de marketing y presencia de marca.
                         </p>
-                        <a href="perfil-empresarial.html" class="btn btn-primary">
-                            Crear Perfil Empresarial
-                        </a>
+                        <div class="diagnostico-meta">
+                            <span>⏱️ 12 min</span>
+                            <span>📝 18 preguntas</span>
+                        </div>
+                        <div class="diagnostico-actions">
+                            <a href="diagnostico-wizard.html?tipo=marketing"
+                                class="btn-diagnostico btn-diagnostico-primary">Iniciar</a>
+                        </div>
+                    </div>
+
+                    <!-- Diagnóstico Operaciones -->
+                    <div class="diagnostico-card">
+                        <div class="diagnostico-icon">⚙️</div>
+                        <h3 class="diagnostico-title">Diagnóstico de Operaciones</h3>
+                        <p class="diagnostico-description">Revisa la eficiencia operativa y procesos de tu negocio.</p>
+                        <div class="diagnostico-meta">
+                            <span>⏱️ 10 min</span>
+                            <span>📝 15 preguntas</span>
+                        </div>
+                        <div class="diagnostico-actions">
+                            <a href="diagnostico-wizard.html?tipo=operaciones"
+                                class="btn-diagnostico btn-diagnostico-primary">Iniciar</a>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Diagnósticos Container -->
-                <div id="diagnosticosContainer" style="display: none;">
-                    <!-- Diagnósticos Disponibles -->
-                    <section class="section">
-                        <div class="section-header">
-                            <h2>Diagnósticos Disponibles</h2>
-                            <p class="section-description">
-                                Selecciona un diagnóstico para evaluar diferentes aspectos de tu empresa
-                            </p>
-                        </div>
+            <!-- Historial de Diagnósticos -->
+            <div class="glass-panel" style="padding: 2rem;">
+                <h2 class="section-title">Mis Diagnósticos</h2>
 
-                        <div id="tiposDiagnosticoGrid" class="diagnostico-grid">
-                            <!-- Se llenará dinámicamente -->
-                        </div>
-                    </section>
+                <div class="history-list" id="diagnosticosList">
+                    <!-- Se llenará dinámicamente -->
+                </div>
 
-                    <!-- Mis Diagnósticos -->
-                    <section class="section">
-                        <div class="section-header">
-                            <h2>Mis Diagnósticos</h2>
-                            <p class="section-description">
-                                Historial de diagnósticos realizados y sus resultados
-                            </p>
-                        </div>
-
-                        <!-- Filtros -->
-                        <div class="filters">
-                            <div class="filter-group">
-                                <label for="filterEstado">Estado:</label>
-                                <select id="filterEstado" class="filter-select">
-                                    <option value="">Todos</option>
-                                    <option value="completado">Completados</option>
-                                    <option value="en_progreso">En Progreso</option>
-                                </select>
-                            </div>
-                            <div class="filter-group">
-                                <label for="filterTipo">Tipo:</label>
-                                <select id="filterTipo" class="filter-select">
-                                    <option value="">Todos los tipos</option>
-                                    <!-- Se llenará dinámicamente -->
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Lista de diagnósticos -->
-                        <div id="diagnosticosList" class="diagnosticos-list">
-                            <!-- Se llenará dinámicamente -->
-                        </div>
-
-                        <!-- Empty state -->
-                        <div id="noDiagnosticos" class="empty-state" style="display: none;">
-                            <div class="empty-state-icon">📋</div>
-                            <h3 class="empty-state-title">No hay diagnósticos realizados</h3>
-                            <p class="empty-state-description">
-                                Comienza tu primer diagnóstico para recibir recomendaciones personalizadas
-                            </p>
-                        </div>
-
-                        <!-- Pagination -->
-                        <div id="pagination" class="pagination" style="display: none;">
-                            <!-- Se llenará dinámicamente -->
-                        </div>
-                    </section>
+                <div id="noDiagnosticos" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📋</div>
+                    <h3 class="empty-state-title">No hay diagnósticos realizados</h3>
+                    <p class="empty-state-description">
+                        Comienza tu primer diagnóstico para recibir recomendaciones personalizadas
+                    </p>
                 </div>
             </div>
-        </main>
-    </div>
+
+        </div>
+
+    </main>
 
     <!-- Scripts -->
     <script src="../../assets/js/config.js"></script>
@@ -240,17 +543,48 @@
     <script src="../../assets/js/auth.js"></script>
     <script src="../../assets/js/diagnosticos.js"></script>
     <script>
-        // Resaltar link activo
+        // Verificar autenticación
+        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) {
+            window.location.href = ROUTES.login;
+        }
+
+        function logout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            window.location.href = ROUTES.login;
+        }
+
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Emprendedor';
+                const avatar = document.querySelector('.emprendedor-avatar-glow');
+                if (avatar && user.nombre) {
+                    avatar.textContent = user.nombre.charAt(0).toUpperCase();
+                }
+            }
+        }
+
         function highlightActiveLink() {
             const currentPage = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.admin-menu a').forEach(link => {
+            document.querySelectorAll('.nav-menu .nav-link').forEach(link => {
                 link.classList.remove('active');
-                if (link.getAttribute('href') === './' + currentPage) {
+                const href = link.getAttribute('href');
+                if (href === './' + currentPage) {
                     link.classList.add('active');
                 }
             });
         }
-        document.addEventListener('DOMContentLoaded', highlightActiveLink);
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarDatosUsuario();
+            highlightActiveLink();
+
+            // Mostrar contenedor de diagnósticos (la lógica real está en diagnosticos.js)
+            document.getElementById('diagnosticosContainer').style.display = 'block';
+        });
     </script>
 </body>
+
 </html>

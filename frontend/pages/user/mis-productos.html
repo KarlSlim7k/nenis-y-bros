@@ -1,556 +1,366 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Productos | Nenis y Bros</title>
+    <title>Mis Productos - Nenis y Bros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
     <style>
-        :root {
-            --primary: #667eea;
-            --primary-dark: #764ba2;
-            --secondary: #f093fb;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-900: #111827;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--gray-50);
-            color: var(--gray-900);
-        }
-
-        /* Admin Container Layout */
-        .admin-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .admin-sidebar {
-            width: 260px;
-            background: #2c3e50;
-            color: white;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .admin-logo {
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            text-decoration: none;
-            color: white;
-            display: block;
-        }
-
-        .admin-menu {
-            list-style: none;
-            padding: 20px 0;
-        }
-
-        .admin-menu li {
-            margin: 5px 0;
-        }
-
-        .admin-menu a {
+        .emprendedor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             display: flex;
             align-items: center;
-            padding: 12px 20px;
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .admin-menu a:hover {
-            background: rgba(255,255,255,0.1);
+            justify-content: center;
             color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
-        .admin-menu a.active {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border-left: 4px solid var(--primary);
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
         }
 
-        .admin-menu a span:first-child {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .admin-main {
-            margin-left: 260px;
-            flex: 1;
-            padding: 30px;
-            width: calc(100% - 260px);
+        .nav-link.active::after {
+            display: none;
         }
 
         .page-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 2rem;
         }
 
-        .page-header h1 {
-            font-size: 28px;
-            margin: 0;
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
         }
 
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 0.25rem;
         }
 
-        .btn-primary {
-            background: white;
-            color: var(--primary);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .stat-label {
-            color: var(--gray-600);
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: var(--gray-900);
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            background: white;
-            border: 2px solid var(--gray-200);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .tab.active {
-            background: var(--primary);
+        .btn-add {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
-            border-color: var(--primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .stats-mini {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-mini-card {
+            background: var(--bg-card);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 160px;
+            flex: 1;
+        }
+
+        .stat-mini-icon {
+            font-size: 1.5rem;
+        }
+
+        .stat-mini-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-mini-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
         }
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
         }
 
         .product-card {
-            background: white;
-            border-radius: 12px;
+            background: var(--bg-panel);
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
         }
 
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+            border-color: rgba(16, 185, 129, 0.3);
         }
 
         .product-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            background: var(--gray-100);
-        }
-
-        .product-body {
-            padding: 20px;
+            height: 160px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            position: relative;
         }
 
         .product-status {
-            display: inline-block;
-            padding: 4px 12px;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 0.7rem;
             font-weight: 600;
-            margin-bottom: 10px;
         }
 
         .status-activo {
-            background: #d1fae5;
-            color: var(--success);
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
         }
 
-        .status-pendiente {
-            background: #fef3c7;
-            color: var(--warning);
+        .status-borrador {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
         }
 
-        .status-inactivo {
-            background: #fee2e2;
-            color: var(--danger);
+        .product-body {
+            padding: 1.25rem;
         }
 
         .product-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--gray-900);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
         }
 
         .product-price {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        .product-stats {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--gray-200);
-        }
-
-        .product-stat {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 14px;
-            color: var(--gray-600);
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 1rem;
         }
 
         .product-actions {
             display: flex;
-            gap: 10px;
+            gap: 0.5rem;
         }
 
-        .btn-small {
-            padding: 8px 16px;
-            font-size: 14px;
-            border-radius: 6px;
-            border: none;
+        .btn-action {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
             cursor: pointer;
-            font-weight: 600;
             transition: all 0.2s;
-            text-decoration: none;
-            display: inline-block;
+            border: none;
         }
 
         .btn-edit {
-            background: var(--primary);
-            color: white;
-            flex: 1;
-        }
-
-        .btn-edit:hover {
-            background: var(--primary-dark);
+            background: rgba(14, 165, 233, 0.15);
+            color: #38bdf8;
         }
 
         .btn-delete {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-delete:hover {
-            background: #dc2626;
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
         }
 
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            background: white;
-            border-radius: 12px;
+            padding: 4rem 2rem;
         }
 
         .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
         }
 
-        .empty-state h3 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: var(--gray-900);
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
 
-        .empty-state p {
-            color: var(--gray-600);
-            margin-bottom: 20px;
+        .empty-state-description {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .btn-add {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <aside class="admin-sidebar">
-            <a href="./dashboard.html" class="admin-logo">🚀 Nenis y Bros</a>
-            <ul class="admin-menu">
-                <li><a href="./dashboard.html"><span>📊</span> Dashboard</a></li>
-                <li><a href="./diagnosticos.html"><span>📋</span> Diagnósticos</a></li>
-                <li><a href="./mi-progreso.html"><span>📈</span> Mi Progreso</a></li>
-                <li><a href="./perfil-empresarial.html"><span>🏢</span> Mi Empresa</a></li>
-                <li><a href="./mis-logros.html"><span>🏆</span> Mis Logros</a></li>
-                <li><a href="./ranking.html"><span>🥇</span> Ranking</a></li>
-                <li><a href="./vitrina-productos.html"><span>🛍️</span> Vitrina de Productos</a></li>
-                <li><a href="./mis-productos.html" class="active"><span>📦</span> Mis Productos</a></li>
-                <li><a href="./chat.html"><span>💬</span> Chat</a></li>
-                <li><a href="./notificaciones.html"><span>🔔</span> Notificaciones</a></li>
-            </ul>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="admin-main">
-            <div class="page-header">
-                <h1>📦 Mis Productos</h1>
-                <a href="./publicar-producto.html" class="btn btn-primary">
-                    ➕ Publicar Producto
-                </a>
+    <nav class="modern-nav">
+        <div class="nav-logo"><span style="font-size: 1.8rem;">🚀</span><span class="text-gradient">Nenis y Bros</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="./mi-progreso.html" class="nav-link">Progreso</a></li>
+            <li><a href="./perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
+            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
+            <li><a href="./ranking.html" class="nav-link">Ranking</a></li>
+            <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
+            <li><a href="./mis-productos.html" class="nav-link active">Productos</a></li>
+            <li><a href="./chat.html" class="nav-link">Chat</a></li>
+            <li><a href="./notificaciones.html" class="nav-link">🔔</a></li>
+        </ul>
+        <div class="admin-user">
+            <div class="emprendedor-avatar-glow user-avatar">E</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
             </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
+        </div>
+    </nav>
 
-            <!-- Estadísticas -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Total Productos</div>
-                    <div class="stat-value" id="total-productos">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Activos</div>
-                    <div class="stat-value" id="productos-activos" style="color: var(--success);">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Pendientes</div>
-                    <div class="stat-value" id="productos-pendientes" style="color: var(--warning);">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Vistas Totales</div>
-                    <div class="stat-value" id="vistas-totales">0</div>
+    <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Mis <span class="text-gradient">Productos</span> 📦</h1>
+                <p class="page-subtitle">Gestiona los productos de tu negocio</p>
+            </div>
+            <button class="btn-add" onclick="nuevoProducto()"><span>➕</span> Nuevo Producto</button>
+        </div>
+
+        <div class="stats-mini">
+            <div class="stat-mini-card"><span class="stat-mini-icon">📦</span>
+                <div>
+                    <div class="stat-mini-value">3</div>
+                    <div class="stat-mini-label">Total Productos</div>
                 </div>
             </div>
-
-            <!-- Filtros por estado -->
-            <div class="tabs">
-                <button class="tab active" data-estado="todos" onclick="filtrarPorEstado('todos')">Todos</button>
-                <button class="tab" data-estado="activo" onclick="filtrarPorEstado('activo')">Activos</button>
-                <button class="tab" data-estado="pendiente" onclick="filtrarPorEstado('pendiente')">Pendientes</button>
-                <button class="tab" data-estado="inactivo" onclick="filtrarPorEstado('inactivo')">Inactivos</button>
+            <div class="stat-mini-card"><span class="stat-mini-icon">✅</span>
+                <div>
+                    <div class="stat-mini-value">2</div>
+                    <div class="stat-mini-label">Publicados</div>
+                </div>
             </div>
-
-            <!-- Grid de productos -->
-            <div class="products-grid" id="products-grid">
-                <!-- Se cargará dinámicamente -->
+            <div class="stat-mini-card"><span class="stat-mini-icon">👁️</span>
+                <div>
+                    <div class="stat-mini-value">156</div>
+                    <div class="stat-mini-label">Vistas Totales</div>
+                </div>
             </div>
-
-            <!-- Estado vacío -->
-            <div class="empty-state" id="empty-state" style="display: none;">
-                <div class="empty-state-icon">📦</div>
-                <h3>No tienes productos publicados</h3>
-                <p>Comienza a publicar tus productos y llega a más clientes</p>
-                <a href="./publicar-producto.html" class="btn btn-primary">Publicar mi primer producto</a>
+            <div class="stat-mini-card"><span class="stat-mini-icon">💬</span>
+                <div>
+                    <div class="stat-mini-value">12</div>
+                    <div class="stat-mini-label">Mensajes</div>
+                </div>
             </div>
-        </main>
-    </div>
+        </div>
 
-    <script src="../../assets/js/config.js"></script>
-    <script src="../../assets/js/auth.js"></script>
-    <script src="../../assets/js/api.js"></script>
-    <script>
-        // Verificar autenticación
-        if (!checkAuth() || !(isEmprendedor() || isEmpresario())) {
-            window.location.href = '../auth/login.html';
-        }
-
-        let productos = [];
-        let estadoFiltro = 'todos';
-
-        // Cargar productos al iniciar
-        document.addEventListener('DOMContentLoaded', () => {
-            highlightActiveLink();
-            cargarMisProductos();
-        });
-
-        // Función para resaltar el link activo en el sidebar
-        function highlightActiveLink() {
-            const currentPath = window.location.pathname;
-            const links = document.querySelectorAll('.admin-menu a');
-            links.forEach(link => {
-                const linkPath = new URL(link.href).pathname;
-                if (currentPath.includes(linkPath.split('/').pop())) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        }
-
-        async function cargarMisProductos() {
-            try {
-                const response = await fetchAPI('/productos/mis-productos');
-                if (response.success) {
-                    productos = response.data;
-                    actualizarEstadisticas();
-                    renderizarProductos();
-                } else {
-                    showMessage('Error al cargar productos: ' + response.message, 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showMessage('Error al cargar los productos', 'error');
-            }
-        }
-
-        function actualizarEstadisticas() {
-            const total = productos.length;
-            const activos = productos.filter(p => p.estado === 'activo').length;
-            const pendientes = productos.filter(p => p.estado === 'pendiente').length;
-            const vistas = productos.reduce((sum, p) => sum + (parseInt(p.vistas) || 0), 0);
-
-            document.getElementById('total-productos').textContent = total;
-            document.getElementById('productos-activos').textContent = activos;
-            document.getElementById('productos-pendientes').textContent = pendientes;
-            document.getElementById('vistas-totales').textContent = vistas;
-        }
-
-        function filtrarPorEstado(estado) {
-            estadoFiltro = estado;
-            
-            // Actualizar tabs
-            document.querySelectorAll('.tab').forEach(tab => {
-                if (tab.dataset.estado === estado) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
-                }
-            });
-
-            renderizarProductos();
-        }
-
-        function renderizarProductos() {
-            const grid = document.getElementById('products-grid');
-            const emptyState = document.getElementById('empty-state');
-
-            // Filtrar productos
-            let productosFiltrados = productos;
-            if (estadoFiltro !== 'todos') {
-                productosFiltrados = productos.filter(p => p.estado === estadoFiltro);
-            }
-
-            if (productosFiltrados.length === 0) {
-                grid.style.display = 'none';
-                emptyState.style.display = 'block';
-                return;
-            }
-
-            grid.style.display = 'grid';
-            emptyState.style.display = 'none';
-
-            grid.innerHTML = productosFiltrados.map(producto => `
+        <div class="glass-panel" style="padding: 2rem;">
+            <div class="products-grid">
                 <div class="product-card">
-                    <img src="${producto.imagen_principal || '../../assets/img/producto-placeholder.jpg'}" 
-                         alt="${producto.nombre}" 
-                         class="product-image"
-                         onerror="this.src='../../assets/img/producto-placeholder.jpg'">
+                    <div class="product-image"><span class="product-status status-activo">✓ Publicado</span>🧁</div>
                     <div class="product-body">
-                        <span class="product-status status-${producto.estado}">
-                            ${producto.estado.toUpperCase()}
-                        </span>
-                        <h3 class="product-title">${producto.nombre}</h3>
-                        <div class="product-price">$${parseFloat(producto.precio).toFixed(2)}</div>
-                        <div class="product-stats">
-                            <span class="product-stat">
-                                👁️ ${producto.vistas || 0} vistas
-                            </span>
-                            <span class="product-stat">
-                                ❤️ ${producto.favoritos || 0}
-                            </span>
-                        </div>
-                        <div class="product-actions">
-                            <a href="./producto-detalle.html?id=${producto.id}" class="btn-small btn-edit">
-                                ✏️ Editar
-                            </a>
-                            <button onclick="eliminarProducto(${producto.id})" class="btn-small btn-delete">
-                                🗑️
-                            </button>
-                        </div>
+                        <h3 class="product-title">Cupcakes de Vainilla</h3>
+                        <div class="product-meta"><span>👁️ 48 vistas</span><span>💬 5 mensajes</span></div>
+                        <div class="product-price">$150.00</div>
+                        <div class="product-actions"><button class="btn-action btn-edit">✏️ Editar</button><button
+                                class="btn-action btn-delete">🗑️ Eliminar</button></div>
                     </div>
                 </div>
-            `).join('');
-        }
+                <div class="product-card">
+                    <div class="product-image"><span class="product-status status-activo">✓ Publicado</span>🎂</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Pastel Tres Leches</h3>
+                        <div class="product-meta"><span>👁️ 78 vistas</span><span>💬 7 mensajes</span></div>
+                        <div class="product-price">$450.00</div>
+                        <div class="product-actions"><button class="btn-action btn-edit">✏️ Editar</button><button
+                                class="btn-action btn-delete">🗑️ Eliminar</button></div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image"><span class="product-status status-borrador">📝 Borrador</span>🍪</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Caja de Galletas</h3>
+                        <div class="product-meta"><span>👁️ 30 vistas</span><span>💬 0 mensajes</span></div>
+                        <div class="product-price">$120.00</div>
+                        <div class="product-actions"><button class="btn-action btn-edit">✏️ Editar</button><button
+                                class="btn-action btn-delete">🗑️ Eliminar</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-        async function eliminarProducto(id) {
-            if (!confirm('¿Estás seguro de que deseas eliminar este producto?')) {
-                return;
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
+        function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
+        function nuevoProducto() { alert('Formulario para agregar nuevo producto.\n\nFuncionalidad en desarrollo.'); }
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Emprendedor';
+                const avatar = document.querySelector('.emprendedor-avatar-glow');
+                if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
             }
-
-            try {
-                const response = await fetchAPI(`/productos/${id}`, 'DELETE');
-                if (response.success) {
-                    showMessage('Producto eliminado exitosamente', 'success');
-                    cargarMisProductos();
-                } else {
-                    showMessage('Error al eliminar: ' + response.message, 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showMessage('Error al eliminar el producto', 'error');
-            }
         }
-
-        function showMessage(message, type) {
-            alert(message);
-        }
+        document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
     </script>
 </body>
+
 </html>

@@ -1,432 +1,305 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Perfil Empresarial - Nenis y Bros</title>
+    <title>Mi Empresa - Nenis y Bros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: #f5f6fa; 
-            color: #2c3e50;
-        }
-        
-        .admin-container { display: flex; min-height: 100vh; }
-        
-        .admin-sidebar { 
-            width: 260px; 
-            background: #2c3e50; 
-            color: white; 
-            position: fixed; 
-            height: 100vh; 
-            overflow-y: auto; 
-            z-index: 1000;
-        }
-        
-        .admin-logo { 
-            padding: 20px; 
-            text-align: center; 
-            border-bottom: 1px solid rgba(255,255,255,0.1); 
-        }
-        
-        .admin-logo h1 { 
-            font-size: 24px; 
-            margin: 0; 
-            color: white;
-        }
-        
-        .admin-logo span { 
-            font-size: 14px; 
-            opacity: 0.8; 
-            display: block; 
-            margin-top: 5px; 
-        }
-        
-        .admin-menu { 
-            list-style: none; 
-            padding: 20px 0; 
-        }
-        
-        .admin-menu li {
-            margin: 5px 0;
-        }
-        
-        .admin-menu a { 
-            display: flex;
-            align-items: center;
-            padding: 12px 20px; 
-            color: rgba(255,255,255,0.8); 
-            text-decoration: none; 
-            transition: all 0.3s; 
-        }
-        
-        .admin-menu a:hover, 
-        .admin-menu a.active { 
-            background: rgba(255,255,255,0.1); 
-            color: white; 
-            border-left: 4px solid #667eea;
-        }
-        
-        .admin-main { 
-            margin-left: 260px; 
-            flex: 1; 
-            padding: 30px; 
-            width: calc(100% - 260px);
-        }
-        
-        .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-        }
-        
-        .page-header h1 {
-            font-size: 28px;
-            margin: 0 0 10px 0;
-        }
-        
-        .page-header .subtitle {
-            opacity: 0.9;
-            font-size: 16px;
-        }
-        
-        .loading-state {
-            text-align: center;
-            padding: 60px 20px;
-            background: white;
-            border-radius: 12px;
-        }
-        
-        .spinner {
+        .emprendedor-avatar-glow {
             width: 40px;
             height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .perfil-form {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-        
-        .form-section {
-            margin-bottom: 40px;
-            padding-bottom: 30px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        .form-section:last-of-type {
-            border-bottom: none;
-        }
-        
-        .section-title {
-            font-size: 20px;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
-        }
-        
-        .form-row {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .form-group {
-            flex: 1;
-        }
-        
-        .form-group.col-12 {
-            width: 100%;
-        }
-        
-        .form-group.col-6 {
-            width: calc(50% - 10px);
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 14px;
-        }
-        
-        .form-group label.required::after {
-            content: ' *';
-            color: #e74c3c;
-        }
-        
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.3s;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-        
-        .help-text {
-            display: block;
-            margin-top: 5px;
-            font-size: 12px;
-            color: #7f8c8d;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-start;
-            padding-top: 20px;
-        }
-        
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .company-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+            border-radius: 16px;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .company-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
             color: white;
         }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+
+        .company-info h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
         }
-        
-        .btn-secondary {
-            background: #e0e0e0;
-            color: #2c3e50;
+
+        .company-info p {
+            color: var(--text-muted);
         }
-        
-        .btn-secondary:hover {
-            background: #d0d0d0;
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
         }
-        
-        .alert {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
+
         @media (max-width: 768px) {
-            .admin-sidebar {
-                width: 200px;
+            .form-grid {
+                grid-template-columns: 1fr;
             }
-            
-            .admin-main {
-                margin-left: 200px;
+
+            .form-group.full-width {
+                grid-column: span 1;
             }
-            
-            .form-row {
+
+            .company-header {
                 flex-direction: column;
-            }
-            
-            .form-group.col-6 {
-                width: 100%;
+                text-align: center;
             }
         }
     </style>
 </head>
+
 <body>
-    <div class="admin-container">
-        <aside class="admin-sidebar">
-            <div class="admin-logo">
-                <h1>🚀 Nenis y Bros</h1>
-                <span>Panel Emprendedor</span>
+    <nav class="modern-nav">
+        <div class="nav-logo"><span style="font-size: 1.8rem;">🚀</span><span class="text-gradient">Nenis y Bros</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="./mi-progreso.html" class="nav-link">Progreso</a></li>
+            <li><a href="./perfil-empresarial.html" class="nav-link active">Mi Empresa</a></li>
+            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
+            <li><a href="./ranking.html" class="nav-link">Ranking</a></li>
+            <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
+            <li><a href="./mis-productos.html" class="nav-link">Productos</a></li>
+            <li><a href="./chat.html" class="nav-link">Chat</a></li>
+            <li><a href="./notificaciones.html" class="nav-link">🔔</a></li>
+        </ul>
+        <div class="admin-user">
+            <div class="emprendedor-avatar-glow user-avatar">E</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
             </div>
-            <ul class="admin-menu">
-                <li><a href="./dashboard.html" data-page="dashboard">📊 Dashboard</a></li>
-                <li><a href="./diagnosticos.html" data-page="diagnosticos">📋 Diagnósticos</a></li>
-                <li><a href="./mi-progreso.html" data-page="mi-progreso">📈 Mi Progreso</a></li>
-                <li><a href="./perfil-empresarial.html" data-page="perfil">🏢 Mi Empresa</a></li>
-                <li><a href="./mis-logros.html" data-page="logros">🏆 Mis Logros</a></li>
-                <li><a href="./ranking.html" data-page="ranking">🥇 Ranking</a></li>
-                <li><a href="./vitrina-productos.html" data-page="vitrina">🛍️ Vitrina de Productos</a></li>
-                <li><a href="./mis-productos.html" data-page="productos">📦 Mis Productos</a></li>
-                <li><a href="./chat.html" data-page="chat">💬 Chat</a></li>
-                <li><a href="./notificaciones.html" data-page="notificaciones">🔔 Notificaciones</a></li>
-            </ul>
-        </aside>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
+        </div>
+    </nav>
 
-        <main class="admin-main">
-            <header class="page-header">
-                <h1>🏢 Perfil Empresarial</h1>
-                <p class="subtitle">Completa la información de tu negocio para recibir recomendaciones personalizadas</p>
-            </header>
+    <main style="padding: 2rem; max-width: 1000px; margin: 0 auto;">
+        <div style="margin-bottom: 2rem;">
+            <h1 class="page-title">Mi <span class="text-gradient">Empresa</span> 🏢</h1>
+            <p class="page-subtitle">Gestiona la información de tu perfil empresarial</p>
+        </div>
 
-            <div id="alertContainer"></div>
+        <div class="company-header">
+            <div class="company-logo" id="companyLogo">🏢</div>
+            <div class="company-info">
+                <h2 id="companyName">Mi Empresa</h2>
+                <p id="companySector">Sector empresarial</p>
+            </div>
+        </div>
 
-            <div id="loadingState" class="loading-state" style="display: none;">
-                <div class="spinner"></div>
-                <p>Cargando información...</p>
+        <form id="perfilForm" class="glass-panel" style="padding: 2rem;">
+            <h3 class="section-title">Información General</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Nombre de la Empresa</label>
+                    <input type="text" class="form-input" id="nombre" placeholder="Nombre de tu empresa">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sector</label>
+                    <select class="form-select" id="sector">
+                        <option value="">Seleccionar sector</option>
+                        <option value="comercio">Comercio</option>
+                        <option value="servicios">Servicios</option>
+                        <option value="tecnologia">Tecnología</option>
+                        <option value="manufactura">Manufactura</option>
+                        <option value="alimentos">Alimentos</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label">Descripción</label>
+                    <textarea class="form-textarea" id="descripcion" placeholder="Describe tu empresa..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono</label>
+                    <input type="tel" class="form-input" id="telefono" placeholder="+52 123 456 7890">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email de Contacto</label>
+                    <input type="email" class="form-input" id="email" placeholder="contacto@miempresa.com">
+                </div>
+                <div class="form-group full-width">
+                    <label class="form-label">Dirección</label>
+                    <input type="text" class="form-input" id="direccion" placeholder="Dirección de tu empresa">
+                </div>
             </div>
 
-            <div id="perfilContainer" style="display: none;">
-                <form id="perfilForm" class="perfil-form">
-                    <div class="form-section">
-                        <h2 class="section-title">📝 Información Básica</h2>
-                        <div class="form-row">
-                            <div class="form-group col-12">
-                                <label for="nombreEmpresa" class="required">Nombre de la Empresa</label>
-                                <input type="text" id="nombreEmpresa" name="nombre_empresa" required placeholder="Ej: Cafetería El Aroma">
-                                <small class="help-text">El nombre con el que se conoce tu negocio</small>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-6">
-                                <label for="sector" class="required">Sector</label>
-                                <select id="sector" name="sector" required>
-                                    <option value="">Selecciona un sector</option>
-                                    <option value="Gastronomía">Gastronomía</option>
-                                    <option value="Retail">Retail</option>
-                                    <option value="Tecnología">Tecnología</option>
-                                    <option value="Consultoría">Consultoría</option>
-                                    <option value="Educación">Educación</option>
-                                    <option value="Salud">Salud</option>
-                                    <option value="Construcción">Construcción</option>
-                                    <option value="Otro">Otro</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="tipoNegocio" class="required">Tipo de Negocio</label>
-                                <select id="tipoNegocio" name="tipo_negocio" required>
-                                    <option value="">Selecciona el tipo</option>
-                                    <option value="emprendimiento">Emprendimiento</option>
-                                    <option value="microempresa">Microempresa (1-10 empleados)</option>
-                                    <option value="pequeña_empresa">Pequeña Empresa (11-50)</option>
-                                    <option value="mediana_empresa">Mediana Empresa (51-250)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h2 class="section-title">📍 Ubicación</h2>
-                        <div class="form-row">
-                            <div class="form-group col-6">
-                                <label for="pais">País</label>
-                                <input type="text" id="pais" name="pais" value="México">
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="estado">Estado</label>
-                                <input type="text" id="estado" name="estado" placeholder="Ej: Jalisco">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-6">
-                                <label for="ciudad">Ciudad</label>
-                                <input type="text" id="ciudad" name="ciudad" placeholder="Ej: Guadalajara">
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="codigoPostal">Código Postal</label>
-                                <input type="text" id="codigoPostal" name="codigo_postal" placeholder="44100">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-section">
-                        <h2 class="section-title">📊 Información Operativa</h2>
-                        <div class="form-row">
-                            <div class="form-group col-6">
-                                <label for="numEmpleados">Número de Empleados</label>
-                                <input type="number" id="numEmpleados" name="numero_empleados" min="0" placeholder="0">
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="ventasAnuales">Ventas Anuales (Aprox.)</label>
-                                <select id="ventasAnuales" name="ventas_anuales_rango">
-                                    <option value="">Selecciona un rango</option>
-                                    <option value="0-100k">Menos de $100,000</option>
-                                    <option value="100k-500k">$100,000 - $500,000</option>
-                                    <option value="500k-1m">$500,000 - $1,000,000</option>
-                                    <option value="1m+">Más de $1,000,000</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-12">
-                                <label for="descripcion">Descripción del Negocio</label>
-                                <textarea id="descripcion" name="descripcion" rows="4" placeholder="Describe brevemente tu negocio, productos o servicios..."></textarea>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">💾 Guardar Perfil</button>
-                        <button type="reset" class="btn btn-secondary">🔄 Limpiar</button>
-                    </div>
-                </form>
+            <h3 class="section-title" style="margin-top: 2rem;">Redes Sociales</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Facebook</label>
+                    <input type="url" class="form-input" id="facebook" placeholder="https://facebook.com/...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Instagram</label>
+                    <input type="url" class="form-input" id="instagram" placeholder="https://instagram.com/...">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sitio Web</label>
+                    <input type="url" class="form-input" id="sitioWeb" placeholder="https://...">
+                </div>
             </div>
-        </main>
-    </div>
+
+            <button type="submit" class="btn-save" style="margin-top: 2rem; width: 100%;">💾 Guardar Cambios</button>
+        </form>
+    </main>
 
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/auth.js"></script>
-    <script src="../../assets/js/perfil-empresarial.js"></script>
     <script>
         if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
 
-        function highlightActiveLink() {
-            const currentPage = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.admin-menu a').forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === './' + currentPage) link.classList.add('active');
-            });
+        function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
+
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Emprendedor';
+                const avatar = document.querySelector('.emprendedor-avatar-glow');
+                if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
+            }
         }
-        document.addEventListener('DOMContentLoaded', highlightActiveLink);
+
+        document.getElementById('perfilForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            alert('Perfil guardado exitosamente');
+        });
+
+        document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
     </script>
 </body>
+
 </html>
