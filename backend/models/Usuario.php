@@ -413,6 +413,26 @@ class Usuario {
     }
     
     /**
+     * Actualiza el rol del usuario
+     * 
+     * @param int $id ID del usuario
+     * @param string $nuevoRol Nuevo rol (emprendedor, empresario, mentor, administrador)
+     * @return bool
+     */
+    public function updateRole($id, $nuevoRol) {
+        $allowedRoles = ['emprendedor', 'empresario', 'mentor', 'administrador'];
+        
+        if (!in_array($nuevoRol, $allowedRoles)) {
+            return false;
+        }
+        
+        $query = "UPDATE usuarios SET tipo_usuario = ? WHERE id_usuario = ?";
+        $affected = $this->db->execute($query, [$nuevoRol, $id]);
+        
+        return $affected > 0;
+    }
+
+    /**
      * Verifica si un usuario es administrador
      * 
      * @param int $userId ID del usuario

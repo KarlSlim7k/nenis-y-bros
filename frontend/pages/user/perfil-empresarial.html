@@ -279,26 +279,111 @@
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/navigation.js"></script>
     <script>
-        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
+        // Verificar autenticación
+        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) {
+            window.location.href = ROUTES.login;
+        }
 
-        function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
+        // Cargar datos al inicio
+        document.addEventListener('DOMContentLoaded', async () => {
+            injectUserTopNav(); // Navegación dinámica
+            await cargarPerfilExistente();
+        });
 
-        function cargarDatosUsuario() {
-            const user = getAuthUser();
-            if (user) {
-                document.getElementById('userName').textContent = user.nombre || 'Emprendedor';
-                const avatar = document.querySelector('.emprendedor-avatar-glow');
-                if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
+        // Cargar datos preexistentes si el usuario ya tiene perfil
+        async function cargarPerfilExistente() {
+            try {
+                // Asumimos que existe un endpoint GET para obtener el perfil propio
+                const response = await apiGet('/perfiles/mi-perfil');
+
+                if (response.success && response.data.existe) {
+                    const p = response.data.perfil;
+
+                    // Llenar formulario
+                    document.getElementById('nombre').value = p.nombre_empresa || '';
+                    document.getElementById('sector').value = p.sector || '';
+                    document.getElementById('descripcion').value = p.descripcion || '';
+                    document.getElementById('telefono').value = p.telefono || '';
+                    document.getElementById('email').value = p.email_contacto || ''; // Ajustar según nombre real en DB
+                    document.getElementById('direccion').value = p.direccion || '';
+                    document.getElementById('facebook').value = p.facebook || '';
+                    document.getElementById('instagram').value = p.instagram || '';
+                    document.getElementById('sitioWeb').value = p.sitio_web || '';
+
+                    // Actualizar Header
+                    document.getElementById('companyName').textContent = p.nombre_empresa || 'Mi Empresa';
+                    document.getElementById('companySector').textContent = p.sector || 'Sector empresarial';
+                }
+            } catch (error) {
+                console.error("No se pudo cargar el perfil:", error);
             }
         }
 
-        document.getElementById('perfilForm').addEventListener('submit', function (e) {
+        // Manejar envío del formulario
+        document.getElementById('perfilForm').addEventListener('submit', async function (e) {
             e.preventDefault();
-            alert('Perfil guardado exitosamente');
-        });
 
-        document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '⏳ Guardando...';
+
+            const formData = {
+                nombre_empresa: document.getElementById('nombre').value,
+                sector: document.getElementById('sector').value,
+                tipo_negocio: 'pyme', // Valor por defecto o agregar campo
+                etapa_negocio: 'operacion', // Valor por defecto
+                descripcion: document.getElementById('descripcion').value,
+                telefono: document.getElementById('telefono').value,
+                // Nota: Asegúrate que los nombres de campos coincidan con lo que espera el backend
+                direccion: document.getElementById('direccion').value,
+                sitio_web: document.getElementById('sitioWeb').value
+            };
+
+            try {
+                // Usamos POST para crear (o deberíamos usar PUT si ya existe, pero simplificamos por ahora)
+                const response = await apiPost('/perfiles', formData);
+
+                if (response.success) {
+
+                    // ** Lógica de Ascenso de Rol **
+                    if (response.data.role_upgraded && response.data.new_token) {
+                        // 1. Actualizar el token en localStorage
+                        localStorage.setItem(AUTH_TOKEN_KEY, response.data.new_token);
+
+                        // 2. Actualizar datos del usuario en localStorage
+                        // Decodificamos el token (si es posible) o solicitamos info actualizada
+                        // O simplemente actualizamos el campo tipo_usuario manualmente por rapidez
+                        const user = getAuthUser();
+                        if (user) {
+                            user.tipo_usuario = 'empresario';
+                            localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
+                        }
+
+                        alert('¡Felicidades! Has completado tu perfil y ahora eres un EMPRESARIO oficial en la plataforma. Se desbloquearán nuevas funciones.');
+
+                        // 3. Recargar para actualizar toda la interfaz y permisos
+                        window.location.reload();
+                    } else {
+                        alert('Perfil empresarial guardado exitosamente.');
+                        // Actualizar encabezado visual sin recargar
+                        document.getElementById('companyName').textContent = formData.nombre_empresa;
+                        document.getElementById('companySector').textContent = formData.sector;
+                    }
+
+                } else {
+                    alert('Error: ' + (response.error || 'No se pudo guardar el perfil'));
+                }
+            } catch (error) {
+                console.error('Error al guardar:', error);
+                alert('Ocurrió un error al conectar con el servidor.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
     </script>
 </body>
 

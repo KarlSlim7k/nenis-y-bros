@@ -123,10 +123,41 @@ class PerfilEmpresarialController {
             $perfilId = $this->model->create($data);
             
             if ($perfilId) {
+                // INTENTO DE ASCENSO AUTOMÁTICO
+                $upgradeService = new UserUpgradeService();
+                $upgraded = false;
+                $newToken = null;
+                
+                // Verificar requisitos (aunque por ahora siempre es true)
+                $check = $upgradeService->checkRequirements($user['id_usuario']);
+                
+                if ($check['eligible']) {
+                    // Realizar ascenso
+                    if ($upgradeService->upgradeToEmpresario($user['id_usuario'])) {
+                        $upgraded = true;
+                        
+                        // Generar nuevo token con el rol actualizado
+                        // Nota: Asumimos que Security::generateJWT existe y funciona como en AuthController
+                        // Obtenemos los datos frescos del usuario para el token
+                        $updatedUser = (new Usuario())->findById($user['id_usuario']);
+                        
+                        if (class_exists('Security')) {
+                            $newToken = Security::generateJWT([
+                                'user_id' => $updatedUser['id_usuario'],
+                                'email' => $updatedUser['email'],
+                                'tipo_usuario' => $updatedUser['tipo_usuario']
+                            ]);
+                        }
+                    }
+                }
+                
                 $perfil = $this->model->findById($perfilId);
+                
                 Response::success([
-                    'mensaje' => 'Perfil empresarial creado exitosamente',
-                    'perfil' => $perfil
+                    'mensaje' => 'Perfil empresarial creado exitosamente' . ($upgraded ? '. ¡Ascendido a Empresario!' : ''),
+                    'perfil' => $perfil,
+                    'role_upgraded' => $upgraded,
+                    'new_token' => $newToken // El frontend debe actualizar su token si este campo viene
                 ], 201);
             }
             
