@@ -22,6 +22,19 @@
             box-shadow: 0 0 15px var(--secondary-glow);
             border: 2px solid rgba(255, 255, 255, 0.2);
         }
+
+        /* Fix Navigation Active State for Mentor */
+        .nav-link.active {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
     </style>
 </head>
 

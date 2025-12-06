@@ -127,35 +127,26 @@
             font-size: 4rem;
             position: relative;
             overflow: hidden;
-        }
-
-        .course-image::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            opacity: 0.9;
-        }
-
-        .course-image.gradient-1::before {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
 
-        .course-image.gradient-2::before {
+        .course-image.gradient-1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .course-image.gradient-2 {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         }
 
-        .course-image.gradient-3::before {
+        .course-image.gradient-3 {
             background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
         }
 
-        .course-image.gradient-4::before {
+        .course-image.gradient-4 {
             background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
         }
 
-        .course-image span {
+        .course-image span:first-child {
             position: relative;
             z-index: 1;
             filter: grayscale(100%) brightness(10);
