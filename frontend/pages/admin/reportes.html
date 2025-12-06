@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes - Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/theme.css">
     <style>
         .admin-avatar-glow {
@@ -40,8 +43,7 @@
     <nav class="modern-nav">
         <div class="nav-logo">
             <span style="font-size: 1.8rem;">🛡️</span>
-            <span class="text-gradient">Nenis y Bros <small
-                    style="font-size: 0.8rem; color: var(--text-muted); opacity: 0.8;">| Admin</small></span>
+            <span class="text-gradient">Nenis y Bros</span>
         </div>
         <ul class="nav-menu">
             <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
@@ -57,11 +59,13 @@
         <div class="admin-user">
             <div class="admin-avatar-glow user-avatar">A</div>
             <div>
-                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Administrador
-                </div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Admin</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Super Admin</div>
             </div>
             <button class="btn-outline" onclick="logout()"
-                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                <span style="margin-right: 0.25rem;">🚪</span> Salir
+            </button>
         </div>
     </nav>
 
