@@ -1,112 +1,350 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Disponibilidad - Instructor</title>
+    <title>Mi Disponibilidad - Mentor</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f6fa; }
-        .admin-container { display: flex; min-height: 100vh; }
-        
-        /* Sidebar */
-        .admin-sidebar { width: 260px; background: #2c3e50; color: white; position: fixed; height: 100vh; overflow-y: auto; }
-        .admin-logo { padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .admin-logo h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
-        .admin-logo span { font-size: 0.85rem; color: #95a5a6; }
-        .admin-menu { list-style: none; padding: 1rem 0; }
-        .admin-menu li a { display: flex; align-items: center; padding: 0.875rem 1.5rem; color: #ecf0f1; text-decoration: none; transition: all 0.3s; }
-        .admin-menu li a:hover, .admin-menu li a.active { background: #34495e; border-left: 4px solid #3498db; }
-        
-        /* Main */
-        .admin-main { margin-left: 260px; flex: 1; padding: 2rem; }
-        .admin-header { background: white; padding: 1.5rem 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .admin-user { display: flex; align-items: center; gap: 1rem; }
-        .admin-user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #3498db; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
-        .btn-logout { background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
-        
-        /* Content */
-        .content-section { background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #ecf0f1; }
-        
-        .schedule-grid { display: grid; gap: 15px; }
-        .day-block { border: 2px solid #e0e0e0; border-radius: 10px; padding: 15px; transition: all 0.2s; }
-        .day-block.active { border-color: #3498db; background: #f8f9ff; }
-        .day-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .day-name { font-weight: 600; font-size: 16px; }
-        .toggle-day { width: 50px; height: 26px; background: #ccc; border-radius: 13px; position: relative; cursor: pointer; transition: background 0.3s; }
-        .toggle-day.active { background: #3498db; }
-        .toggle-day::after { content: ''; position: absolute; width: 20px; height: 20px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: left 0.3s; }
-        .toggle-day.active::after { left: 27px; }
-        .time-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .time-input-group { display: flex; flex-direction: column; gap: 5px; }
-        .time-input-group label { font-size: 12px; color: #666; font-weight: 600; }
-        .time-input-group input { padding: 8px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; outline: none; }
-        .time-input-group input:focus { border-color: #3498db; }
-        .btn-primary { background: #3498db; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
-        .btn-primary:hover { background: #2980b9; }
-        .btn-primary.full-width { width: 100%; margin-top: 1rem; }
-        .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; }
-        .alert.show { display: block; }
-        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        /* Mentor Avatar */
+        .mentor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Fix Navigation Active State */
+        .nav-link.active {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Schedule Grid */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .day-block {
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.25rem;
+            transition: all 0.3s;
+        }
+
+        .day-block:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .day-block.active {
+            border-color: var(--accent);
+            background: rgba(6, 182, 212, 0.05);
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .day-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        /* Modern Toggle */
+        .toggle-day {
+            width: 52px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-day.active {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+
+        .toggle-day::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: left 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-day.active::after {
+            left: 27px;
+        }
+
+        /* Time Inputs */
+        .time-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .time-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .time-input-group label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .time-input-group input {
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .time-input-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.15);
+        }
+
+        /* Save Button */
+        .btn-save {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            margin-top: 2rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn-save:active {
+            transform: translateY(0);
+        }
+
+        /* Alert */
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            display: none;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        .alert.show {
+            display: flex;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .info-box-icon {
+            font-size: 1.25rem;
+        }
+
+        .info-box-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .schedule-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <aside class="admin-sidebar">
-            <div class="admin-logo">
-                <h1>👨‍🏫 Nenis y Bros</h1>
-                <span>Panel Instructor</span>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">👨‍🏫</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./estudiantes.html" class="nav-link">Estudiantes</a></li>
+            <li><a href="./sesiones.html" class="nav-link">Sesiones</a></li>
+            <li><a href="./disponibilidad-instructor.html" class="nav-link active">Disponibilidad</a></li>
+            <li><a href="./cursos.html" class="nav-link">Cursos</a></li>
+            <li><a href="./mensajes.html" class="nav-link">Mensajes</a></li>
+        </ul>
+
+        <div class="admin-user">
+            <div class="mentor-avatar-glow user-avatar">M</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Mentor</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Instructor</div>
             </div>
-            <ul class="admin-menu">
-                <li><a href="./dashboard.html" data-page="dashboard">📊 Dashboard</a></li>
-                <li><a href="./estudiantes.html" data-page="estudiantes">👥 Mis Estudiantes</a></li>
-                <li><a href="./sesiones.html" data-page="sesiones">🎯 Sesiones de Mentoría</a></li>
-                <li><a href="./disponibilidad-instructor.html" data-page="disponibilidad">📅 Mi Disponibilidad</a></li>
-                <li><a href="./cursos.html" data-page="cursos">📚 Mis Cursos</a></li>
-                <li><a href="./mensajes.html" data-page="mensajes">💬 Mensajes</a></li>
-            </ul>
-        </aside>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                <span style="margin-right: 0.25rem;">🚪</span> Salir
+            </button>
+        </div>
+    </nav>
 
-        <!-- Main Content -->
-        <main class="admin-main">
-            <div class="admin-header">
-                <h2>Mi Disponibilidad</h2>
-                <div class="admin-user">
-                    <div class="admin-user-avatar user-avatar">I</div>
-                    <div>
-                        <div class="user-name">Instructor</div>
-                        <div class="user-tipo" style="font-size: 0.85rem; color: #7f8c8d;">Mentor</div>
-                    </div>
-                    <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
-                </div>
+    <!-- Main Content -->
+    <main style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Mi <span class="text-gradient">Disponibilidad</span> 📅</h1>
+                <p class="page-subtitle">Configura los días y horarios en los que puedes dar mentoría</p>
             </div>
+        </div>
 
-            <!-- Alerts -->
-            <div id="alertContainer"></div>
+        <!-- Alerts -->
+        <div id="alertContainer"></div>
 
-            <!-- Disponibilidad Card -->
-            <div class="content-section">
-                <div class="section-header">
-                    <h3>Configura tu Horario Disponible</h3>
-                </div>
-                <p style="color: #7f8c8d; margin-bottom: 1.5rem;">
-                    Define los días y horarios en los que estás disponible para sesiones de mentoría con tus estudiantes.
+        <!-- Main Panel -->
+        <div class="glass-panel" style="padding: 2rem;">
+
+            <!-- Info Box -->
+            <div class="info-box">
+                <span class="info-box-icon">💡</span>
+                <p class="info-box-text">
+                    Activa los días en los que estás disponible y define tu horario de atención.
+                    Los estudiantes podrán agendar sesiones de mentoría solo dentro de estos horarios.
                 </p>
-
-                <div class="schedule-grid" id="scheduleContainer">
-                    <div style="text-align: center; padding: 2rem; color: #7f8c8d;">Cargando disponibilidad...</div>
-                </div>
-
-                <button class="btn-primary full-width" onclick="guardarDisponibilidad()">
-                    💾 Guardar Disponibilidad
-                </button>
             </div>
-        </main>
-    </div>
+
+            <!-- Schedule Grid -->
+            <div class="schedule-grid" id="scheduleContainer">
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">Cargando disponibilidad...
+                </div>
+            </div>
+
+            <!-- Save Button -->
+            <button class="btn-save" onclick="guardarDisponibilidad()">
+                💾 Guardar Disponibilidad
+            </button>
+        </div>
+
+    </main>
 
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
@@ -119,22 +357,34 @@
         }
 
         const DIAS = [
-            { id: 1, nombre: 'Lunes' },
-            { id: 2, nombre: 'Martes' },
-            { id: 3, nombre: 'Miércoles' },
-            { id: 4, nombre: 'Jueves' },
-            { id: 5, nombre: 'Viernes' },
-            { id: 6, nombre: 'Sábado' },
-            { id: 0, nombre: 'Domingo' }
+            { id: 1, nombre: 'Lunes', emoji: '📅' },
+            { id: 2, nombre: 'Martes', emoji: '📅' },
+            { id: 3, nombre: 'Miércoles', emoji: '📅' },
+            { id: 4, nombre: 'Jueves', emoji: '📅' },
+            { id: 5, nombre: 'Viernes', emoji: '📅' },
+            { id: 6, nombre: 'Sábado', emoji: '🌴' },
+            { id: 0, nombre: 'Domingo', emoji: '🌴' }
         ];
 
         let disponibilidadActual = {};
+
+        // Cargar datos de usuario
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Mentor';
+                const avatar = document.querySelector('.mentor-avatar-glow');
+                if (avatar && user.nombre) {
+                    avatar.textContent = user.nombre.charAt(0).toUpperCase();
+                }
+            }
+        }
 
         // Cargar disponibilidad al inicio
         async function cargarDisponibilidad() {
             try {
                 const response = await apiGet('/mentorias/disponibilidad');
-                
+
                 if (response.success && response.data) {
                     response.data.forEach(bloque => {
                         disponibilidadActual[bloque.dia_semana] = {
@@ -147,7 +397,7 @@
             } catch (error) {
                 console.error('Error al cargar disponibilidad:', error);
             }
-            
+
             renderSchedule();
         }
 
@@ -164,7 +414,7 @@
                 return `
                     <div class="day-block ${disp.activo ? 'active' : ''}" id="day-${dia.id}">
                         <div class="day-header">
-                            <span class="day-name">${dia.nombre}</span>
+                            <span class="day-name">${dia.emoji} ${dia.nombre}</span>
                             <div class="toggle-day ${disp.activo ? 'active' : ''}" 
                                  onclick="toggleDay(${dia.id})">
                             </div>
@@ -249,6 +499,7 @@
             const container = document.getElementById('alertContainer');
             container.innerHTML = `
                 <div class="alert alert-${tipo} show">
+                    <span>${tipo === 'success' ? '✅' : '❌'}</span>
                     ${mensaje}
                 </div>
             `;
@@ -265,25 +516,25 @@
             window.location.href = ROUTES.login;
         }
 
-        // Resaltar enlace activo del sidebar
+        // Highlight active link
         function highlightActiveLink() {
-            const currentPage = window.location.pathname.split('/').pop() || 'dashboard.html';
-            const links = document.querySelectorAll('.admin-menu a');
-            links.forEach(link => {
+            const currentPage = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.nav-menu .nav-link').forEach(link => {
                 link.classList.remove('active');
                 const href = link.getAttribute('href');
-                if (href === './' + currentPage || href === currentPage) {
+                if (href === './' + currentPage) {
                     link.classList.add('active');
                 }
             });
         }
 
-        // Cargar datos al inicio
-        document.addEventListener('DOMContentLoaded', function() {
-            displayUserInfo();
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarDatosUsuario();
             cargarDisponibilidad();
             highlightActiveLink();
         });
     </script>
 </body>
+
 </html>

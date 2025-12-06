@@ -1,154 +1,569 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sesiones de Mentoría - Instructor</title>
+    <title>Sesiones de Mentoría - Mentor</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
     <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f5f6fa; }
-        .admin-container { display: flex; min-height: 100vh; }
-        .admin-sidebar { width: 260px; background: #2c3e50; color: white; position: fixed; height: 100vh; overflow-y: auto; }
-        .admin-logo { padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .admin-logo h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
-        .admin-logo span { font-size: 0.85rem; color: #95a5a6; }
-        .admin-menu { list-style: none; padding: 1rem 0; }
-        .admin-menu li a { display: flex; align-items: center; padding: 0.875rem 1.5rem; color: #ecf0f1; text-decoration: none; transition: all 0.3s; }
-        .admin-menu li a:hover, .admin-menu li a.active { background: #34495e; border-left: 4px solid #3498db; }
-        .admin-main { margin-left: 260px; flex: 1; padding: 2rem; }
-        .admin-header { background: white; padding: 1.5rem 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .btn-logout { background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
-        .btn-primary { background: #3498db; color: white; border: none; padding: 0.625rem 1.25rem; border-radius: 4px; cursor: pointer; }
-        .content-section { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1.5rem; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #ecf0f1; }
-        .tabs { display: flex; gap: 1rem; margin-bottom: 1.5rem; border-bottom: 2px solid #ecf0f1; }
-        .tab { padding: 0.75rem 1.5rem; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s; }
-        .tab.active { border-bottom-color: #3498db; color: #3498db; font-weight: 600; }
-        table { width: 100%; border-collapse: collapse; }
-        table th, table td { padding: 1rem; text-align: left; border-bottom: 1px solid #ecf0f1; }
-        table th { background: #f8f9fa; font-weight: 600; }
-        .badge { padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.85rem; }
-        .badge-info { background: #d1ecf1; color: #0c5460; }
-        .badge-success { background: #d4edda; color: #155724; }
-        .badge-danger { background: #f8d7da; color: #721c24; }
-        .btn-sm { padding: 0.375rem 0.75rem; border: none; border-radius: 4px; cursor: pointer; margin: 0 0.25rem; font-size: 0.85rem; }
-        .btn-success { background: #28a745; color: white; }
-        .btn-warning { background: #ffc107; color: #212529; }
+        /* Mentor Avatar */
+        .mentor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Fix Navigation Active State */
+        .nav-link.active {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        .btn-add {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Stats Mini Cards */
+        .stats-mini {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-mini-card {
+            background: var(--bg-card);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 160px;
+            flex: 1;
+        }
+
+        .stat-mini-icon {
+            font-size: 1.5rem;
+        }
+
+        .stat-mini-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-mini-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Tabs */
+        .tabs-container {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 0;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.75rem 1.25rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .tab-count {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
+
+        .tab-btn.active .tab-count {
+            background: rgba(6, 182, 212, 0.2);
+            color: var(--accent);
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+        }
+
+        .sessions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .sessions-table th {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .sessions-table td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+
+        .sessions-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .sessions-table tbody tr:hover {
+            background: rgba(6, 182, 212, 0.05);
+        }
+
+        /* Badges */
+        .badge {
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .badge-programada {
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .badge-completada {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-cancelada {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .badge-virtual {
+            background: rgba(6, 182, 212, 0.15);
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+        }
+
+        .badge-presencial {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Action Buttons */
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            padding: 0.4rem 0.85rem;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            background: rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-warning:hover {
+            background: rgba(245, 158, 11, 0.25);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-text {
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .btn-add {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .tabs-container {
+                overflow-x: auto;
+            }
+
+            .actions-cell {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="admin-container">
-        <aside class="admin-sidebar">
-            <div class="admin-logo"><h1>👨‍🏫 Nenis y Bros</h1><span>Panel Instructor</span></div>
-            <ul class="admin-menu">
-                <li><a href="./dashboard.html" data-page="dashboard">📊 Dashboard</a></li>
-                <li><a href="./estudiantes.html" data-page="estudiantes">👥 Mis Estudiantes</a></li>
-                <li><a href="./sesiones.html" data-page="sesiones">🎯 Sesiones de Mentoría</a></li>
-                <li><a href="./disponibilidad-instructor.html" data-page="disponibilidad">📅 Mi Disponibilidad</a></li>
-                <li><a href="./cursos.html" data-page="cursos">📚 Mis Cursos</a></li>
-                <li><a href="./mensajes.html" data-page="mensajes">💬 Mensajes</a></li>
-            </ul>
-        </aside>
-        <main class="admin-main">
-            <div class="admin-header">
-                <h2>Sesiones de Mentoría</h2>
-                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">👨‍🏫</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./estudiantes.html" class="nav-link">Estudiantes</a></li>
+            <li><a href="./sesiones.html" class="nav-link active">Sesiones</a></li>
+            <li><a href="./disponibilidad-instructor.html" class="nav-link">Disponibilidad</a></li>
+            <li><a href="./cursos.html" class="nav-link">Cursos</a></li>
+            <li><a href="./mensajes.html" class="nav-link">Mensajes</a></li>
+        </ul>
+
+        <div class="admin-user">
+            <div class="mentor-avatar-glow user-avatar">M</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Mentor</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Instructor</div>
             </div>
-            <div class="content-section">
-                <div class="section-header">
-                    <h3>Gestión de Sesiones</h3>
-                    <button class="btn-primary" onclick="nuevaSesion()">➕ Nueva Sesión</button>
-                </div>
-                <div class="tabs">
-                    <div class="tab active" onclick="cambiarTab('pendientes')">Pendientes (3)</div>
-                    <div class="tab" onclick="cambiarTab('completadas')">Completadas (45)</div>
-                    <div class="tab" onclick="cambiarTab('canceladas')">Canceladas (2)</div>
-                </div>
-                <div id="sesionesContent">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Estudiante</th>
-                                <th>Fecha</th>
-                                <th>Hora</th>
-                                <th>Tipo</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="sesionesTable">
-                            <tr>
-                                <td><strong>Juan Pérez</strong></td>
-                                <td>25 Nov 2025</td>
-                                <td>10:00 AM</td>
-                                <td>Virtual</td>
-                                <td><span class="badge badge-info">Programada</span></td>
-                                <td>
-                                    <button class="btn-sm btn-success" onclick="iniciarSesion(1)">Iniciar</button>
-                                    <button class="btn-sm btn-warning" onclick="reprogramar(1)">Reprogramar</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>María García</strong></td>
-                                <td>26 Nov 2025</td>
-                                <td>2:00 PM</td>
-                                <td>Presencial</td>
-                                <td><span class="badge badge-info">Programada</span></td>
-                                <td>
-                                    <button class="btn-sm btn-success" onclick="iniciarSesion(2)">Iniciar</button>
-                                    <button class="btn-sm btn-warning" onclick="reprogramar(2)">Reprogramar</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                <span style="margin-right: 0.25rem;">🚪</span> Salir
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Sesiones de <span class="text-gradient">Mentoría</span> 🎯</h1>
+                <p class="page-subtitle">Gestiona tus sesiones de mentoría con estudiantes</p>
+            </div>
+            <button class="btn-add" onclick="nuevaSesion()">
+                <span>➕</span> Nueva Sesión
+            </button>
+        </div>
+
+        <!-- Mini Stats -->
+        <div class="stats-mini">
+            <div class="stat-mini-card">
+                <span class="stat-mini-icon">📅</span>
+                <div>
+                    <div class="stat-mini-value" id="pendingCount">3</div>
+                    <div class="stat-mini-label">Pendientes</div>
                 </div>
             </div>
-        </main>
-    </div>
+            <div class="stat-mini-card">
+                <span class="stat-mini-icon">✅</span>
+                <div>
+                    <div class="stat-mini-value" id="completedCount">45</div>
+                    <div class="stat-mini-label">Completadas</div>
+                </div>
+            </div>
+            <div class="stat-mini-card">
+                <span class="stat-mini-icon">📹</span>
+                <div>
+                    <div class="stat-mini-value" id="virtualCount">32</div>
+                    <div class="stat-mini-label">Virtuales</div>
+                </div>
+            </div>
+            <div class="stat-mini-card">
+                <span class="stat-mini-icon">🏢</span>
+                <div>
+                    <div class="stat-mini-value" id="presencialCount">16</div>
+                    <div class="stat-mini-label">Presenciales</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sessions Panel -->
+        <div class="glass-panel" style="padding: 2rem;">
+
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <button class="tab-btn active" onclick="cambiarTab('pendientes')">
+                    Pendientes <span class="tab-count">3</span>
+                </button>
+                <button class="tab-btn" onclick="cambiarTab('completadas')">
+                    Completadas <span class="tab-count">45</span>
+                </button>
+                <button class="tab-btn" onclick="cambiarTab('canceladas')">
+                    Canceladas <span class="tab-count">2</span>
+                </button>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <table class="sessions-table">
+                    <thead>
+                        <tr>
+                            <th>Estudiante</th>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Tipo</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessionsTableBody">
+                        <tr>
+                            <td><strong>Juan Pérez</strong></td>
+                            <td>25 Nov 2025</td>
+                            <td>10:00 AM</td>
+                            <td><span class="badge badge-virtual">📹 Virtual</span></td>
+                            <td><span class="badge badge-programada">📅 Programada</span></td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-action btn-success" onclick="iniciarSesion(1)">▶️
+                                        Iniciar</button>
+                                    <button class="btn-action btn-warning" onclick="reprogramar(1)">🔄
+                                        Reprogramar</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>María García</strong></td>
+                            <td>26 Nov 2025</td>
+                            <td>2:00 PM</td>
+                            <td><span class="badge badge-presencial">🏢 Presencial</span></td>
+                            <td><span class="badge badge-programada">📅 Programada</span></td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-action btn-success" onclick="iniciarSesion(2)">▶️
+                                        Iniciar</button>
+                                    <button class="btn-action btn-warning" onclick="reprogramar(2)">🔄
+                                        Reprogramar</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Carlos López</strong></td>
+                            <td>27 Nov 2025</td>
+                            <td>11:30 AM</td>
+                            <td><span class="badge badge-virtual">📹 Virtual</span></td>
+                            <td><span class="badge badge-programada">📅 Programada</span></td>
+                            <td>
+                                <div class="actions-cell">
+                                    <button class="btn-action btn-success" onclick="iniciarSesion(3)">▶️
+                                        Iniciar</button>
+                                    <button class="btn-action btn-warning" onclick="reprogramar(3)">🔄
+                                        Reprogramar</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
+        // Verificar autenticación y rol
         if (!checkAuth() || !isMentor()) {
-            alert('Acceso denegado.');
+            alert('Acceso denegado. Solo instructores pueden acceder a esta página.');
             window.location.href = ROUTES.login;
         }
 
-        function cambiarTab(tipo) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            event.target.classList.add('active');
-            alert(`Filtrar sesiones: ${tipo}\n\nFuncionalidad en desarrollo.`);
-        }
-
-        function nuevaSesion() {
-            alert('Nueva Sesión\n\nFuncionalidad en desarrollo.');
-        }
-
-        function iniciarSesion(id) {
-            alert(`Iniciar sesión ${id}\n\nFuncionalidad en desarrollo.`);
-        }
-
-        function reprogramar(id) {
-            alert(`Reprogramar sesión ${id}\n\nFuncionalidad en desarrollo.`);
-        }
-
+        // Función logout
         function logout() {
             localStorage.removeItem(AUTH_TOKEN_KEY);
             localStorage.removeItem(AUTH_USER_KEY);
             window.location.href = ROUTES.login;
         }
 
+        // Cargar datos de usuario
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Mentor';
+                const avatar = document.querySelector('.mentor-avatar-glow');
+                if (avatar && user.nombre) {
+                    avatar.textContent = user.nombre.charAt(0).toUpperCase();
+                }
+            }
+        }
+
+        function cambiarTab(tipo) {
+            // Update active tab
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.tab-btn').classList.add('active');
+
+            // Show message for demo
+            alert(`Filtrar sesiones: ${tipo}\n\nFuncionalidad en desarrollo.`);
+        }
+
+        function nuevaSesion() {
+            alert('Nueva Sesión\n\nFuncionalidad para programar una nueva sesión de mentoría.\n\nEn desarrollo.');
+        }
+
+        function iniciarSesion(id) {
+            alert(`Iniciar sesión #${id}\n\nEsta acción abrirá la sala de videoconferencia o el sistema de sesión.\n\nEn desarrollo.`);
+        }
+
+        function reprogramar(id) {
+            alert(`Reprogramar sesión #${id}\n\nSe abrirá el calendario para seleccionar nueva fecha y hora.\n\nEn desarrollo.`);
+        }
+
+        // Highlight active link
         function highlightActiveLink() {
             const currentPage = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.admin-menu a').forEach(link => {
+            document.querySelectorAll('.nav-menu .nav-link').forEach(link => {
                 link.classList.remove('active');
-                if (link.getAttribute('href') === './' + currentPage) {
+                const href = link.getAttribute('href');
+                if (href === './' + currentPage) {
                     link.classList.add('active');
                 }
             });
         }
 
-        document.addEventListener('DOMContentLoaded', highlightActiveLink);
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarDatosUsuario();
+            highlightActiveLink();
+        });
     </script>
 </body>
+
 </html>

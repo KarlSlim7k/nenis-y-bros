@@ -1,66 +1,345 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mensajes - Instructor</title>
+    <title>Mensajes - Mentor</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f5f6fa; }
-        .admin-container { display: flex; min-height: 100vh; }
-        .admin-sidebar { width: 260px; background: #2c3e50; color: white; position: fixed; height: 100vh; overflow-y: auto; }
-        .admin-logo { padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .admin-menu { list-style: none; padding: 1rem 0; }
-        .admin-menu li a { display: block; padding: 0.875rem 1.5rem; color: #ecf0f1; text-decoration: none; }
-        .admin-menu li a:hover, .admin-menu li a.active { background: #34495e; border-left: 4px solid #3498db; }
-        .admin-main { margin-left: 260px; flex: 1; padding: 2rem; }
-        .admin-header { background: white; padding: 1.5rem 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .btn-logout { background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; }
-        .content-section { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; padding: 4rem 2rem; }
+        /* Mentor Avatar */
+        .mentor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Fix Navigation Active State */
+        .nav-link.active {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Empty State */
+        .empty-state-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            text-align: center;
+        }
+
+        .empty-icon-wrapper {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+        }
+
+        .empty-description {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 400px;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .coming-soon-badge {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(168, 85, 247, 0.2) 100%);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            color: #a5b4fc;
+        }
+
+        .coming-soon-badge span:first-child {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Features Preview */
+        .features-preview {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .features-title {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 1.5rem;
+        }
+
+        .feature-text {
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="admin-container">
-        <aside class="admin-sidebar">
-            <div class="admin-logo"><h1>👨‍🏫 Nenis y Bros</h1><span>Panel Instructor</span></div>
-            <ul class="admin-menu">
-                <li><a href="./dashboard.html">📊 Dashboard</a></li>
-                <li><a href="./estudiantes.html">👥 Mis Estudiantes</a></li>
-                <li><a href="./sesiones.html">🎯 Sesiones de Mentoría</a></li>
-                <li><a href="./disponibilidad-instructor.html">📅 Mi Disponibilidad</a></li>
-                <li><a href="./cursos.html">📚 Mis Cursos</a></li>
-                <li><a href="./mensajes.html">💬 Mensajes</a></li>
-            </ul>
-        </aside>
-        <main class="admin-main">
-            <div class="admin-header">
-                <h2>Mensajes</h2>
-                <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">👨‍🏫</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./estudiantes.html" class="nav-link">Estudiantes</a></li>
+            <li><a href="./sesiones.html" class="nav-link">Sesiones</a></li>
+            <li><a href="./disponibilidad-instructor.html" class="nav-link">Disponibilidad</a></li>
+            <li><a href="./cursos.html" class="nav-link">Cursos</a></li>
+            <li><a href="./mensajes.html" class="nav-link active">Mensajes</a></li>
+        </ul>
+
+        <div class="admin-user">
+            <div class="mentor-avatar-glow user-avatar">M</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Mentor</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Instructor</div>
             </div>
-            <div class="content-section">
-                <h3 style="font-size: 3rem; margin-bottom: 1rem;">💬</h3>
-                <h3>Sistema de Mensajería</h3>
-                <p style="color: #7f8c8d; margin-top: 1rem;">Funcionalidad en desarrollo</p>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                <span style="margin-right: 0.25rem;">🚪</span> Salir
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title"><span class="text-gradient">Mensajes</span> 💬</h1>
+                <p class="page-subtitle">Comunícate con tus estudiantes y colegas</p>
             </div>
-        </main>
-    </div>
+        </div>
+
+        <!-- Main Panel -->
+        <div class="glass-panel" style="padding: 2rem;">
+
+            <div class="empty-state-container">
+                <div class="empty-icon-wrapper">
+                    <span class="empty-icon">💬</span>
+                </div>
+
+                <h2 class="empty-title">Sistema de Mensajería</h2>
+                <p class="empty-description">
+                    Próximamente podrás comunicarte directamente con tus estudiantes,
+                    recibir notificaciones y mantener un historial de conversaciones.
+                </p>
+
+                <div class="coming-soon-badge">
+                    <span>⚙️</span>
+                    <span>En desarrollo</span>
+                </div>
+
+                <!-- Features Preview -->
+                <div class="features-preview">
+                    <h3 class="features-title">Funcionalidades que vienen</h3>
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <span class="feature-icon">📩</span>
+                            <span class="feature-text">Chat en tiempo real</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🔔</span>
+                            <span class="feature-text">Notificaciones push</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">📎</span>
+                            <span class="feature-text">Envío de archivos</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">👥</span>
+                            <span class="feature-text">Grupos de estudio</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
-        if (!checkAuth() || !isMentor()) window.location.href = ROUTES.login;
+        // Verificar autenticación y rol
+        if (!checkAuth() || !isMentor()) {
+            alert('Acceso denegado. Solo instructores pueden acceder a esta página.');
+            window.location.href = ROUTES.login;
+        }
+
+        // Función logout
         function logout() {
             localStorage.removeItem(AUTH_TOKEN_KEY);
             localStorage.removeItem(AUTH_USER_KEY);
             window.location.href = ROUTES.login;
         }
+
+        // Cargar datos de usuario
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Mentor';
+                const avatar = document.querySelector('.mentor-avatar-glow');
+                if (avatar && user.nombre) {
+                    avatar.textContent = user.nombre.charAt(0).toUpperCase();
+                }
+            }
+        }
+
+        // Highlight active link
         function highlightActiveLink() {
             const currentPage = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.admin-menu a').forEach(link => {
+            document.querySelectorAll('.nav-menu .nav-link').forEach(link => {
                 link.classList.remove('active');
-                if (link.getAttribute('href') === './' + currentPage) link.classList.add('active');
+                const href = link.getAttribute('href');
+                if (href === './' + currentPage) {
+                    link.classList.add('active');
+                }
             });
         }
-        document.addEventListener('DOMContentLoaded', highlightActiveLink);
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarDatosUsuario();
+            highlightActiveLink();
+        });
     </script>
 </body>
+
 </html>
