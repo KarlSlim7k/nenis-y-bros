@@ -15,19 +15,38 @@
     <link rel="stylesheet" href="../../assets/css/theme.css">
 
     <style>
-        /* Overrides specific for this page if needed */
+        /* Emprendedor Avatar */
         .user-avatar-glow {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: bold;
-            box-shadow: 0 0 15px var(--primary-glow);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
             border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Fix Navigation Active State */
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        /* Nav Link Hover - distinguishable color */
+        .nav-link:hover:not(.active) {
+            color: #6ee7b7 !important;
+            -webkit-text-fill-color: #6ee7b7;
         }
     </style>
 </head>
@@ -43,9 +62,14 @@
         <ul class="nav-menu">
             <li><a href="./dashboard.html" class="nav-link active">Dashboard</a></li>
             <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
-            <li><a href="../cursos/catalogo.html" class="nav-link">Cursos</a></li>
+            <li><a href="./mi-progreso.html" class="nav-link">Progreso</a></li>
+            <li><a href="./perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
             <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
+            <li><a href="./ranking.html" class="nav-link">Ranking</a></li>
             <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
+            <li><a href="./mis-productos.html" class="nav-link">Productos</a></li>
+            <li><a href="./chat.html" class="nav-link">Chat</a></li>
+            <li><a href="./notificaciones.html" class="nav-link">🔔</a></li>
         </ul>
 
         <div class="admin-user">
@@ -53,7 +77,7 @@
             <div>
                 <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
                 </div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">Nivel 1</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
             </div>
             <button class="btn-outline" onclick="logout()"
                 style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
