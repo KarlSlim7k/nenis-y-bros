@@ -81,8 +81,17 @@
             backdrop-filter: blur(4px);
         }
 
-        .status-published { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
-        .status-draft { background: rgba(251, 191, 36, 0.2); color: #fbbf24; border: 1px solid rgba(251, 191, 36, 0.3); }
+        .status-published {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-draft {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
 
         .course-content {
             padding: 1.5rem;
@@ -178,8 +187,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .modal-content {
@@ -188,11 +202,12 @@
             border-radius: 20px;
             padding: 0;
             width: 100%;
-            max-width: 600px; /* Wider for course form */
+            max-width: 600px;
+            /* Wider for course form */
             position: relative;
             transform: scale(0.9);
             transition: transform 0.3s ease;
-            box-shadow: 
+            box-shadow:
                 0 25px 50px rgba(0, 0, 0, 0.5),
                 0 0 100px rgba(99, 102, 241, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -207,13 +222,14 @@
         }
 
         @keyframes slideUp {
-            from { 
+            from {
                 opacity: 0;
-                transform: scale(0.9) translateY(20px); 
+                transform: scale(0.9) translateY(20px);
             }
-            to { 
+
+            to {
                 opacity: 1;
-                transform: scale(1) translateY(0); 
+                transform: scale(1) translateY(0);
             }
         }
 
@@ -251,10 +267,21 @@
             flex-shrink: 0;
         }
 
-        .form-group { margin-bottom: 1.25rem; }
-        .form-label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.875rem; font-weight: 500; }
-        
-        .form-input, .form-select, .form-textarea {
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
             width: 100%;
             background: rgba(15, 23, 42, 0.8);
             border: 2px solid rgba(255, 255, 255, 0.1);
@@ -272,7 +299,9 @@
             resize: vertical;
         }
 
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
@@ -377,15 +406,18 @@
             display: inline-block;
             width: 30px;
             height: 30px;
-            border: 3px solid rgba(255,255,255,0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-top-color: var(--primary);
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin-bottom: 1rem;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
-
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
@@ -402,6 +434,9 @@
             <li><a href="./usuarios.html" class="nav-link">Usuarios</a></li>
             <li><a href="./cursos.html" class="nav-link active">Cursos</a></li>
             <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="./productos.html" class="nav-link">Productos</a></li>
+            <li><a href="./recursos.html" class="nav-link">Recursos</a></li>
+            <li><a href="./auditoria.html" class="nav-link">Auditoría</a></li>
             <li><a href="./reportes.html" class="nav-link">Reportes</a></li>
             <li><a href="./configuracion.html" class="nav-link">Configuración</a></li>
         </ul>
@@ -412,7 +447,8 @@
                 <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Admin</div>
                 <div style="font-size: 0.75rem; color: var(--text-muted);">Super Admin</div>
             </div>
-            <button class="btn-outline" onclick="logout()" style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
                 <span style="margin-right: 0.25rem;">🚪</span> Salir
             </button>
         </div>
@@ -434,7 +470,7 @@
     <!-- Main Content -->
     <main class="dashboard-grid">
         <div class="col-span-12">
-            
+
             <!-- Filters -->
             <div class="filters-bar">
                 <div class="search-input-wrapper">
@@ -474,9 +510,10 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="form-label">Título del Curso *</label>
-                        <input type="text" name="titulo" class="form-input" required minlength="5" placeholder="Ej: Marketing Digital para Principiantes">
+                        <input type="text" name="titulo" class="form-input" required minlength="5"
+                            placeholder="Ej: Marketing Digital para Principiantes">
                     </div>
-                    
+
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Categoría *</label>
@@ -496,7 +533,8 @@
 
                     <div class="form-group">
                         <label class="form-label">Descripción</label>
-                        <textarea name="descripcion" class="form-textarea" placeholder="¿De qué trata este curso?"></textarea>
+                        <textarea name="descripcion" class="form-textarea"
+                            placeholder="¿De qué trata este curso?"></textarea>
                     </div>
 
                     <div class="form-row">
@@ -528,7 +566,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-outline" onclick="closeModal('createCourseModal')">Cancelar</button>
+                    <button type="button" class="btn-outline"
+                        onclick="closeModal('createCourseModal')">Cancelar</button>
                     <button type="submit" class="btn-modern">Crear Curso</button>
                 </div>
             </form>
@@ -558,9 +597,9 @@
                 modal.style.display = 'flex';
                 setTimeout(() => modal.classList.add('active'), 10);
                 document.body.style.overflow = 'hidden';
-                
+
                 // Reset form if opening create modal
-                if(modalId === 'createCourseModal') {
+                if (modalId === 'createCourseModal') {
                     document.getElementById('createCourseForm').reset();
                 }
             }
@@ -579,7 +618,7 @@
 
         // Close on backdrop click
         document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', function(e) {
+            modal.addEventListener('click', function (e) {
                 if (e.target === this) closeModal(this.id);
             });
         });
@@ -613,9 +652,9 @@
             try {
                 const response = await apiGet('/courses/categories');
                 const categorias = response.message?.data || response.data || [];
-                
+
                 select.innerHTML = '<option value="">Seleccionar categoría</option>';
-                
+
                 if (Array.isArray(categorias)) {
                     categorias.forEach(cat => {
                         select.innerHTML += `<option value="${cat.id_categoria}">${cat.nombre}</option>`;
@@ -651,7 +690,7 @@
             try {
                 const response = await apiGet(url);
                 const cursos = response.message?.data || response.data?.data || [];
-                
+
                 if (cursos.length > 0) {
                     container.innerHTML = `
                         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
@@ -763,7 +802,7 @@
 
         async function cambiarEstado(id, estadoActual) {
             const nuevoEstado = estadoActual === 'publicado' ? 'borrador' : 'publicado';
-            
+
             // Optimistic update could be done here, but let's wait for API
             try {
                 const response = await apiPut(`/courses/${id}`, { estado: nuevoEstado });
@@ -838,4 +877,5 @@
         }
     </script>
 </body>
+
 </html>

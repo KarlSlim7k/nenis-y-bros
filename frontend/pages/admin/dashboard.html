@@ -70,10 +70,25 @@
             box-shadow: 0 0 10px currentColor;
         }
 
-        .activity-dot.success { background: var(--success); color: var(--success); }
-        .activity-dot.primary { background: var(--primary); color: var(--primary); }
-        .activity-dot.warning { background: var(--warning); color: var(--warning); }
-        .activity-dot.danger { background: var(--danger); color: var(--danger); }
+        .activity-dot.success {
+            background: var(--success);
+            color: var(--success);
+        }
+
+        .activity-dot.primary {
+            background: var(--primary);
+            color: var(--primary);
+        }
+
+        .activity-dot.warning {
+            background: var(--warning);
+            color: var(--warning);
+        }
+
+        .activity-dot.danger {
+            background: var(--danger);
+            color: var(--danger);
+        }
 
         .activity-content {
             flex: 1;
@@ -113,8 +128,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .modal-content {
@@ -127,7 +147,7 @@
             position: relative;
             transform: scale(0.9);
             transition: transform 0.3s ease;
-            box-shadow: 
+            box-shadow:
                 0 25px 50px rgba(0, 0, 0, 0.5),
                 0 0 100px rgba(99, 102, 241, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -140,13 +160,14 @@
         }
 
         @keyframes slideUp {
-            from { 
+            from {
                 opacity: 0;
-                transform: scale(0.9) translateY(20px); 
+                transform: scale(0.9) translateY(20px);
             }
-            to { 
+
+            to {
                 opacity: 1;
-                transform: scale(1) translateY(0); 
+                transform: scale(1) translateY(0);
             }
         }
 
@@ -314,6 +335,9 @@
             <li><a href="./usuarios.html" class="nav-link">Usuarios</a></li>
             <li><a href="./cursos.html" class="nav-link">Cursos</a></li>
             <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="./productos.html" class="nav-link">Productos</a></li>
+            <li><a href="./recursos.html" class="nav-link">Recursos</a></li>
+            <li><a href="./auditoria.html" class="nav-link">Auditoría</a></li>
             <li><a href="./reportes.html" class="nav-link">Reportes</a></li>
             <li><a href="./configuracion.html" class="nav-link">Configuración</a></li>
         </ul>
@@ -324,7 +348,8 @@
                 <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Admin</div>
                 <div style="font-size: 0.75rem; color: var(--text-muted);">Super Admin</div>
             </div>
-            <button class="btn-outline" onclick="logout()" style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
                 <span style="margin-right: 0.25rem;">🚪</span> Salir
             </button>
         </div>
@@ -385,7 +410,8 @@
             <div class="glass-panel" style="padding: 2rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                     <h3 style="font-size: 1.25rem; font-weight: 600;">Usuarios Recientes</h3>
-                    <a href="./usuarios.html" style="color: var(--primary); text-decoration: none; font-size: 0.9rem;">Ver todos →</a>
+                    <a href="./usuarios.html"
+                        style="color: var(--primary); text-decoration: none; font-size: 0.9rem;">Ver todos →</a>
                 </div>
 
                 <div class="table-responsive">
@@ -594,7 +620,7 @@
 
         // Close modal on backdrop click
         document.querySelectorAll('.modal-overlay').forEach(modal => {
-            modal.addEventListener('click', function(e) {
+            modal.addEventListener('click', function (e) {
                 if (e.target === this) {
                     this.classList.remove('active');
                     setTimeout(() => {
@@ -606,7 +632,7 @@
         });
 
         // Close modal on Escape key
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 document.querySelectorAll('.modal-overlay.active').forEach(modal => {
                     closeModal(modal.id);
@@ -633,25 +659,25 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success) {
-                    showNotification('✅ Usuario creado exitosamente', 'success');
-                    closeModal('createUserModal');
-                    e.target.reset();
-                    cargarUsuariosRecientes();
-                } else {
-                    showNotification('❌ ' + (result.message || 'Error al crear usuario'), 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showNotification('❌ Error de conexión', 'error');
-            })
-            .finally(() => {
-                btn.textContent = originalText;
-                btn.disabled = false;
-            });
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        showNotification('✅ Usuario creado exitosamente', 'success');
+                        closeModal('createUserModal');
+                        e.target.reset();
+                        cargarUsuariosRecientes();
+                    } else {
+                        showNotification('❌ ' + (result.message || 'Error al crear usuario'), 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('❌ Error de conexión', 'error');
+                })
+                .finally(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                });
         }
 
         function openEditModal(user) {
