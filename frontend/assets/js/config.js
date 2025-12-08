@@ -11,7 +11,7 @@ const IS_PRODUCTION = window.location.hostname !== 'localhost' && window.locatio
 const BASE_PATH = IS_PRODUCTION ? '' : '/nenis_y_bros';
 
 // URL base de la API - Configuración dinámica para desarrollo y producción
-const API_BASE_URL = IS_PRODUCTION 
+const API_BASE_URL = IS_PRODUCTION
     ? 'https://nenis-y-bros-production.up.railway.app/api/v1'
     : '/nenis_y_bros/backend/index.php/api/v1';
 
@@ -40,7 +40,8 @@ const ROUTES = {
     register: `${BASE_PATH}/frontend/pages/auth/register.html`,
 
     // Usuario/Emprendedor - Páginas que existen
-    emprendedorDashboard: `${BASE_PATH}/frontend/pages/user/dashboard.html`,
+    emprendedorDashboard: `${BASE_PATH}/frontend/pages/emprendedor/dashboard.html`,
+    empresarioDashboard: `${BASE_PATH}/frontend/pages/empresario/dashboard.html`,
     diagnosticos: `${BASE_PATH}/frontend/pages/user/diagnosticos.html`,
     perfilEmpresarial: `${BASE_PATH}/frontend/pages/user/perfil-empresarial.html`,
     diagnosticoWizard: `${BASE_PATH}/frontend/pages/user/diagnostico-wizard.html`,

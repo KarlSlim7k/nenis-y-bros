@@ -46,7 +46,7 @@ function getMenuItems(tipoUsuario) {
         empresario: [
             {
                 section: 'Principal', items: [
-                    { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/user/dashboard-empresario.html` },
+                    { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/empresario/dashboard.html` },
                     { icon: '📈', text: 'Mi Progreso', url: `${bp}/frontend/pages/user/mi-progreso.html` },
                     { icon: '🏢', text: 'Mi Empresa', url: `${bp}/frontend/pages/user/perfil-empresarial.html` }
                 ]
@@ -76,7 +76,7 @@ function getMenuItems(tipoUsuario) {
         emprendedor: [
             {
                 section: 'Principal', items: [
-                    { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/user/dashboard-emprendedor.html` },
+                    { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/emprendedor/dashboard.html` },
                     { icon: '📈', text: 'Mi Progreso', url: `${bp}/frontend/pages/user/mi-progreso.html` }
                 ]
             },
@@ -199,11 +199,11 @@ function generateBreadcrumbs() {
         breadcrumbs.push({ text: 'Admin', url: '/nenis_y_bros/frontend/pages/admin/dashboard.html' });
     } else if (path.includes('/instructor/')) {
         breadcrumbs.push({ text: 'Instructor', url: '/nenis_y_bros/frontend/pages/instructor/dashboard.html' });
-    } else if (path.includes('/user/')) {
+    } else if (path.includes('/user/') || path.includes('/emprendedor/') || path.includes('/empresario/')) {
         if (getUserType() === 'empresario') {
-            breadcrumbs.push({ text: 'Empresario', url: '/nenis_y_bros/frontend/pages/user/dashboard-empresario.html' });
+            breadcrumbs.push({ text: 'Empresario', url: '/nenis_y_bros/frontend/pages/empresario/dashboard.html' });
         } else {
-            breadcrumbs.push({ text: 'Emprendedor', url: '/nenis_y_bros/frontend/pages/user/dashboard-emprendedor.html' });
+            breadcrumbs.push({ text: 'Emprendedor', url: '/nenis_y_bros/frontend/pages/emprendedor/dashboard.html' });
         }
     }
 
@@ -245,8 +245,8 @@ function redirectToDashboard() {
     const dashboards = {
         'administrador': '/nenis_y_bros/frontend/pages/admin/dashboard.html',
         'mentor': '/nenis_y_bros/frontend/pages/instructor/dashboard.html',
-        'empresario': '/nenis_y_bros/frontend/pages/user/dashboard-empresario.html',
-        'emprendedor': '/nenis_y_bros/frontend/pages/user/dashboard-emprendedor.html'
+        'empresario': '/nenis_y_bros/frontend/pages/empresario/dashboard.html',
+        'emprendedor': '/nenis_y_bros/frontend/pages/emprendedor/dashboard.html'
     };
 
     window.location.href = dashboards[user.tipo_usuario] || dashboards.emprendedor;
