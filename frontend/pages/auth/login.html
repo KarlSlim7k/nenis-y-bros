@@ -151,6 +151,7 @@
                 opacity: 0;
                 transform: translateY(-10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -223,8 +224,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .divider {
@@ -310,17 +316,15 @@
             <form id="loginForm" autocomplete="off">
                 <div class="form-group">
                     <label class="form-label">📧 Correo Electrónico</label>
-                    <input type="email" id="email" name="email" class="form-input" required 
-                           placeholder="tu@email.com"
-                           autocomplete="email">
+                    <input type="email" id="email" name="email" class="form-input" required placeholder="tu@email.com"
+                        autocomplete="email">
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">🔒 Contraseña</label>
                     <div class="password-wrapper">
-                        <input type="password" id="password" name="password" class="form-input" required 
-                               placeholder="Tu contraseña"
-                               autocomplete="current-password">
+                        <input type="password" id="password" name="password" class="form-input" required
+                            placeholder="Tu contraseña" autocomplete="current-password">
                         <button type="button" class="password-toggle" onclick="togglePassword()">
                             👁️
                         </button>
@@ -359,7 +363,7 @@
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const toggleBtn = document.querySelector('.password-toggle');
-            
+
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
                 toggleBtn.textContent = '🙈';
@@ -425,6 +429,8 @@
                             window.location.href = ROUTES.adminDashboard;
                         } else if (tipoUsuario === 'mentor') {
                             window.location.href = ROUTES.instructorDashboard;
+                        } else if (tipoUsuario === 'empresario') {
+                            window.location.href = ROUTES.empresarioDashboard;
                         } else {
                             window.location.href = ROUTES.emprendedorDashboard;
                         }
