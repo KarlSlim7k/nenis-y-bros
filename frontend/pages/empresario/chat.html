@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat - Nenis y Bros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <style>
+        .emprendedor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 1.5rem;
+            height: calc(100vh - 200px);
+            min-height: 500px;
+        }
+
+        .conversations-panel {
+            background: var(--bg-panel);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .conversations-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .conversations-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .search-conversations {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            color: var(--text-main);
+            font-size: 0.9rem;
+        }
+
+        .conversations-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .conversation-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .conversation-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .conversation-item.active {
+            background: rgba(16, 185, 129, 0.1);
+            border-left-color: #10b981;
+        }
+
+        .conversation-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .conversation-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .conversation-preview {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .conversation-time {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        .conversation-badge {
+            background: #10b981;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .chat-panel {
+            background: var(--bg-panel);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .chat-user-name {
+            font-weight: 600;
+        }
+
+        .chat-user-status {
+            font-size: 0.8rem;
+            color: #10b981;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 0.85rem 1.15rem;
+            border-radius: 16px;
+        }
+
+        .message-received {
+            background: rgba(255, 255, 255, 0.05);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-sent {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 0.35rem;
+        }
+
+        .chat-input-area {
+            padding: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 0.85rem 1.15rem;
+            color: var(--text-main);
+            font-family: inherit;
+            resize: none;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: #10b981;
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 0.85rem 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-send:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .chat-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .conversations-panel {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="modern-nav">
+        <div class="nav-logo"><span style="font-size: 1.8rem;">🚀</span><span class="text-gradient">Nenis y Bros</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="./mi-progreso.html" class="nav-link">Progreso</a></li>
+            <li><a href="./perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
+            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
+            <li><a href="./ranking.html" class="nav-link">Ranking</a></li>
+            <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
+            <li><a href="./mis-productos.html" class="nav-link">Productos</a></li>
+            <li><a href="./chat.html" class="nav-link active">Chat</a></li>
+            <li><a href="./notificaciones.html" class="nav-link">🔔</a></li>
+        </ul>
+        <div class="admin-user">
+            <div class="emprendedor-avatar-glow user-avatar">E</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
+        </div>
+    </nav>
+
+    <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+        <div style="margin-bottom: 1.5rem;">
+            <h1 class="page-title"><span class="text-gradient">Chat</span> 💬</h1>
+            <p class="page-subtitle">Comunícate con otros emprendedores de la comunidad</p>
+        </div>
+
+        <div class="chat-container">
+            <div class="conversations-panel">
+                <div class="conversations-header">
+                    <h3>Conversaciones</h3>
+                    <input type="text" class="search-conversations" placeholder="🔍 Buscar...">
+                </div>
+                <div class="conversations-list">
+                    <div class="conversation-item active">
+                        <div class="conversation-avatar">M</div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">María García</div>
+                            <div class="conversation-preview">¡Hola! Me interesa tu producto...</div>
+                        </div>
+                        <div>
+                            <div class="conversation-time">10:30</div><span class="conversation-badge">2</span>
+                        </div>
+                    </div>
+                    <div class="conversation-item">
+                        <div class="conversation-avatar">C</div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">Carlos Ruiz</div>
+                            <div class="conversation-preview">Gracias por la información</div>
+                        </div>
+                        <div class="conversation-time">Ayer</div>
+                    </div>
+                    <div class="conversation-item">
+                        <div class="conversation-avatar">A</div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">Ana Martínez</div>
+                            <div class="conversation-preview">¿Tienes disponibilidad?</div>
+                        </div>
+                        <div class="conversation-time">Lunes</div>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <div class="chat-user-avatar">M</div>
+                    <div>
+                        <div class="chat-user-name">María García</div>
+                        <div class="chat-user-status">● En línea</div>
+                    </div>
+                </div>
+                <div class="chat-messages">
+                    <div class="message message-received">
+                        <div>¡Hola! Me interesa tu producto de cupcakes. ¿Tienes disponibilidad para este fin de semana?
+                        </div>
+                        <div class="message-time">10:28</div>
+                    </div>
+                    <div class="message message-sent">
+                        <div>¡Hola María! Claro que sí, tengo disponibilidad. ¿Cuántos necesitas?</div>
+                        <div class="message-time">10:30</div>
+                    </div>
+                    <div class="message message-received">
+                        <div>Serían 24 cupcakes para una fiesta de cumpleaños 🎂</div>
+                        <div class="message-time">10:32</div>
+                    </div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" placeholder="Escribe un mensaje...">
+                    <button class="btn-send">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
+        function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Emprendedor';
+                const avatar = document.querySelector('.emprendedor-avatar-glow');
+                if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
+    </script>
+</body>
+
+</html>

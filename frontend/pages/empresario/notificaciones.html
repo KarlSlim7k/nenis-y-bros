@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificaciones - Nenis y Bros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <style>
+        .emprendedor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        .btn-mark-all {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 0.6rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-mark-all:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .stats-mini {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-mini-card {
+            background: var(--bg-card);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 160px;
+            flex: 1;
+        }
+
+        .stat-mini-icon {
+            font-size: 1.5rem;
+        }
+
+        .stat-mini-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-mini-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .notification-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .notification-item.unread {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 3px solid #10b981;
+        }
+
+        .notification-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.success {
+            background: rgba(16, 185, 129, 0.15);
+        }
+
+        .notification-icon.info {
+            background: rgba(14, 165, 233, 0.15);
+        }
+
+        .notification-icon.warning {
+            background: rgba(245, 158, 11, 0.15);
+        }
+
+        .notification-icon.system {
+            background: rgba(168, 85, 247, 0.15);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 0.5rem;
+        }
+
+        .notification-badge {
+            background: #10b981;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 0.5rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.6rem 1.25rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="modern-nav">
+        <div class="nav-logo"><span style="font-size: 1.8rem;">🚀</span><span class="text-gradient">Nenis y Bros</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="./mi-progreso.html" class="nav-link">Progreso</a></li>
+            <li><a href="./perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
+            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
+            <li><a href="./ranking.html" class="nav-link">Ranking</a></li>
+            <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
+            <li><a href="./mis-productos.html" class="nav-link">Productos</a></li>
+            <li><a href="./chat.html" class="nav-link">Chat</a></li>
+            <li><a href="./notificaciones.html" class="nav-link active">🔔</a></li>
+        </ul>
+        <div class="admin-user">
+            <div class="emprendedor-avatar-glow user-avatar">E</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
+        </div>
+    </nav>
+
+    <main style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title"><span class="text-gradient">Notificaciones</span> 🔔</h1>
+                <p class="page-subtitle">Mantente al día con tu actividad</p>
+            </div>
+            <button class="btn-mark-all" onclick="marcarTodasLeidas()">✓ Marcar todas como leídas</button>
+        </div>
+
+        <div class="stats-mini">
+            <div class="stat-mini-card"><span class="stat-mini-icon">🔔</span>
+                <div>
+                    <div class="stat-mini-value" id="totalNotif">8</div>
+                    <div class="stat-mini-label">Total</div>
+                </div>
+            </div>
+            <div class="stat-mini-card"><span class="stat-mini-icon">📩</span>
+                <div>
+                    <div class="stat-mini-value" id="noLeidas">3</div>
+                    <div class="stat-mini-label">Sin Leer</div>
+                </div>
+            </div>
+            <div class="stat-mini-card"><span class="stat-mini-icon">🏆</span>
+                <div>
+                    <div class="stat-mini-value" id="logrosNotif">2</div>
+                    <div class="stat-mini-label">Logros</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel" style="padding: 1.5rem;">
+            <div class="tabs">
+                <button class="tab-btn active">Todas</button>
+                <button class="tab-btn">Sin leer</button>
+                <button class="tab-btn">Logros</button>
+                <button class="tab-btn">Sistema</button>
+            </div>
+
+            <div class="notifications-list">
+                <div class="notification-item unread">
+                    <div class="notification-icon success">🏆</div>
+                    <div class="notification-content">
+                        <div class="notification-title">¡Nuevo logro desbloqueado!</div>
+                        <div class="notification-message">Has completado el logro "Primer Paso". ¡Felicidades!</div>
+                        <div class="notification-time">Hace 5 minutos</div>
+                    </div>
+                    <div class="notification-badge"></div>
+                </div>
+                <div class="notification-item unread">
+                    <div class="notification-icon info">💬</div>
+                    <div class="notification-content">
+                        <div class="notification-title">Nuevo mensaje de María García</div>
+                        <div class="notification-message">Te ha enviado un mensaje sobre tu producto...</div>
+                        <div class="notification-time">Hace 30 minutos</div>
+                    </div>
+                    <div class="notification-badge"></div>
+                </div>
+                <div class="notification-item unread">
+                    <div class="notification-icon warning">🔥</div>
+                    <div class="notification-content">
+                        <div class="notification-title">¡Tu racha está en riesgo!</div>
+                        <div class="notification-message">Completa una actividad hoy para mantener tu racha de 5 días.
+                        </div>
+                        <div class="notification-time">Hace 2 horas</div>
+                    </div>
+                    <div class="notification-badge"></div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon system">📊</div>
+                    <div class="notification-content">
+                        <div class="notification-title">Tu posición en el ranking ha subido</div>
+                        <div class="notification-message">Ahora estás en la posición #5 del ranking general.</div>
+                        <div class="notification-time">Ayer</div>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon success">✅</div>
+                    <div class="notification-content">
+                        <div class="notification-title">Diagnóstico completado</div>
+                        <div class="notification-message">Has completado el diagnóstico financiero con 85 puntos.</div>
+                        <div class="notification-time">Hace 2 días</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
+        function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
+        function marcarTodasLeidas() { document.querySelectorAll('.notification-item.unread').forEach(item => { item.classList.remove('unread'); item.querySelector('.notification-badge')?.remove(); }); document.getElementById('noLeidas').textContent = '0'; }
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Emprendedor';
+                const avatar = document.querySelector('.emprendedor-avatar-glow');
+                if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
+    </script>
+</body>
+
+</html>

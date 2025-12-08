@@ -47,29 +47,28 @@ function getMenuItems(tipoUsuario) {
             {
                 section: 'Principal', items: [
                     { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/empresario/dashboard.html` },
-                    { icon: '📈', text: 'Mi Progreso', url: `${bp}/frontend/pages/user/mi-progreso.html` },
-                    { icon: '🏢', text: 'Mi Empresa', url: `${bp}/frontend/pages/user/perfil-empresarial.html` }
+                    { icon: '📈', text: 'Mi Progreso', url: `${bp}/frontend/pages/empresario/mi-progreso.html` },
+                    { icon: '🏢', text: 'Mi Empresa', url: `${bp}/frontend/pages/empresario/perfil-empresarial.html` }
                 ]
             },
             {
                 section: 'Formación', items: [
-                    { icon: '📚', text: 'Cursos', url: `${bp}/frontend/pages/cursos/catalogo.html` },
+                    { icon: '📚', text: 'Cursos', url: `${bp}/frontend/pages/empresario/mis-cursos.html` },
                     { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/recursos/biblioteca.html` },
-                    { icon: '🎓', text: 'Certificados', url: `${bp}/frontend/pages/user/mis-certificados.html` }
+                    { icon: '🎓', text: 'Certificados', url: `${bp}/frontend/pages/empresario/mis-certificados.html` }
                 ]
             },
             {
                 section: 'Productos', items: [
-                    { icon: '🛍️', text: 'Mis Productos', url: `${bp}/frontend/pages/user/mis-productos.html` },
-                    { icon: '➕', text: 'Publicar', url: `${bp}/frontend/pages/user/publicar-producto.html` },
-                    { icon: '🏪', text: 'Vitrina', url: `${bp}/frontend/pages/user/vitrina-productos.html` }
+                    { icon: '🛍️', text: 'Mis Productos', url: `${bp}/frontend/pages/empresario/mis-productos.html` },
+                    { icon: '🏪', text: 'Vitrina', url: `${bp}/frontend/pages/empresario/vitrina-productos.html` }
                 ]
             },
             {
                 section: 'Gamificación', items: [
-                    { icon: '🏆', text: 'Mis Logros', url: `${bp}/frontend/pages/user/mis-logros.html` },
-                    { icon: '🥇', text: 'Ranking', url: `${bp}/frontend/pages/user/ranking.html` },
-                    { icon: '🔔', text: 'Notificaciones', url: `${bp}/frontend/pages/user/notificaciones.html` }
+                    { icon: '🏆', text: 'Mis Logros', url: `${bp}/frontend/pages/empresario/mis-logros.html` },
+                    { icon: '🥇', text: 'Ranking', url: `${bp}/frontend/pages/empresario/ranking.html` },
+                    { icon: '🔔', text: 'Notificaciones', url: `${bp}/frontend/pages/empresario/notificaciones.html` }
                 ]
             }
         ],

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitrina de Productos - Nenis y Bros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <style>
+        .emprendedor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .filters-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .filter-select {
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            color: var(--text-main);
+            font-family: inherit;
+            min-width: 150px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background: var(--bg-panel);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-image {
+            height: 180px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .product-body {
+            padding: 1.25rem;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-seller {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-product {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            text-align: center;
+        }
+
+        .btn-product-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-product-outline {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .filters-section {
+                flex-direction: column;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="modern-nav">
+        <div class="nav-logo"><span style="font-size: 1.8rem;">🚀</span><span class="text-gradient">Nenis y Bros</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="./mi-progreso.html" class="nav-link">Progreso</a></li>
+            <li><a href="./perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
+            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
+            <li><a href="./ranking.html" class="nav-link">Ranking</a></li>
+            <li><a href="./vitrina-productos.html" class="nav-link active">Vitrina</a></li>
+            <li><a href="./mis-productos.html" class="nav-link">Productos</a></li>
+            <li><a href="./chat.html" class="nav-link">Chat</a></li>
+            <li><a href="./notificaciones.html" class="nav-link">🔔</a></li>
+        </ul>
+        <div class="admin-user">
+            <div class="emprendedor-avatar-glow user-avatar">E</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
+        </div>
+    </nav>
+
+    <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+        <div style="margin-bottom: 2rem;">
+            <h1 class="page-title">Vitrina de <span class="text-gradient">Productos</span> 🛍️</h1>
+            <p class="page-subtitle">Explora productos de otros emprendedores de la comunidad</p>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+            <div class="filters-section">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Buscar productos...">
+                </div>
+                <select class="filter-select">
+                    <option value="">Todas las categorías</option>
+                    <option value="alimentos">Alimentos</option>
+                    <option value="ropa">Ropa y Accesorios</option>
+                    <option value="tecnologia">Tecnología</option>
+                    <option value="servicios">Servicios</option>
+                </select>
+                <select class="filter-select">
+                    <option value="">Ordenar por</option>
+                    <option value="reciente">Más recientes</option>
+                    <option value="precio-asc">Menor precio</option>
+                    <option value="precio-desc">Mayor precio</option>
+                </select>
+            </div>
+
+            <div class="products-grid">
+                <div class="product-card">
+                    <div class="product-image"><span class="product-badge">Nuevo</span>🧁</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Cupcakes Artesanales</h3>
+                        <p class="product-seller">Por: Dulces María</p>
+                        <div class="product-price">$150.00</div>
+                        <div class="product-actions"><button class="btn-product btn-product-primary">Ver
+                                Detalles</button><button class="btn-product btn-product-outline">💬</button></div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">👕</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Playeras Personalizadas</h3>
+                        <p class="product-seller">Por: Custom Prints MX</p>
+                        <div class="product-price">$250.00</div>
+                        <div class="product-actions"><button class="btn-product btn-product-primary">Ver
+                                Detalles</button><button class="btn-product btn-product-outline">💬</button></div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image"><span class="product-badge">Popular</span>🎨</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Diseño de Logos</h3>
+                        <p class="product-seller">Por: Studio Creativo</p>
+                        <div class="product-price">$800.00</div>
+                        <div class="product-actions"><button class="btn-product btn-product-primary">Ver
+                                Detalles</button><button class="btn-product btn-product-outline">💬</button></div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">🌮</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Tacos Gourmet (12 pzas)</h3>
+                        <p class="product-seller">Por: Cocina Don Carlos</p>
+                        <div class="product-price">$180.00</div>
+                        <div class="product-actions"><button class="btn-product btn-product-primary">Ver
+                                Detalles</button><button class="btn-product btn-product-outline">💬</button></div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">📱</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Fundas para Celular</h3>
+                        <p class="product-seller">Por: Tech Covers</p>
+                        <div class="product-price">$199.00</div>
+                        <div class="product-actions"><button class="btn-product btn-product-primary">Ver
+                                Detalles</button><button class="btn-product btn-product-outline">💬</button></div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">🧴</div>
+                    <div class="product-body">
+                        <h3 class="product-title">Jabones Artesanales</h3>
+                        <p class="product-seller">Por: Natural Beauty</p>
+                        <div class="product-price">$85.00</div>
+                        <div class="product-actions"><button class="btn-product btn-product-primary">Ver
+                                Detalles</button><button class="btn-product btn-product-outline">💬</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
+        function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Emprendedor';
+                const avatar = document.querySelector('.emprendedor-avatar-glow');
+                if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
+    </script>
+</body>
+
+</html>

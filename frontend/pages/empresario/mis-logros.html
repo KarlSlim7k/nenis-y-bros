@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Logros - Nenis y Bros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <style>
+        .emprendedor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .stats-mini {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-mini-card {
+            background: var(--bg-card);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 160px;
+            flex: 1;
+        }
+
+        .stat-mini-icon {
+            font-size: 1.5rem;
+        }
+
+        .stat-mini-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .stat-mini-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .logros-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .logro-card {
+            background: var(--bg-panel);
+            border: 2px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logro-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .logro-card.desbloqueado {
+            border-color: #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%);
+        }
+
+        .logro-card.bloqueado {
+            opacity: 0.5;
+            filter: grayscale(50%);
+        }
+
+        .logro-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .logro-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .logro-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .logro-points {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.85rem;
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .logro-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .logro-progress {
+            margin-top: 1rem;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 4px;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+        }
+
+        @media (max-width: 768px) {
+            .logros-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="modern-nav">
+        <div class="nav-logo"><span style="font-size: 1.8rem;">🚀</span><span class="text-gradient">Nenis y Bros</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="./mi-progreso.html" class="nav-link">Progreso</a></li>
+            <li><a href="./perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
+            <li><a href="./mis-logros.html" class="nav-link active">Logros</a></li>
+            <li><a href="./ranking.html" class="nav-link">Ranking</a></li>
+            <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
+            <li><a href="./mis-productos.html" class="nav-link">Productos</a></li>
+            <li><a href="./chat.html" class="nav-link">Chat</a></li>
+            <li><a href="./notificaciones.html" class="nav-link">🔔</a></li>
+        </ul>
+        <div class="admin-user">
+            <div class="emprendedor-avatar-glow user-avatar">E</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
+        </div>
+    </nav>
+
+    <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+        <div style="margin-bottom: 2rem;">
+            <h1 class="page-title">Mis <span class="text-gradient">Logros</span> 🏆</h1>
+            <p class="page-subtitle">Desbloquea logros completando actividades y gana recompensas</p>
+        </div>
+
+        <div class="stats-mini">
+            <div class="stat-mini-card"><span class="stat-mini-icon">🏆</span>
+                <div>
+                    <div class="stat-mini-value" id="totalLogros">0</div>
+                    <div class="stat-mini-label">Logros</div>
+                </div>
+            </div>
+            <div class="stat-mini-card"><span class="stat-mini-icon">✅</span>
+                <div>
+                    <div class="stat-mini-value" id="desbloqueados">0</div>
+                    <div class="stat-mini-label">Desbloqueados</div>
+                </div>
+            </div>
+            <div class="stat-mini-card"><span class="stat-mini-icon">💰</span>
+                <div>
+                    <div class="stat-mini-value" id="puntosGanados">0</div>
+                    <div class="stat-mini-label">Puntos Ganados</div>
+                </div>
+            </div>
+            <div class="stat-mini-card"><span class="stat-mini-icon">📈</span>
+                <div>
+                    <div class="stat-mini-value" id="progreso">0%</div>
+                    <div class="stat-mini-label">Progreso Total</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+            <h2 class="section-title">Todos los Logros</h2>
+            <div class="logros-grid" id="logrosGrid">
+                <div class="logro-card desbloqueado">
+                    <span class="logro-badge">✓ Obtenido</span>
+                    <div class="logro-icon">🚀</div>
+                    <div class="logro-name">Primer Paso</div>
+                    <div class="logro-description">Completa tu registro en la plataforma</div>
+                    <div class="logro-points">💰 50 pts</div>
+                </div>
+                <div class="logro-card desbloqueado">
+                    <span class="logro-badge">✓ Obtenido</span>
+                    <div class="logro-icon">📋</div>
+                    <div class="logro-name">Diagnóstico Inicial</div>
+                    <div class="logro-description">Completa tu primer diagnóstico empresarial</div>
+                    <div class="logro-points">💰 100 pts</div>
+                </div>
+                <div class="logro-card">
+                    <div class="logro-icon">🔥</div>
+                    <div class="logro-name">Racha de 7 días</div>
+                    <div class="logro-description">Mantén una racha de actividad de 7 días</div>
+                    <div class="logro-points">💰 150 pts</div>
+                    <div class="logro-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 42%"></div>
+                        </div>
+                        <div class="progress-text">3 / 7 días</div>
+                    </div>
+                </div>
+                <div class="logro-card bloqueado">
+                    <div class="logro-icon">🏢</div>
+                    <div class="logro-name">Perfil Completo</div>
+                    <div class="logro-description">Completa el 100% de tu perfil empresarial</div>
+                    <div class="logro-points">💰 75 pts</div>
+                    <div class="logro-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%"></div>
+                        </div>
+                        <div class="progress-text">60% completado</div>
+                    </div>
+                </div>
+                <div class="logro-card bloqueado">
+                    <div class="logro-icon">📦</div>
+                    <div class="logro-name">Primer Producto</div>
+                    <div class="logro-description">Publica tu primer producto en la vitrina</div>
+                    <div class="logro-points">💰 100 pts</div>
+                </div>
+                <div class="logro-card bloqueado">
+                    <div class="logro-icon">🥇</div>
+                    <div class="logro-name">Top 10</div>
+                    <div class="logro-description">Alcanza el top 10 del ranking general</div>
+                    <div class="logro-points">💰 500 pts</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
+        function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Emprendedor';
+                const avatar = document.querySelector('.emprendedor-avatar-glow');
+                if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDatosUsuario();
+            document.getElementById('totalLogros').textContent = '12';
+            document.getElementById('desbloqueados').textContent = '2';
+            document.getElementById('puntosGanados').textContent = '150';
+            document.getElementById('progreso').textContent = '16%';
+        });
+    </script>
+</body>
+
+</html>

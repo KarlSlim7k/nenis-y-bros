@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados del Diagnóstico - Nenis y Bros</title>
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/diagnosticos.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .admin-logo {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .admin-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .admin-menu li {
+            margin: 5px 0;
+        }
+
+        .admin-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .admin-menu a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .admin-menu a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left: 4px solid #667eea;
+        }
+
+        .admin-menu a span:first-child {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .admin-main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+            width: calc(100% - 260px);
+        }
+
+        .resultados-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header-resultados {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .header-resultados h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2rem;
+        }
+
+        .header-resultados .fecha {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .score-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .score-principal {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #3498db;
+            margin: 1rem 0;
+        }
+
+        .nivel-madurez {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+        }
+
+        .nivel-inicial { background: #e74c3c; color: white; }
+        .nivel-desarrollo { background: #f39c12; color: white; }
+        .nivel-gestionado { background: #3498db; color: white; }
+        .nivel-optimizado { background: #2ecc71; color: white; }
+
+        .grid-charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .chart-card h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .areas-detalle {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .area-item {
+            border-left: 4px solid #3498db;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .area-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .area-nombre {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .area-score {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .recomendaciones {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .recomendacion-item {
+            background: #ebf5fb;
+            border-left: 4px solid #3498db;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+        }
+
+        .recomendacion-item.alta {
+            background: #fadbd8;
+            border-left-color: #e74c3c;
+        }
+
+        .recomendacion-item.media {
+            background: #fef5e7;
+            border-left-color: #f39c12;
+        }
+
+        .prioridad-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .prioridad-alta { background: #e74c3c; color: white; }
+        .prioridad-media { background: #f39c12; color: white; }
+        .prioridad-baja { background: #95a5a6; color: white; }
+
+        .cursos-recomendados {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .curso-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s;
+        }
+
+        .curso-card:hover {
+            border-color: #3498db;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+        }
+
+        .curso-titulo {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .curso-nivel {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+
+        .acciones {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dbdb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .resultados-container {
+                padding: 1rem;
+            }
+
+            .grid-charts {
+                grid-template-columns: 1fr;
+            }
+
+            .score-principal {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <a href="./dashboard.html" class="admin-logo">🚀 Nenis y Bros</a>
+            <ul class="admin-menu">
+                <li><a href="./dashboard.html"><span>📊</span> Dashboard</a></li>
+                <li><a href="./diagnosticos.html" class="active"><span>📋</span> Diagnósticos</a></li>
+                <li><a href="./mi-progreso.html"><span>📈</span> Mi Progreso</a></li>
+                <li><a href="./perfil-empresarial.html"><span>🏢</span> Mi Empresa</a></li>
+                <li><a href="./mis-logros.html"><span>🏆</span> Mis Logros</a></li>
+                <li><a href="./ranking.html"><span>🥇</span> Ranking</a></li>
+                <li><a href="./vitrina-productos.html"><span>🛍️</span> Vitrina de Productos</a></li>
+                <li><a href="./mis-productos.html"><span>📦</span> Mis Productos</a></li>
+                <li><a href="./chat.html"><span>💬</span> Chat</a></li>
+                <li><a href="./notificaciones.html"><span>🔔</span> Notificaciones</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="resultados-container">
+                <div id="loadingState" class="loading">
+                    <div class="spinner"></div>
+                    <p>Cargando resultados...</p>
+                </div>
+
+                <div id="resultadosContent" style="display: none;">
+                    <!-- Header -->
+                    <div class="header-resultados">
+                        <h1>Resultados del Diagnóstico</h1>
+                <p class="fecha" id="fechaDiagnostico"></p>
+                <p id="tipoDiagnostico"></p>
+            </div>
+
+            <!-- Score Principal -->
+            <div class="score-card">
+                <h2>Puntuación General</h2>
+                <div class="score-principal" id="scoreTotal">0</div>
+                <p>de 100 puntos</p>
+                <div class="nivel-madurez" id="nivelMadurez"></div>
+            </div>
+
+            <!-- Gráficos -->
+            <div class="grid-charts">
+                <div class="chart-card">
+                    <h3>Puntuación por Área</h3>
+                    <canvas id="radarChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Distribución de Resultados</h3>
+                    <canvas id="barChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Detalle por Áreas -->
+            <div class="areas-detalle">
+                <h2>Detalle por Áreas</h2>
+                <div id="areasDetalle"></div>
+            </div>
+
+            <!-- Recomendaciones -->
+            <div class="recomendaciones" id="recomendacionesSection">
+                <h2>Recomendaciones Personalizadas</h2>
+                <div id="recomendacionesContent"></div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="acciones">
+                <a href="diagnosticos.html" class="btn btn-secondary">← Mis Diagnósticos</a>
+                <button class="btn btn-primary" onclick="exportarPDF()">📄 Descargar Reporte</button>
+                <button class="btn btn-primary" onclick="repetirDiagnostico()">🔄 Realizar Nuevo Diagnóstico</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        let diagnosticoId = null;
+        let diagnosticoData = null;
+        let radarChart = null;
+        let barChart = null;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        diagnosticoId = urlParams.get('id');
+
+        if (!diagnosticoId) {
+            alert('No se especificó un diagnóstico');
+            window.location.href = 'diagnosticos.html';
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            requireAuth();
+            await cargarResultados();
+        });
+
+        async function cargarResultados() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/diagnosticos/${diagnosticoId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${getToken()}`
+                    }
+                });
+
+                if (!response.ok) throw new Error('Error al cargar resultados');
+
+                diagnosticoData = await response.json();
+
+                if (diagnosticoData.estado !== 'completado') {
+                    alert('Este diagnóstico aún no está completado');
+                    window.location.href = `diagnostico-wizard.html?id=${diagnosticoId}`;
+                    return;
+                }
+
+                renderizarResultados();
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('resultadosContent').style.display = 'block';
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingState').innerHTML = `
+                    <p style="color: #e74c3c;">Error al cargar resultados: ${error.message}</p>
+                    <button class="btn btn-primary" onclick="window.location.href='diagnosticos.html'">
+                        Volver a Diagnósticos
+                    </button>
+                `;
+            }
+        }
+
+        function renderizarResultados() {
+            // Header
+            document.getElementById('tipoDiagnostico').textContent = diagnosticoData.tipo_nombre || 'Diagnóstico';
+            document.getElementById('fechaDiagnostico').textContent = 
+                `Realizado el ${new Date(diagnosticoData.fecha_inicio).toLocaleDateString('es-ES')}`;
+
+            // Score
+            const scoreTotal = Math.round(diagnosticoData.puntaje_total || 0);
+            document.getElementById('scoreTotal').textContent = scoreTotal;
+
+            // Nivel de madurez
+            const nivelElement = document.getElementById('nivelMadurez');
+            const nivel = diagnosticoData.nivel_madurez || 'No determinado';
+            nivelElement.textContent = nivel.charAt(0).toUpperCase() + nivel.slice(1);
+            nivelElement.className = `nivel-madurez nivel-${nivel.toLowerCase()}`;
+
+            // Áreas
+            if (diagnosticoData.resultados_areas) {
+                renderizarAreas(diagnosticoData.resultados_areas);
+                renderizarGraficos(diagnosticoData.resultados_areas);
+            }
+
+            // Recomendaciones
+            if (diagnosticoData.recomendaciones_generadas) {
+                renderizarRecomendaciones(diagnosticoData.recomendaciones_generadas);
+            }
+        }
+
+        function renderizarAreas(areas) {
+            const container = document.getElementById('areasDetalle');
+            container.innerHTML = areas.map(area => {
+                const porcentaje = Math.round(area.porcentaje || 0);
+                return `
+                    <div class="area-item">
+                        <div class="area-header">
+                            <span class="area-nombre">${area.nombre_area}</span>
+                            <span class="area-score">${porcentaje}%</span>
+                        </div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: ${porcentaje}%"></div>
+                        </div>
+                        <p style="margin-top: 0.5rem; color: #7f8c8d; font-size: 0.9rem;">
+                            ${area.puntaje_obtenido.toFixed(1)} de ${area.puntaje_maximo.toFixed(1)} puntos
+                        </p>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderizarGraficos(areas) {
+            const labels = areas.map(a => a.nombre_area);
+            const data = areas.map(a => Math.round(a.porcentaje || 0));
+
+            // Radar Chart
+            const ctxRadar = document.getElementById('radarChart').getContext('2d');
+            radarChart = new Chart(ctxRadar, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Puntuación',
+                        data: data,
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderColor: 'rgba(52, 152, 219, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(52, 152, 219, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(52, 152, 219, 1)'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                stepSize: 20
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Bar Chart
+            const ctxBar = document.getElementById('barChart').getContext('2d');
+            barChart = new Chart(ctxBar, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Puntuación (%)',
+                        data: data,
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.8)',
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(155, 89, 182, 0.8)',
+                            'rgba(241, 196, 15, 0.8)',
+                            'rgba(230, 126, 34, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(52, 152, 219, 1)',
+                            'rgba(46, 204, 113, 1)',
+                            'rgba(155, 89, 182, 1)',
+                            'rgba(241, 196, 15, 1)',
+                            'rgba(230, 126, 34, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderizarRecomendaciones(recomendaciones) {
+            const container = document.getElementById('recomendacionesContent');
+            
+            if (!recomendaciones || recomendaciones.length === 0) {
+                container.innerHTML = '<p>No hay recomendaciones disponibles.</p>';
+                return;
+            }
+
+            container.innerHTML = recomendaciones.map(rec => `
+                <div class="recomendacion-item ${rec.criticidad || 'baja'}">
+                    <span class="prioridad-badge prioridad-${rec.criticidad || 'baja'}">
+                        ${(rec.criticidad || 'baja').toUpperCase()}
+                    </span>
+                    <h4 style="margin: 0.5rem 0;">${rec.area}</h4>
+                    <p style="margin: 0.5rem 0;">${rec.mensaje}</p>
+                    ${rec.accion ? `<p style="margin: 0.5rem 0; font-weight: 600;">📌 ${rec.accion}</p>` : ''}
+                    ${rec.cursos_recomendados && rec.cursos_recomendados.length > 0 ? `
+                        <div class="cursos-recomendados">
+                            ${rec.cursos_recomendados.map(curso => `
+                                <div class="curso-card">
+                                    <div class="curso-titulo">${curso.titulo}</div>
+                                    <div class="curso-nivel">Nivel: ${curso.nivel}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function exportarPDF() {
+            alert('Funcionalidad de exportación a PDF en desarrollo');
+        }
+
+        function repetirDiagnostico() {
+            if (confirm('¿Deseas realizar un nuevo diagnóstico del mismo tipo?')) {
+                window.location.href = 'diagnosticos.html';
+            }
+        }
+
+        // Función para resaltar el link activo en el sidebar
+        function highlightActiveLink() {
+            const currentPath = window.location.pathname;
+            const links = document.querySelectorAll('.admin-menu a');
+            links.forEach(link => {
+                const linkPath = new URL(link.href).pathname;
+                if (currentPath.includes(linkPath.split('/').pop())) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        // Ejecutar al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            highlightActiveLink();
+        });
+    </script>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking - Nenis y Bros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+    <style>
+        .emprendedor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .podium {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 2rem;
+        }
+
+        .podium-place {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 16px;
+            transition: all 0.3s;
+        }
+
+        .podium-place.first {
+            background: linear-gradient(135deg, rgba(250, 204, 21, 0.2) 0%, rgba(234, 179, 8, 0.1) 100%);
+            border: 2px solid rgba(250, 204, 21, 0.4);
+            order: 2;
+        }
+
+        .podium-place.second {
+            background: linear-gradient(135deg, rgba(156, 163, 175, 0.2) 0%, rgba(107, 114, 128, 0.1) 100%);
+            border: 2px solid rgba(156, 163, 175, 0.4);
+            order: 1;
+        }
+
+        .podium-place.third {
+            background: linear-gradient(135deg, rgba(180, 83, 9, 0.2) 0%, rgba(146, 64, 14, 0.1) 100%);
+            border: 2px solid rgba(180, 83, 9, 0.4);
+            order: 3;
+        }
+
+        .podium-medal {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .podium-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin: 0 auto 0.5rem;
+        }
+
+        .podium-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .podium-points {
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .ranking-table th {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ranking-table td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            vertical-align: middle;
+        }
+
+        .ranking-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .ranking-table tbody tr:hover {
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .ranking-table tbody tr.current-user {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid #10b981;
+        }
+
+        .rank-position {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .rank-1 {
+            color: #facc15;
+        }
+
+        .rank-2 {
+            color: #9ca3af;
+        }
+
+        .rank-3 {
+            color: #b45309;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-level {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .points-cell {
+            font-weight: 700;
+            color: #10b981;
+        }
+
+        .level-badge {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .podium {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .podium-place {
+                order: unset !important;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="modern-nav">
+        <div class="nav-logo"><span style="font-size: 1.8rem;">🚀</span><span class="text-gradient">Nenis y Bros</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="./mi-progreso.html" class="nav-link">Progreso</a></li>
+            <li><a href="./perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
+            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
+            <li><a href="./ranking.html" class="nav-link active">Ranking</a></li>
+            <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
+            <li><a href="./mis-productos.html" class="nav-link">Productos</a></li>
+            <li><a href="./chat.html" class="nav-link">Chat</a></li>
+            <li><a href="./notificaciones.html" class="nav-link">🔔</a></li>
+        </ul>
+        <div class="admin-user">
+            <div class="emprendedor-avatar-glow user-avatar">E</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
+        </div>
+    </nav>
+
+    <main style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
+        <div style="margin-bottom: 2rem;">
+            <h1 class="page-title"><span class="text-gradient">Ranking</span> 🥇</h1>
+            <p class="page-subtitle">Compite con otros emprendedores y escala posiciones</p>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+            <div class="podium">
+                <div class="podium-place second">
+                    <div class="podium-medal">🥈</div>
+                    <div class="podium-avatar">M</div>
+                    <div class="podium-name">María García</div>
+                    <div class="podium-points">2,450 pts</div>
+                </div>
+                <div class="podium-place first">
+                    <div class="podium-medal">🥇</div>
+                    <div class="podium-avatar">J</div>
+                    <div class="podium-name">Juan López</div>
+                    <div class="podium-points">3,200 pts</div>
+                </div>
+                <div class="podium-place third">
+                    <div class="podium-medal">🥉</div>
+                    <div class="podium-avatar">C</div>
+                    <div class="podium-name">Carlos Ruiz</div>
+                    <div class="podium-points">2,100 pts</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-panel" style="padding: 2rem;">
+            <table class="ranking-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Usuario</th>
+                        <th>Nivel</th>
+                        <th>Puntos</th>
+                        <th>Logros</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="rank-position rank-1">1</td>
+                        <td>
+                            <div class="user-cell">
+                                <div class="user-avatar">J</div>
+                                <div>
+                                    <div class="user-name">Juan López</div>
+                                    <div class="user-level">Emprendedor Experto</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="level-badge">Nivel 8</span></td>
+                        <td class="points-cell">3,200</td>
+                        <td>15</td>
+                    </tr>
+                    <tr>
+                        <td class="rank-position rank-2">2</td>
+                        <td>
+                            <div class="user-cell">
+                                <div class="user-avatar">M</div>
+                                <div>
+                                    <div class="user-name">María García</div>
+                                    <div class="user-level">Emprendedor Avanzado</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="level-badge">Nivel 7</span></td>
+                        <td class="points-cell">2,450</td>
+                        <td>12</td>
+                    </tr>
+                    <tr>
+                        <td class="rank-position rank-3">3</td>
+                        <td>
+                            <div class="user-cell">
+                                <div class="user-avatar">C</div>
+                                <div>
+                                    <div class="user-name">Carlos Ruiz</div>
+                                    <div class="user-level">Emprendedor Avanzado</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="level-badge">Nivel 6</span></td>
+                        <td class="points-cell">2,100</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td class="rank-position">4</td>
+                        <td>
+                            <div class="user-cell">
+                                <div class="user-avatar">A</div>
+                                <div>
+                                    <div class="user-name">Ana Martínez</div>
+                                    <div class="user-level">Emprendedor Intermedio</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="level-badge">Nivel 5</span></td>
+                        <td class="points-cell">1,800</td>
+                        <td>8</td>
+                    </tr>
+                    <tr class="current-user">
+                        <td class="rank-position">5</td>
+                        <td>
+                            <div class="user-cell">
+                                <div class="user-avatar">T</div>
+                                <div>
+                                    <div class="user-name">Tú</div>
+                                    <div class="user-level">Emprendedor Inicial</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="level-badge">Nivel 3</span></td>
+                        <td class="points-cell">950</td>
+                        <td>4</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
+        function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Emprendedor';
+                const avatar = document.querySelector('.emprendedor-avatar-glow');
+                if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
+    </script>
+</body>
+
+</html>

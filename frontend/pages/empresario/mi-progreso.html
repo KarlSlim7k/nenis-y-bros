@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Progreso - Nenis y Bros</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
+    <style>
+        /* Emprendedor Avatar */
+        .emprendedor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Fix Navigation Active State */
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        /* Page Header */
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Nivel Card Hero */
+        .nivel-hero {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .nivel-info h3 {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .nivel-numero {
+            font-size: 4rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .nivel-progreso {
+            margin-top: 1rem;
+        }
+
+        .nivel-progreso-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .progreso-bar {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progreso-fill {
+            height: 100%;
+            background: white;
+            border-radius: 5px;
+            transition: width 1s ease;
+        }
+
+        .nivel-badge {
+            font-size: 5rem;
+        }
+
+        /* Racha Card */
+        .racha-card {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
+        }
+
+        .racha-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .racha-numero {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .racha-icon {
+            font-size: 3rem;
+        }
+
+        .racha-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .racha-stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+        }
+
+        .racha-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .racha-stat-label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card-modern {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .stat-card-modern:hover {
+            transform: translateY(-5px);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .stat-detail {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Charts */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .chart-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 280px;
+        }
+
+        /* Logros Section */
+        .logros-section {
+            background: var(--bg-panel);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+
+        .logros-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+        }
+
+        .logros-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+        }
+
+        .logro-mini {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .logro-mini:hover {
+            border-color: #10b981;
+            transform: translateY(-2px);
+        }
+
+        .logro-mini.desbloqueado {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .logro-mini.bloqueado {
+            opacity: 0.4;
+            filter: grayscale(100%);
+        }
+
+        .logro-mini-icono {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logro-mini-nombre {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nivel-hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nivel-badge {
+                margin-top: 1.5rem;
+            }
+
+            .racha-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">🚀</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="./mi-progreso.html" class="nav-link active">Progreso</a></li>
+            <li><a href="./perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
+            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
+            <li><a href="./ranking.html" class="nav-link">Ranking</a></li>
+            <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
+            <li><a href="./mis-productos.html" class="nav-link">Productos</a></li>
+            <li><a href="./chat.html" class="nav-link">Chat</a></li>
+            <li><a href="./notificaciones.html" class="nav-link">🔔</a></li>
+        </ul>
+
+        <div class="admin-user">
+            <div class="emprendedor-avatar-glow user-avatar">E</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                <span style="margin-right: 0.25rem;">🚪</span> Salir
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+
+        <!-- Page Header -->
+        <div style="margin-bottom: 2rem;">
+            <h1 class="page-title">Mi <span class="text-gradient">Progreso</span> 📈</h1>
+            <p class="page-subtitle">Estadísticas y métricas de tu avance como emprendedor</p>
+        </div>
+
+        <!-- Nivel Hero -->
+        <div class="nivel-hero">
+            <div class="nivel-info">
+                <h3>Nivel Actual</h3>
+                <div class="nivel-numero" id="nivelNumero">1</div>
+                <div class="nivel-progreso">
+                    <div class="nivel-progreso-text">
+                        <span id="puntosActuales">0 pts</span>
+                        <span id="puntosSiguienteNivel">100 pts</span>
+                    </div>
+                    <div class="progreso-bar">
+                        <div class="progreso-fill" id="progresoNivel" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="nivel-badge">⭐</div>
+        </div>
+
+        <!-- Racha Card -->
+        <div class="racha-card">
+            <div class="racha-header">
+                <div>
+                    <h3 style="margin: 0 0 0.5rem 0; font-size: 1rem;">Racha de Actividad</h3>
+                    <div class="racha-numero"><span id="rachaActual">0</span> días 🔥</div>
+                </div>
+                <div class="racha-icon">🔥</div>
+            </div>
+            <div class="racha-stats">
+                <div class="racha-stat">
+                    <div class="racha-stat-value" id="rachaMaxima">0</div>
+                    <div class="racha-stat-label">Racha Máxima</div>
+                </div>
+                <div class="racha-stat">
+                    <div class="racha-stat-value" id="proximoHito">7</div>
+                    <div class="racha-stat-label">Próximo Hito</div>
+                </div>
+                <div class="racha-stat">
+                    <div class="racha-stat-value" id="congelaciones">0</div>
+                    <div class="racha-stat-label">Congelaciones</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card-modern">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="puntosTotal">0</div>
+                <div class="stat-label">Puntos Totales</div>
+                <div class="stat-detail"><span id="puntosDisponibles">0</span> disponibles</div>
+            </div>
+            <div class="stat-card-modern">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-value" id="logrosDesbloqueados">0</div>
+                <div class="stat-label">Logros Desbloqueados</div>
+                <div class="stat-detail"><span id="logrosPorcentaje">0</span>% completado</div>
+            </div>
+            <div class="stat-card-modern">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value">#<span id="posicionRanking">-</span></div>
+                <div class="stat-label">Posición en Ranking</div>
+                <div class="stat-detail">Ranking global</div>
+            </div>
+            <div class="stat-card-modern">
+                <div class="stat-icon">🔔</div>
+                <div class="stat-value" id="notificacionesTotal">0</div>
+                <div class="stat-label">Notificaciones</div>
+                <div class="stat-detail"><span id="notificacionesNoLeidas">0</span> sin leer</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>📈 Puntos por Actividad</h3>
+                <div class="chart-container">
+                    <canvas id="chartActividades"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>🏆 Progreso de Logros</h3>
+                <div class="chart-container">
+                    <canvas id="chartLogros"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logros Section -->
+        <div class="logros-section">
+            <h3>🏆 Tus Logros Destacados</h3>
+            <div class="logros-grid" id="logrosLista">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/navigation.js"></script>
+    <script>
+        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
+
+        let chartActividades, chartLogros;
+
+        // Cargar Dashboard
+        async function cargarDashboard() {
+            try {
+                const response = await apiGet('/gamificacion/dashboard');
+                if (response.success) {
+                    const data = response.data;
+                    actualizarPuntos(data.puntos);
+                    actualizarRacha(data.racha);
+                    actualizarLogros(data.logros);
+                    actualizarEstadisticas(data);
+                    crearGraficas(data);
+                    await cargarLogrosRapido();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function actualizarPuntos(puntos) {
+            document.getElementById('nivelNumero').textContent = puntos.nivel || 1;
+            document.getElementById('puntosActuales').textContent = (puntos.experiencia || 0) + ' pts';
+            document.getElementById('puntosSiguienteNivel').textContent = (puntos.puntos_siguiente_nivel || 100) + ' pts';
+            document.getElementById('puntosTotal').textContent = puntos.puntos_totales || 0;
+            document.getElementById('puntosDisponibles').textContent = puntos.puntos_disponibles || 0;
+            const progreso = puntos.progreso_nivel || 0;
+            setTimeout(() => { document.getElementById('progresoNivel').style.width = progreso + '%'; }, 100);
+        }
+
+        function actualizarRacha(racha) {
+            document.getElementById('rachaActual').textContent = racha.racha_actual || 0;
+            document.getElementById('rachaMaxima').textContent = racha.racha_maxima || 0;
+            document.getElementById('proximoHito').textContent = racha.proximo_hito || 7;
+            document.getElementById('congelaciones').textContent = racha.congelaciones_disponibles || 0;
+        }
+
+        function actualizarLogros(logros) {
+            document.getElementById('logrosDesbloqueados').textContent = logros.desbloqueados || 0;
+            document.getElementById('logrosPorcentaje').textContent = (logros.porcentaje || 0);
+        }
+
+        function actualizarEstadisticas(data) {
+            document.getElementById('posicionRanking').textContent = data.posicion_ranking || '-';
+            document.getElementById('notificacionesTotal').textContent = (data.notificaciones_no_leidas || 0);
+            document.getElementById('notificacionesNoLeidas').textContent = data.notificaciones_no_leidas || 0;
+        }
+
+        function crearGraficas(data) {
+            const ctxActividades = document.getElementById('chartActividades').getContext('2d');
+            chartActividades = new Chart(ctxActividades, {
+                type: 'bar',
+                data: {
+                    labels: ['Lecciones', 'Cursos', 'Evaluaciones', 'Diagnósticos', 'Logros'],
+                    datasets: [{
+                        label: 'Puntos Ganados',
+                        data: [data.puntos.puntos_ganados_hoy || 0, 0, 0, 0, 0],
+                        backgroundColor: ['rgba(16,185,129,0.8)', 'rgba(14,165,233,0.8)', 'rgba(168,85,247,0.8)', 'rgba(249,115,22,0.8)', 'rgba(236,72,153,0.8)']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' } },
+                        x: { grid: { color: 'rgba(255,255,255,0.1)' } }
+                    }
+                }
+            });
+
+            const ctxLogros = document.getElementById('chartLogros').getContext('2d');
+            chartLogros = new Chart(ctxLogros, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Desbloqueados', 'Pendientes'],
+                    datasets: [{
+                        data: [data.logros.desbloqueados || 0, data.logros.pendientes || 0],
+                        backgroundColor: ['rgba(16,185,129,0.8)', 'rgba(100,116,139,0.3)']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: 'rgba(255,255,255,0.7)' } } }
+                }
+            });
+        }
+
+        async function cargarLogrosRapido() {
+            try {
+                const response = await apiGet('/gamificacion/logros/mis-logros?desbloqueados=false');
+                if (response.success) {
+                    const logros = response.data.logros || [];
+                    renderLogrosRapido(logros.slice(0, 6));
+                }
+            } catch (error) {
+                console.error('Error al cargar logros:', error);
+            }
+        }
+
+        function renderLogrosRapido(logros) {
+            const lista = document.getElementById('logrosLista');
+            lista.innerHTML = '';
+            logros.forEach(logro => {
+                const div = document.createElement('div');
+                div.className = 'logro-mini ' + (logro.desbloqueado == 1 ? 'desbloqueado' : 'bloqueado');
+                div.innerHTML = `<div class="logro-mini-icono">${logro.icono || '🏆'}</div><div class="logro-mini-nombre">${logro.nombre}</div>`;
+                div.addEventListener('click', () => { window.location.href = 'mis-logros.html'; });
+                lista.appendChild(div);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inyectar navegación dinámica
+            injectUserTopNav();
+
+            cargarDashboard();
+        });
+    </script>
+</body>
+
+</html>

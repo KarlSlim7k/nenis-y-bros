@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula Virtual - Nenis y Bros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
+    <style>
+        body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .classroom-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .course-sidebar {
+            width: 350px;
+            background: white;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .module-list {
+            flex: 1;
+        }
+
+        .module-header {
+            padding: 1rem 1.5rem;
+            background: #f8f9fa;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .lesson-item {
+            padding: 0.75rem 1.5rem;
+            border-bottom: 1px solid #f1f1f1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .lesson-item:hover {
+            background: #f8f9fa;
+        }
+
+        .lesson-item.active {
+            background: #eef2ff;
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+        }
+
+        .lesson-item.completed .status-icon {
+            color: var(--success);
+        }
+
+        /* Main Content */
+        .lesson-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            background: #f5f6fa;
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .video-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .lesson-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn-nav {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: white;
+            color: var(--text-main);
+        }
+
+        .btn-nav:hover {
+            background: #f8f9fa;
+        }
+
+        .btn-complete {
+            background: var(--success);
+            color: white;
+            border: none;
+        }
+
+        .btn-complete:hover {
+            background: #219150;
+        }
+
+        .top-bar {
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            justify-content: space-between;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-bar">
+        <a href="mis-cursos.html" class="back-link">
+            <span>←</span> Volver a Mis Cursos
+        </a>
+        <div style="font-weight: 600;" id="courseTitle">Cargando curso...</div>
+        <div class="user-avatar" style="width: 32px; height: 32px; background: var(--primary); border-radius: 50%;"></div>
+    </div>
+
+    <div class="classroom-container">
+        <aside class="course-sidebar">
+            <div class="sidebar-header">
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Tu Progreso</div>
+                <div style="height: 6px; background: #eee; border-radius: 3px; overflow: hidden;">
+                    <div id="courseProgress" style="width: 0%; height: 100%; background: var(--success); transition: width 0.3s;"></div>
+                </div>
+                <div style="font-size: 0.8rem; margin-top: 0.5rem; text-align: right;" id="progressText">0%</div>
+            </div>
+            <div id="moduleList" class="module-list">
+                <!-- Modules and lessons will be loaded here -->
+            </div>
+        </aside>
+
+        <main class="lesson-content">
+            <div class="content-wrapper">
+                <h1 id="lessonTitle" style="margin-bottom: 1.5rem;">Selecciona una lección</h1>
+                
+                <div id="lessonBody">
+                    <div class="video-placeholder">
+                        <div>▶ Reproductor de Video</div>
+                    </div>
+                    <div class="lesson-text">
+                        <p>Contenido de la lección...</p>
+                    </div>
+                </div>
+
+                <div class="lesson-navigation">
+                    <button class="btn-nav" id="prevBtn" disabled>← Anterior</button>
+                    <button class="btn-nav btn-complete" id="completeBtn" onclick="toggleComplete()">Marcar como Completada</button>
+                    <button class="btn-nav" id="nextBtn" disabled>Siguiente →</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script>
+        if (!checkAuth()) window.location.href = '../auth/login.html';
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const courseId = urlParams.get('courseId');
+        let currentLessonId = null;
+        let courseData = null;
+
+        document.addEventListener('DOMContentLoaded', loadCourseContent);
+
+        async function loadCourseContent() {
+            try {
+                // 1. Get Modules with Lessons
+                const modulesResponse = await apiGet(`/courses/${courseId}/modules?with_lessons=true`);
+                // 2. Get Course Info
+                const courseResponse = await apiGet(`/courses/${courseId}`);
+                // 3. Get Progress
+                const progressResponse = await apiGet(`/courses/${courseId}/progress`);
+
+                if (modulesResponse.success && courseResponse.success) {
+                    courseData = {
+                        info: courseResponse.data,
+                        modules: modulesResponse.data,
+                        progress: progressResponse.data?.general || { porcentaje: 0 }
+                    };
+                    
+                    renderSidebar();
+                    document.getElementById('courseTitle').textContent = courseData.info.titulo;
+                    document.getElementById('courseProgress').style.width = `${courseData.progress.porcentaje}%`;
+                    document.getElementById('progressText').textContent = `${Math.round(courseData.progress.porcentaje)}%`;
+
+                    // Load first lesson or next pending
+                    const nextLessonResponse = await apiGet(`/courses/${courseId}/next-lesson`);
+                    if (nextLessonResponse.success && nextLessonResponse.data) {
+                        loadLesson(nextLessonResponse.data.id_leccion);
+                    } else if (courseData.modules[0]?.lecciones[0]) {
+                        loadLesson(courseData.modules[0].lecciones[0].id_leccion);
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function renderSidebar() {
+            const container = document.getElementById('moduleList');
+            container.innerHTML = courseData.modules.map((module, mIndex) => `
+                <div class="module-header">Módulo ${mIndex + 1}: ${module.titulo}</div>
+                ${module.lecciones ? module.lecciones.map(lesson => `
+                    <div class="lesson-item ${lesson.id_leccion == currentLessonId ? 'active' : ''}" 
+                         onclick="loadLesson(${lesson.id_leccion})">
+                        <span class="status-icon">○</span>
+                        <span>${lesson.titulo}</span>
+                    </div>
+                `).join('') : ''}
+            `).join('');
+        }
+
+        async function loadLesson(id) {
+            currentLessonId = id;
+            renderSidebar(); // Update active state
+
+            try {
+                const response = await apiGet(`/lessons/${id}`);
+                if (response.success) {
+                    const lesson = response.data;
+                    document.getElementById('lessonTitle').textContent = lesson.titulo;
+                    
+                    // Render content based on type
+                    const body = document.getElementById('lessonBody');
+                    if (lesson.tipo_contenido === 'video') {
+                        body.innerHTML = `
+                            <div class="video-placeholder">
+                                <div>▶ Video: ${lesson.url_recurso || 'No disponible'}</div>
+                            </div>
+                            <div class="lesson-text">${lesson.contenido || ''}</div>
+                        `;
+                    } else {
+                        body.innerHTML = `<div class="lesson-text">${lesson.contenido || 'Sin contenido de texto.'}</div>`;
+                    }
+
+                    // Update buttons
+                    document.getElementById('prevBtn').disabled = !lesson.anterior;
+                    document.getElementById('prevBtn').onclick = () => loadLesson(lesson.anterior.id_leccion);
+                    
+                    document.getElementById('nextBtn').disabled = !lesson.siguiente;
+                    document.getElementById('nextBtn').onclick = () => loadLesson(lesson.siguiente.id_leccion);
+
+                    // Check completion status (mock check for now, ideally API returns it)
+                    // In a real app, we'd check if this lesson is in the completed list
+                }
+            } catch (error) {
+                console.error('Error loading lesson:', error);
+            }
+        }
+
+        async function toggleComplete() {
+            try {
+                const response = await apiPost(`/lessons/${currentLessonId}/complete`, { tiempo_dedicado: 10 });
+                if (response.success) {
+                    alert('¡Lección completada!');
+                    // Refresh progress
+                    const progressResponse = await apiGet(`/courses/${courseId}/progress`);
+                    if (progressResponse.success) {
+                        document.getElementById('courseProgress').style.width = `${progressResponse.data.general.porcentaje}%`;
+                        document.getElementById('progressText').textContent = `${Math.round(progressResponse.data.general.porcentaje)}%`;
+                    }
+                    
+                    // Auto advance
+                    const nextBtn = document.getElementById('nextBtn');
+                    if (!nextBtn.disabled) {
+                        nextBtn.click();
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

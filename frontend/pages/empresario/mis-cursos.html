@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Cursos - Nenis y Bros</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
+    <style>
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .course-image {
+            height: 160px;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .course-content {
+            padding: 1.5rem;
+        }
+
+        .course-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .progress-container {
+            margin: 1rem 0;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #eee;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-continue {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+
+        .btn-continue:hover {
+            background: var(--primary-dark);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">🚀</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="./mis-cursos.html" class="nav-link active">Mis Cursos</a></li>
+            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
+            <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
+        </ul>
+
+        <div class="admin-user">
+            <div class="user-avatar" style="background: var(--primary); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">U</div>
+            <button class="btn-outline" onclick="logout()" style="margin-left: 1rem; padding: 0.5rem 1rem;">
+                Salir
+            </button>
+        </div>
+    </nav>
+
+    <main class="dashboard-grid" style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
+        <div class="col-span-12">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h1>Mis Cursos</h1>
+                <a href="../public/catalogo-cursos.html" class="btn-continue" style="width: auto; padding: 0.75rem 1.5rem;">Explorar Catálogo</a>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" onclick="filterCourses('active')">En Progreso</div>
+                <div class="tab" onclick="filterCourses('completed')">Completados</div>
+            </div>
+
+            <div id="coursesContainer" class="course-grid">
+                <!-- Loading -->
+                <div style="grid-column: 1/-1; text-align: center; padding: 3rem;">
+                    Cargando tus cursos...
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script>
+        if (!checkAuth()) window.location.href = '../auth/login.html';
+
+        let allCourses = [];
+        let currentFilter = 'active';
+
+        document.addEventListener('DOMContentLoaded', loadMyCourses);
+
+        async function loadMyCourses() {
+            try {
+                const response = await apiGet('/my-courses?limit=50');
+                if (response.success) {
+                    allCourses = response.data.data;
+                    renderCourses();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('coursesContainer').innerHTML = '<p>Error al cargar cursos.</p>';
+            }
+        }
+
+        function filterCourses(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            renderCourses();
+        }
+
+        function renderCourses() {
+            const container = document.getElementById('coursesContainer');
+            
+            const filtered = allCourses.filter(c => {
+                if (currentFilter === 'active') return !c.fecha_finalizacion;
+                return c.fecha_finalizacion;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; background: white; border-radius: 12px;">
+                        <h3>No tienes cursos ${currentFilter === 'active' ? 'en progreso' : 'completados'}</h3>
+                        ${currentFilter === 'active' ? '<p>¡Explora el catálogo y comienza a aprender!</p>' : ''}
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(course => `
+                <div class="course-card">
+                    <div class="course-image">
+                        ${course.icono || '📚'}
+                    </div>
+                    <div class="course-content">
+                        <div style="font-size: 0.8rem; color: var(--primary); font-weight: 600; margin-bottom: 0.25rem;">
+                            ${course.categoria_nombre || 'General'}
+                        </div>
+                        <h3 class="course-title">${course.curso_titulo}</h3>
+                        
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${course.porcentaje_avance || 0}%"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>${Math.round(course.porcentaje_avance || 0)}% completado</span>
+                                <span>${course.total_lecciones || 0} lecciones</span>
+                            </div>
+                        </div>
+
+                        <a href="leccion.html?courseId=${course.id_curso}" class="btn-continue">
+                            ${course.porcentaje_avance > 0 ? 'Continuar' : 'Iniciar Curso'}
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
