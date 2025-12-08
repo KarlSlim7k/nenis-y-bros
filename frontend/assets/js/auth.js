@@ -24,7 +24,7 @@ function setAuthToken(token) {
 function getAuthUser() {
     const userData = localStorage.getItem(AUTH_USER_KEY);
     if (!userData) return null;
-    
+
     try {
         return JSON.parse(userData);
     } catch (e) {
@@ -55,7 +55,7 @@ function decodeJWTPayload(token) {
     try {
         const parts = token.split('.');
         if (parts.length !== 3) return null;
-        
+
         const payload = parts[1];
         // Decodificar base64url
         const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
@@ -72,7 +72,7 @@ function decodeJWTPayload(token) {
 function isTokenExpired(token) {
     const payload = decodeJWTPayload(token);
     if (!payload || !payload.exp) return true;
-    
+
     // exp está en segundos, Date.now() en milisegundos
     const now = Math.floor(Date.now() / 1000);
     return payload.exp < now;
@@ -84,16 +84,16 @@ function isTokenExpired(token) {
 function isAuthenticated() {
     const token = getAuthToken();
     const user = getAuthUser();
-    
+
     if (!token || !user) return false;
-    
+
     // Verificar si el token ha expirado
     if (isTokenExpired(token)) {
         console.log('Token expirado, limpiando sesión...');
         clearAuth();
         return false;
     }
-    
+
     return true;
 }
 
@@ -148,14 +148,14 @@ function getUserType() {
 function getUserTypeName() {
     const user = getAuthUser();
     if (!user) return '';
-    
+
     const typeNames = {
         'administrador': 'Administrador',
         'mentor': 'Mentor/Instructor',
         'empresario': 'Empresario',
         'emprendedor': 'Emprendedor'
     };
-    
+
     return typeNames[user.tipo_usuario] || user.tipo_usuario;
 }
 
@@ -175,12 +175,12 @@ function checkAuth() {
  */
 function requireAdmin() {
     if (!checkAuth()) return false;
-    
+
     if (!isAdmin()) {
         window.location.href = ROUTES.emprendedorDashboard;
         return false;
     }
-    
+
     return true;
 }
 
@@ -193,17 +193,17 @@ async function login(email, password) {
             email,
             password
         });
-        
+
         if (response.data && response.data.token && response.data.user) {
             // Guardar token y datos del usuario
             setAuthToken(response.data.token);
             setAuthUser(response.data.user);
-            
+
             return response.data;
         }
-        
+
         throw new Error('Respuesta de login inválida');
-        
+
     } catch (error) {
         throw error;
     }
@@ -215,17 +215,17 @@ async function login(email, password) {
 async function register(userData) {
     try {
         const response = await apiPost('/auth/register', userData);
-        
+
         if (response.data && response.data.token && response.data.user) {
             // Guardar token y datos del usuario
             setAuthToken(response.data.token);
             setAuthUser(response.data.user);
-            
+
             return response.data;
         }
-        
+
         throw new Error('Respuesta de registro inválida');
-        
+
     } catch (error) {
         throw error;
     }
@@ -243,7 +243,7 @@ async function logout() {
     } finally {
         // Limpiar datos locales siempre
         clearAuth();
-        
+
         // Redirigir al login
         window.location.href = ROUTES.login;
     }
@@ -255,14 +255,14 @@ async function logout() {
 async function refreshUserData() {
     try {
         const response = await apiGet('/auth/me');
-        
+
         if (response.data && response.data.user) {
             setAuthUser(response.data.user);
             return response.data.user;
         }
-        
+
         return null;
-        
+
     } catch (error) {
         console.error('Error al refrescar datos de usuario:', error);
         return null;
@@ -275,25 +275,25 @@ async function refreshUserData() {
 function displayUserInfo() {
     const user = getAuthUser();
     if (!user) return;
-    
+
     // Actualizar elementos con clase .user-name
     const nameElements = document.querySelectorAll('.user-name');
     nameElements.forEach(el => {
         el.textContent = user.nombre || user.email;
     });
-    
+
     // Actualizar elementos con clase .user-email
     const emailElements = document.querySelectorAll('.user-email');
     emailElements.forEach(el => {
         el.textContent = user.email;
     });
-    
+
     // Actualizar elementos con clase .user-rol
     const rolElements = document.querySelectorAll('.user-rol, .user-tipo');
     rolElements.forEach(el => {
         el.textContent = getUserTypeName();
     });
-    
+
     // Actualizar avatares
     const avatarElements = document.querySelectorAll('.user-avatar');
     avatarElements.forEach(el => {
@@ -312,11 +312,11 @@ function displayUserInfo() {
 function initAuthUI() {
     // Mostrar info del usuario
     displayUserInfo();
-    
+
     // Botones de logout
     const logoutButtons = document.querySelectorAll('[data-action="logout"]');
     logoutButtons.forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
             e.preventDefault();
             if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
                 logout();
@@ -327,7 +327,7 @@ function initAuthUI() {
 
 // Inicializar cuando el DOM esté listo
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         if (isAuthenticated()) {
             displayUserInfo();
         }

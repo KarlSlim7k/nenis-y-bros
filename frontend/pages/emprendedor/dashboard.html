@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Emprendedor - Nenis y Bros</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../../assets/css/style.css">
+    <link rel="stylesheet" href="../../../assets/css/theme.css">
+
+    <style>
+        /* Emprendedor Avatar */
+        .user-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Fix Navigation Active State */
+        .nav-link.active {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        /* Nav Link Hover - distinguishable color */
+        .nav-link:hover:not(.active) {
+            color: #6ee7b7 !important;
+            -webkit-text-fill-color: #6ee7b7;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">🚀</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link active">Dashboard</a></li>
+            <li><a href="../user/diagnosticos.html" class="nav-link">Diagnósticos</a></li>
+            <li><a href="../user/mi-progreso.html" class="nav-link">Progreso</a></li>
+            <li><a href="../user/perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
+            <li><a href="../user/mis-logros.html" class="nav-link">Logros</a></li>
+            <li><a href="../user/ranking.html" class="nav-link">Ranking</a></li>
+            <li><a href="../user/vitrina-productos.html" class="nav-link">Vitrina</a></li>
+            <li><a href="../user/mis-productos.html" class="nav-link">Productos</a></li>
+            <li><a href="../user/chat.html" class="nav-link">Chat</a></li>
+            <li><a href="../user/notificaciones.html" class="nav-link">🔔</a></li>
+        </ul>
+
+        <div class="admin-user">
+            <div class="user-avatar-glow user-avatar">E</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
+                </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                <span style="margin-right: 0.25rem;">🚪</span> Salir
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section">
+        <h1 class="hero-welcome">Hola, <span class="text-gradient user-name">Emprendedor</span> 👋</h1>
+        <p class="hero-subtitle">Tu viaje hacia el éxito empresarial continúa. Aquí tienes un resumen de tu progreso
+            hoy.</p>
+    </header>
+
+    <!-- Main Grid -->
+    <main class="dashboard-grid">
+
+        <!-- Stats Row -->
+        <div class="col-span-12">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem;">
+                <!-- Stat 1 -->
+                <div class="stat-card-modern">
+                    <div class="stat-icon-box" style="color: var(--accent);">📚</div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Cursos Activos</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;" id="statCursos">-</div>
+                    </div>
+                </div>
+
+                <!-- Stat 2 -->
+                <div class="stat-card-modern">
+                    <div class="stat-icon-box" style="color: var(--success);">📊</div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Diagnósticos</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;" id="statDiagnosticos">-</div>
+                    </div>
+                </div>
+
+                <!-- Stat 3 -->
+                <div class="stat-card-modern">
+                    <div class="stat-icon-box" style="color: var(--warning);">🏆</div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Logros</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;" id="statLogros">-</div>
+                    </div>
+                </div>
+
+                <!-- Stat 4 -->
+                <div class="stat-card-modern">
+                    <div class="stat-icon-box" style="color: var(--secondary);">🛍️</div>
+                    <div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Productos</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;" id="statProductos">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area (Left) -->
+        <div class="col-span-8">
+            <!-- Cursos Section -->
+            <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1.25rem; font-weight: 600;">Continúa Aprendiendo</h3>
+                    <a href="../user/../cursos/catalogo.html" class="btn-outline"
+                        style="font-size: 0.85rem; padding: 0.5rem 1rem;">Ver Catálogo</a>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
+                    <!-- Curso Card 1 -->
+                    <div class="course-card-modern">
+                        <div class="course-image-wrapper">
+                            <div class="course-tag">En Progreso</div>
+                            <!-- Placeholder gradient instead of image for now -->
+                            <div class="course-image-bg" style="background: linear-gradient(45deg, #2563eb, #9333ea);">
+                            </div>
+                            <div class="course-overlay">
+                                <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">Marketing
+                                    Digital 101</h4>
+                                <div style="display: flex; gap: 1rem; font-size: 0.8rem; color: rgba(255,255,255,0.8);">
+                                    <span>⏱ 45 min restantes</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="course-content">
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-muted);">
+                                <span>Tu progreso</span>
+                                <span>65%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill-glow" style="width: 65%;"></div>
+                            </div>
+                            <button class="btn-modern"
+                                style="width: 100%; margin-top: 1.5rem; justify-content: center;">
+                                ▶ Continuar Lección
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Curso Card 2 -->
+                    <div class="course-card-modern">
+                        <div class="course-image-wrapper">
+                            <div class="course-tag">Nuevo</div>
+                            <div class="course-image-bg" style="background: linear-gradient(45deg, #ec4899, #f43f5e);">
+                            </div>
+                            <div class="course-overlay">
+                                <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">Finanzas Básicas
+                                </h4>
+                                <div style="display: flex; gap: 1rem; font-size: 0.8rem; color: rgba(255,255,255,0.8);">
+                                    <span>⏱ 2h restantes</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="course-content">
+                            <div
+                                style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-muted);">
+                                <span>Tu progreso</span>
+                                <span>15%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill-glow" style="width: 15%;"></div>
+                            </div>
+                            <button class="btn-modern"
+                                style="width: 100%; margin-top: 1.5rem; justify-content: center;">
+                                ▶ Continuar Lección
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnosticos Table -->
+            <div class="glass-panel" style="padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1.25rem; font-weight: 600;">Diagnósticos Recientes</h3>
+                    <a href="../user/diagnosticos.html"
+                        style="color: var(--primary); text-decoration: none; font-size: 0.9rem;">Ver todos →</a>
+                </div>
+
+                <table class="table-modern">
+                    <thead>
+                        <tr>
+                            <th>Diagnóstico</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th>Puntaje</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600;">Diagnóstico General</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Evaluación inicial</div>
+                            </td>
+                            <td style="color: var(--text-muted);">20 Nov</td>
+                            <td><span
+                                    style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; border: 1px solid rgba(16, 185, 129, 0.3);">Completado</span>
+                            </td>
+                            <td style="font-weight: 700;">85/100</td>
+                            <td><button class="btn-outline"
+                                    style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">Ver</button></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div style="font-weight: 600;">Marketing Digital</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Nivel Básico</div>
+                            </td>
+                            <td style="color: var(--text-muted);">18 Nov</td>
+                            <td><span
+                                    style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; border: 1px solid rgba(16, 185, 129, 0.3);">Completado</span>
+                            </td>
+                            <td style="font-weight: 700;">72/100</td>
+                            <td><button class="btn-outline"
+                                    style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">Ver</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sidebar Area (Right) -->
+        <div class="col-span-4">
+            <!-- Mentor AI Card -->
+            <div class="glass-panel"
+                style="padding: 2rem; margin-bottom: 2rem; background: linear-gradient(180deg, rgba(99, 102, 241, 0.1) 0%, rgba(30, 41, 59, 0.7) 100%); border: 1px solid rgba(99, 102, 241, 0.3);">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <div
+                        style="width: 64px; height: 64px; background: var(--gradient-primary); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem; box-shadow: 0 0 20px var(--primary-glow);">
+                        🤖</div>
+                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">MentorIA</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Tu asistente de negocios 24/7</p>
+                </div>
+                <button class="btn-modern" style="width: 100%; justify-content: center;">
+                    Iniciar Conversación
+                </button>
+            </div>
+
+            <!-- Activity Feed -->
+            <div class="glass-panel" style="padding: 2rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem;">Actividad Reciente</h3>
+
+                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="width: 2px; background: var(--border-light); position: relative;">
+                        <div
+                            style="width: 10px; height: 10px; background: var(--warning); border-radius: 50%; position: absolute; left: -4px; top: 5px; box-shadow: 0 0 10px var(--warning);">
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Nuevo Logro Desbloqueado</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">"Primeros Pasos"
+                            - Hace 2h</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div style="width: 2px; background: var(--border-light); position: relative;">
+                        <div
+                            style="width: 10px; height: 10px; background: var(--success); border-radius: 50%; position: absolute; left: -4px; top: 5px; box-shadow: 0 0 10px var(--success);">
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Diagnóstico Completado</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Marketing Digital
+                            - Hace 5h</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem;">
+                    <div style="width: 2px; background: var(--border-light); position: relative;">
+                        <div
+                            style="width: 10px; height: 10px; background: var(--primary); border-radius: 50%; position: absolute; left: -4px; top: 5px; box-shadow: 0 0 10px var(--primary);">
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.9rem; font-weight: 500;">Inscripción a Curso</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Finanzas Básicas
+                            - Ayer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../../assets/js/config.js"></script>
+    <script src="../../../assets/js/auth.js"></script>
+    <script src="../../../assets/js/api.js"></script>
+    <script src="../../../assets/js/navigation.js"></script>
+    <script>
+        // Verificar autenticación y rol
+        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) {
+            window.location.href = ROUTES.login;
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inyectar navegación dinámica basada en el rol
+            injectUserTopNav();
+
+            // Cargar estadísticas
+            cargarEstadisticas();
+
+            // Ajustar UI según el rol
+            ajustarInterfazPorRol();
+        });
+
+        // Ajustar interfaz según rol
+        function ajustarInterfazPorRol() {
+            // Ya estamos en el dashboard de emprendedor, no es necesario ocultar nada dinámicamente
+            // excepto si queremos asegurar consistencia
+
+            // Ocultar productos (hardcoded logic simplification)
+            const statCards = document.querySelectorAll('.stat-card-modern');
+            if (statCards.length >= 4) {
+                statCards[3].style.display = 'none';
+            }
+        }
+
+        // Cargar estadísticas (Simuladas por ahora)
+        async function cargarEstadisticas() {
+            try {
+                // Animación de números
+                animateValue('statCursos', 0, 5, 1000);
+                animateValue('statDiagnosticos', 0, 3, 1200);
+                animateValue('statLogros', 0, 12, 1500);
+
+                // Solo animar productos si es empresario
+                if (isEmpresario()) {
+                    animateValue('statProductos', 0, 2, 800);
+                }
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            if (!obj) return;
+
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+    </script>
+</body>
+
+</html>
