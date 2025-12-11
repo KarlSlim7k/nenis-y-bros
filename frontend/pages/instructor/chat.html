@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -283,16 +283,7 @@
         <div class="nav-logo"><span style="font-size: 1.8rem;">🚀</span><span class="text-gradient">Nenis y Bros</span>
         </div>
         <ul class="nav-menu">
-            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
-            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
-            <li><a href="./mi-progreso.html" class="nav-link">Progreso</a></li>
-            <li><a href="./perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
-            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
-            <li><a href="./ranking.html" class="nav-link">Ranking</a></li>
-            <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
-            <li><a href="./mis-productos.html" class="nav-link">Productos</a></li>
-            <li><a href="./chat.html" class="nav-link active">Chat</a></li>
-            <li><a href="./notificaciones.html" class="nav-link">🔔</a></li>
+            <!-- Menú dinámico generado por navigation.js -->
         </ul>
         <div class="admin-user">
             <div class="emprendedor-avatar-glow user-avatar">E</div>
@@ -393,6 +384,12 @@
             }
         }
         document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
+    </script>
+    <script src="../../assets/js/navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initDynamicNavbar();
+        });
     </script>
 </body>
 

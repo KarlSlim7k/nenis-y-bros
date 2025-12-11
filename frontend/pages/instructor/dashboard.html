@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -45,12 +45,7 @@
             <span class="text-gradient">Nenis y Bros</span>
         </div>
         <ul class="nav-menu">
-            <li><a href="./dashboard.html" class="nav-link active">Dashboard</a></li>
-            <li><a href="./estudiantes.html" class="nav-link">Estudiantes</a></li>
-            <li><a href="./sesiones.html" class="nav-link">Sesiones</a></li>
-            <li><a href="./disponibilidad-instructor.html" class="nav-link">Disponibilidad</a></li>
-            <li><a href="./cursos.html" class="nav-link">Cursos</a></li>
-            <li><a href="./mensajes.html" class="nav-link">Mensajes</a></li>
+            <!-- Menú dinámico generado por navigation.js -->
         </ul>
         <div class="admin-user">
             <div class="mentor-avatar-glow user-avatar">M</div>
@@ -248,6 +243,12 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             cargarDatosUsuario();
+        });
+    </script>
+    <script src="../../assets/js/navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initDynamicNavbar();
         });
     </script>
 </body>

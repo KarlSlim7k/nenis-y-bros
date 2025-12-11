@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -131,11 +131,7 @@
         </div>
 
         <ul class="nav-menu">
-            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
-            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
-            <li><a href="./mis-cursos.html" class="nav-link active">Mis Cursos</a></li>
-            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
-            <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
+            <!-- Menú dinámico generado por navigation.js -->
         </ul>
 
         <div class="admin-user">
@@ -244,6 +240,12 @@
                 </div>
             `).join('');
         }
+    </script>
+    <script src="../../assets/js/navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initDynamicNavbar();
+        });
     </script>
 </body>
 </html>

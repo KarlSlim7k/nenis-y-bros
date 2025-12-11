@@ -106,6 +106,49 @@ function getMenuItems(tipoUsuario) {
 }
 
 /**
+ * Genera el HTML de los items para el menú lateral (admin-menu)
+ * Usado en páginas con layout de sidebar como mentoria-ai, diagnostico-resultados, etc.
+ */
+function generateAdminMenuItems() {
+    const user = getAuthUser();
+    if (!user) return '';
+
+    const menuSections = getMenuItems(user.tipo_usuario);
+    const currentFileName = window.location.pathname.split('/').pop();
+    let html = '';
+
+    // Aplanar las secciones para el menú lateral
+    menuSections.forEach(section => {
+        section.items.forEach(item => {
+            const itemFileName = item.url.split('/').pop();
+            const isActive = currentFileName === itemFileName;
+            const activeClass = isActive ? ' active' : '';
+
+            html += `<li><a href="${item.url}" class="${activeClass.trim()}"><span>${item.icon}</span> ${item.text}</a></li>`;
+        });
+    });
+
+    return html;
+}
+
+/**
+ * Inyecta el menú lateral en páginas con layout de sidebar
+ */
+function injectAdminMenu(containerClass = 'admin-menu') {
+    const container = document.querySelector(`.${containerClass}`);
+    if (!container) {
+        console.warn('Admin menu container not found:', containerClass);
+        return;
+    }
+
+    const menuHtml = generateAdminMenuItems();
+    container.innerHTML = menuHtml;
+    
+    // Actualizar información del usuario
+    updateUserHeaderInfo();
+}
+
+/**
  * Genera el HTML de una sidebar de navegación
  */
 function generateSidebar(currentPage = '') {
@@ -266,14 +309,14 @@ function generateTopNavItems(currentPage = '') {
     menuSections.forEach(section => {
         section.items.forEach(item => {
             // Determinar si es la página actual
-            // item.url es ruta absoluta (e.g. /nenis_y_bros/frontend/pages/user/diagnosticos.html)
+            // item.url es ruta absoluta (e.g. /nenis_y_bros/frontend/pages/emprendedor/diagnosticos.html)
 
             let itemUrl = item.url;
 
-            // Si estamos desarrollando localmente y las rutas no coinciden exactamente con lo que devuelve getMenuItems
-            // tratamos de normalizar.
-
-            const isActive = currentPage && (itemUrl.endsWith(currentPage) || window.location.href.includes(itemUrl));
+            // Verificar si es la página actual
+            const currentFileName = currentPage || window.location.pathname.split('/').pop();
+            const itemFileName = itemUrl.split('/').pop();
+            const isActive = currentFileName === itemFileName;
             const activeClass = isActive ? ' active' : '';
 
             // Usamos la ruta tal cual viene definida en getMenuItems
@@ -282,6 +325,33 @@ function generateTopNavItems(currentPage = '') {
     });
 
     return html;
+}
+
+/**
+ * Genera e inyecta el navbar completo dinámicamente
+ * Esta función debe llamarse en el DOMContentLoaded de cada página
+ * Detecta automáticamente si la página usa nav-menu (horizontal) o admin-menu (sidebar)
+ */
+function initDynamicNavbar() {
+    const user = getAuthUser();
+    if (!user) return;
+
+    // Detectar qué tipo de menú tiene la página
+    const navMenu = document.querySelector('.nav-menu');
+    const adminMenu = document.querySelector('.admin-menu');
+
+    if (navMenu) {
+        // Menú horizontal superior
+        injectUserTopNav('nav-menu');
+    }
+    
+    if (adminMenu) {
+        // Menú lateral (sidebar)
+        injectAdminMenu('admin-menu');
+    }
+
+    // Actualizar información del usuario
+    updateUserHeaderInfo();
 }
 
 /**

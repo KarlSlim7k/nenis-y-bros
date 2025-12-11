@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -329,12 +329,7 @@
         </div>
 
         <ul class="nav-menu">
-            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
-            <li><a href="./estudiantes.html" class="nav-link">Estudiantes</a></li>
-            <li><a href="./sesiones.html" class="nav-link">Sesiones</a></li>
-            <li><a href="./disponibilidad-instructor.html" class="nav-link">Disponibilidad</a></li>
-            <li><a href="./cursos.html" class="nav-link active">Cursos</a></li>
-            <li><a href="./mensajes.html" class="nav-link">Mensajes</a></li>
+            <!-- Menú dinámico generado por navigation.js -->
         </ul>
 
         <div class="admin-user">
@@ -576,6 +571,12 @@
         document.addEventListener('DOMContentLoaded', function () {
             cargarDatosUsuario();
             highlightActiveLink();
+        });
+    </script>
+    <script src="../../assets/js/navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initDynamicNavbar();
         });
     </script>
 </body>
