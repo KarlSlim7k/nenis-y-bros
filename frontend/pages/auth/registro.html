@@ -537,8 +537,12 @@
                         const user = data.data.user;
                         if (user.tipo_usuario === 'administrador') {
                             window.location.href = '../admin/dashboard.html';
+                        } else if (user.tipo_usuario === 'mentor') {
+                            window.location.href = '../instructor/dashboard.html';
+                        } else if (user.tipo_usuario === 'empresario') {
+                            window.location.href = '../empresario/dashboard.html';
                         } else {
-                            window.location.href = '../user/dashboard.html';
+                            window.location.href = '../emprendedor/dashboard.html';
                         }
                     }, 1500);
                 } else {

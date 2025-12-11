@@ -97,9 +97,18 @@ function setupForm() {
             localStorage.setItem(AUTH_TOKEN_KEY, response.data.token);
             localStorage.setItem(AUTH_USER_KEY, JSON.stringify(response.data.user));
 
-            // Redirigir al dashboard después de un momento
+            // Redirigir al dashboard según tipo de usuario
             setTimeout(() => {
-                window.location.href = '../user/dashboard.html';
+                const user = response.data.user;
+                if (user.tipo_usuario === 'administrador') {
+                    window.location.href = '../admin/dashboard.html';
+                } else if (user.tipo_usuario === 'mentor') {
+                    window.location.href = '../instructor/dashboard.html';
+                } else if (user.tipo_usuario === 'empresario') {
+                    window.location.href = '../empresario/dashboard.html';
+                } else {
+                    window.location.href = '../emprendedor/dashboard.html';
+                }
             }, 1500);
 
         } catch (error) {

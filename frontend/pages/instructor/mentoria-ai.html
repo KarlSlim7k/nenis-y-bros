@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MentorIA - Asistente Virtual | Nenis y Bros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+        }
+
+        /* Admin Container Layout */
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            width: 260px;
+            background: #2c3e50;
+            color: white;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .admin-logo {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .admin-menu {
+            list-style: none;
+            padding: 20px 0;
+        }
+
+        .admin-menu li {
+            margin: 5px 0;
+        }
+
+        .admin-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .admin-menu a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .admin-menu a.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-left: 4px solid #667eea;
+        }
+
+        .admin-menu a span:first-child {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .admin-main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 30px;
+            width: calc(100% - 260px);
+        }
+
+        .chat-interface {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .chat-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+
+        .chat-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .messages-container {
+            height: 500px;
+            overflow-y: auto;
+            padding: 30px;
+            background: #f9fafb;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .message.ai .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.user .message-avatar {
+            background: #10b981;
+            color: white;
+        }
+
+        .message-content {
+            max-width: 70%;
+        }
+
+        .message-bubble {
+            padding: 15px 18px;
+            border-radius: 12px;
+            line-height: 1.5;
+        }
+
+        .message.ai .message-bubble {
+            background: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            width: fit-content;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .typing-indicator.show {
+            display: block;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .message-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 24px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: none;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-send {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .btn-send:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+
+        .btn-send:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .suggestions {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .suggestions-title {
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 10px;
+        }
+
+        .suggestions-grid {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .suggestion-chip {
+            padding: 8px 16px;
+            background: #f3f4f6;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .suggestion-chip:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <a href="./dashboard.html" class="admin-logo">🚀 Nenis y Bros</a>
+            <ul class="admin-menu">
+                <li><a href="./dashboard.html"><span>📊</span> Dashboard</a></li>
+                <li><a href="./diagnosticos.html"><span>📋</span> Diagnósticos</a></li>
+                <li><a href="./mi-progreso.html"><span>📈</span> Mi Progreso</a></li>
+                <li><a href="./perfil-empresarial.html"><span>🏢</span> Mi Empresa</a></li>
+                <li><a href="./mis-logros.html"><span>🏆</span> Mis Logros</a></li>
+                <li><a href="./ranking.html"><span>🥇</span> Ranking</a></li>
+                <li><a href="./vitrina-productos.html"><span>🛍️</span> Vitrina de Productos</a></li>
+                <li><a href="./mis-productos.html"><span>📦</span> Mis Productos</a></li>
+                <li><a href="./chat.html"><span>💬</span> Chat</a></li>
+                <li><a href="./notificaciones.html"><span>🔔</span> Notificaciones</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="admin-main">
+            <div class="chat-interface">
+                <div class="chat-header">
+                    <h1>🤖 MentorIA</h1>
+                    <div class="chat-status">
+                        <span class="status-indicator"></span>
+                        <span>Asistente Virtual Disponible</span>
+                    </div>
+                </div>
+
+                <div class="messages-container" id="messages-container">
+                    <div class="message ai">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-content">
+                            <div class="message-bubble">
+                                ¡Hola! Soy MentorIA, tu asistente virtual. Estoy aquí para ayudarte con:
+                                <br><br>
+                                • Resolver dudas sobre emprendimiento<br>
+                                • Asesoría en tus proyectos<br>
+                                • Recomendaciones de cursos<br>
+                                • Orientación en diagnósticos empresariales<br>
+                                <br>
+                                ¿En qué puedo ayudarte hoy?
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="typing-indicator" id="typing-indicator">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="suggestions">
+                    <div class="suggestions-title">💡 Sugerencias rápidas:</div>
+                    <div class="suggestions-grid">
+                        <div class="suggestion-chip" onclick="enviarSugerencia('¿Cómo iniciar mi negocio?')">
+                            ¿Cómo iniciar mi negocio?
+                        </div>
+                        <div class="suggestion-chip" onclick="enviarSugerencia('Cursos recomendados')">
+                            Cursos recomendados
+                        </div>
+                        <div class="suggestion-chip" onclick="enviarSugerencia('Consejos de marketing')">
+                            Consejos de marketing
+                        </div>
+                        <div class="suggestion-chip" onclick="enviarSugerencia('Estrategias de ventas')">
+                            Estrategias de ventas
+                        </div>
+                    </div>
+                </div>
+
+                <div class="input-area">
+                    <div class="input-wrapper">
+                        <textarea 
+                            id="message-input" 
+                            class="message-input" 
+                            placeholder="Escribe tu pregunta..."
+                            rows="1"
+                            onkeypress="handleKeyPress(event)"></textarea>
+                    </div>
+                    <button class="btn-send" id="btn-send" onclick="enviarMensaje()">📤</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script>
+        // Verificar autenticación
+        if (!checkAuth() || !(isEmprendedor() || isEmpresario())) {
+            window.location.href = ROUTES.login;
+        }
+
+        const messagesContainer = document.getElementById('messages-container');
+        const messageInput = document.getElementById('message-input');
+        const btnSend = document.getElementById('btn-send');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            highlightActiveLink();
+        });
+
+        function highlightActiveLink() {
+            const currentPath = window.location.pathname;
+            const links = document.querySelectorAll('.admin-menu a');
+            links.forEach(link => {
+                const linkPath = new URL(link.href).pathname;
+                if (currentPath.includes(linkPath.split('/').pop())) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
+
+        function agregarMensaje(contenido, esUsuario = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${esUsuario ? 'user' : 'ai'}`;
+            
+            const user = getAuthUser();
+            const avatar = esUsuario ? user.nombre.charAt(0).toUpperCase() : '🤖';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">
+                    <div class="message-bubble">${contenido}</div>
+                    <div class="message-time">${new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}</div>
+                </div>
+            `;
+
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function enviarSugerencia(texto) {
+            messageInput.value = texto;
+            enviarMensaje();
+        }
+
+        async function enviarMensaje() {
+            const contenido = messageInput.value.trim();
+            if (!contenido) return;
+
+            // Agregar mensaje del usuario
+            agregarMensaje(contenido, true);
+            messageInput.value = '';
+            
+            // Deshabilitar input
+            messageInput.disabled = true;
+            btnSend.disabled = true;
+            
+            // Mostrar indicador de escritura
+            typingIndicator.classList.add('show');
+
+            try {
+                const response = await fetchAPI('/mentoria/chat', 'POST', {
+                    mensaje: contenido
+                });
+
+                // Ocultar indicador
+                typingIndicator.classList.remove('show');
+
+                if (response.success) {
+                    agregarMensaje(response.data.respuesta, false);
+                } else {
+                    agregarMensaje('Lo siento, ocurrió un error. Por favor intenta de nuevo.', false);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                typingIndicator.classList.remove('show');
+                agregarMensaje('Lo siento, no pude procesar tu mensaje. Por favor intenta de nuevo.', false);
+            } finally {
+                messageInput.disabled = false;
+                btnSend.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                enviarMensaje();
+            }
+        }
+    </script>
+</body>
+</html>

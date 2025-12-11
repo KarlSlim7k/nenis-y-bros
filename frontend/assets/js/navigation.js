@@ -33,12 +33,12 @@ function getMenuItems(tipoUsuario) {
                     { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/instructor/dashboard.html` },
                     { icon: '📚', text: 'Mis Cursos', url: `${bp}/frontend/pages/instructor/cursos.html` },
                     { icon: '👥', text: 'Mis Alumnos', url: `${bp}/frontend/pages/instructor/alumnos.html` },
-                    { icon: '💬', text: 'Mensajes', url: `${bp}/frontend/pages/user/mis-conversaciones.html` }
+                    { icon: '💬', text: 'Mensajes', url: `${bp}/frontend/pages/instructor/mis-conversaciones.html` }
                 ]
             },
             {
                 section: 'Mentoría', items: [
-                    { icon: '🤖', text: 'Mentoría AI', url: `${bp}/frontend/pages/user/mentoria-ai.html` },
+                    { icon: '🤖', text: 'Mentoría AI', url: `${bp}/frontend/pages/instructor/mentoria-ai.html` },
                     { icon: '📅', text: 'Disponibilidad', url: `${bp}/frontend/pages/instructor/disponibilidad.html` }
                 ]
             }
@@ -76,27 +76,27 @@ function getMenuItems(tipoUsuario) {
             {
                 section: 'Principal', items: [
                     { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/emprendedor/dashboard.html` },
-                    { icon: '📈', text: 'Mi Progreso', url: `${bp}/frontend/pages/user/mi-progreso.html` }
+                    { icon: '📈', text: 'Mi Progreso', url: `${bp}/frontend/pages/emprendedor/mi-progreso.html` }
                 ]
             },
             {
                 section: 'Formación', items: [
-                    { icon: '📚', text: 'Cursos', url: `${bp}/frontend/pages/cursos/catalogo.html` },
+                    { icon: '📚', text: 'Cursos', url: `${bp}/frontend/pages/emprendedor/mis-cursos.html` },
                     { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/recursos/biblioteca.html` },
-                    { icon: '🤖', text: 'Mentoría AI', url: `${bp}/frontend/pages/user/mentoria-ai.html` },
-                    { icon: '🎓', text: 'Certificados', url: `${bp}/frontend/pages/user/mis-certificados.html` }
+                    { icon: '🤖', text: 'Mentoría AI', url: `${bp}/frontend/pages/emprendedor/mentoria-ai.html` },
+                    { icon: '🎓', text: 'Certificados', url: `${bp}/frontend/pages/emprendedor/mis-certificados.html` }
                 ]
             },
             {
                 section: 'Productos', items: [
-                    { icon: '🛍️', text: 'Vitrina', url: `${bp}/frontend/pages/user/vitrina-productos.html` }
+                    { icon: '🛍️', text: 'Vitrina', url: `${bp}/frontend/pages/emprendedor/vitrina-productos.html` }
                 ]
             },
             {
                 section: 'Gamificación', items: [
-                    { icon: '🏆', text: 'Mis Logros', url: `${bp}/frontend/pages/user/mis-logros.html` },
-                    { icon: '🥇', text: 'Ranking', url: `${bp}/frontend/pages/user/ranking.html` },
-                    { icon: '🔔', text: 'Notificaciones', url: `${bp}/frontend/pages/user/notificaciones.html` }
+                    { icon: '🏆', text: 'Mis Logros', url: `${bp}/frontend/pages/emprendedor/mis-logros.html` },
+                    { icon: '🥇', text: 'Ranking', url: `${bp}/frontend/pages/emprendedor/ranking.html` },
+                    { icon: '🔔', text: 'Notificaciones', url: `${bp}/frontend/pages/emprendedor/notificaciones.html` }
                 ]
             }
         ]
