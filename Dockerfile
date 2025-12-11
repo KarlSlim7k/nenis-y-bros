@@ -10,8 +10,11 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd zip pdo pdo_mysql
 
-# Habilitar mod_rewrite para Apache
-RUN a2enmod rewrite
+# Deshabilitar todos los MPM excepto prefork (necesario para PHP)
+RUN a2dismod mpm_event mpm_worker || true
+
+# Habilitar mpm_prefork y mod_rewrite
+RUN a2enmod mpm_prefork rewrite
 
 # Configurar Apache para servir desde /var/www/html/backend
 ENV APACHE_DOCUMENT_ROOT /var/www/html/backend
