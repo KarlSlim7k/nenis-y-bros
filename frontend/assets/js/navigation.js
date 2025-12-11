@@ -32,14 +32,14 @@ function getMenuItems(tipoUsuario) {
                 section: 'Principal', items: [
                     { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/instructor/dashboard.html` },
                     { icon: '📚', text: 'Mis Cursos', url: `${bp}/frontend/pages/instructor/cursos.html` },
-                    { icon: '👥', text: 'Mis Alumnos', url: `${bp}/frontend/pages/instructor/alumnos.html` },
+                    { icon: '👥', text: 'Mis Alumnos', url: `${bp}/frontend/pages/instructor/estudiantes.html` },
                     { icon: '💬', text: 'Mensajes', url: `${bp}/frontend/pages/instructor/mis-conversaciones.html` }
                 ]
             },
             {
                 section: 'Mentoría', items: [
                     { icon: '🤖', text: 'Mentoría AI', url: `${bp}/frontend/pages/instructor/mentoria-ai.html` },
-                    { icon: '📅', text: 'Disponibilidad', url: `${bp}/frontend/pages/instructor/disponibilidad.html` }
+                    { icon: '📅', text: 'Disponibilidad', url: `${bp}/frontend/pages/instructor/disponibilidad-instructor.html` }
                 ]
             }
         ],
