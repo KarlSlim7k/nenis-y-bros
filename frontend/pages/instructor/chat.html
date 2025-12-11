@@ -373,12 +373,12 @@
     <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
-        if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
+        if (!checkAuth() || !isMentor()) window.location.href = ROUTES.login;
         function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
         function cargarDatosUsuario() {
             const user = getAuthUser();
             if (user) {
-                document.getElementById('userName').textContent = user.nombre || 'Emprendedor';
+                document.getElementById('userName').textContent = user.nombre || 'Mentor';
                 const avatar = document.querySelector('.emprendedor-avatar-glow');
                 if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
             }
