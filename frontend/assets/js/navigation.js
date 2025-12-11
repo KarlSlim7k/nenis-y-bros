@@ -56,7 +56,7 @@ function getMenuItems(tipoUsuario) {
             {
                 section: 'Formación', items: [
                     { icon: '📚', text: 'Cursos', url: `${bp}/frontend/pages/empresario/mis-cursos.html` },
-                    { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/recursos/biblioteca.html` },
+                    { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/recursos/catalogo.html` },
                     { icon: '🎓', text: 'Certificados', url: `${bp}/frontend/pages/empresario/mis-certificados.html` }
                 ]
             },
@@ -84,7 +84,7 @@ function getMenuItems(tipoUsuario) {
             {
                 section: 'Formación', items: [
                     { icon: '📚', text: 'Cursos', url: `${bp}/frontend/pages/emprendedor/mis-cursos.html` },
-                    { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/recursos/biblioteca.html` },
+                    { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/recursos/catalogo.html` },
                     { icon: '🤖', text: 'Mentoría AI', url: `${bp}/frontend/pages/emprendedor/mentoria-ai.html` },
                     { icon: '🎓', text: 'Certificados', url: `${bp}/frontend/pages/emprendedor/mis-certificados.html` }
                 ]
