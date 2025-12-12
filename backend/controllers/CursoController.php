@@ -46,16 +46,16 @@ class CursoController {
             }
             
             // Los usuarios normales solo ven cursos publicados
-            // Los admins/instructores pueden ver todos los estados
+            // Los admins/mentores pueden ver todos los estados
             $user = AuthMiddleware::getCurrentUser();
-            if (!$user || $user['rol'] === 'estudiante') {
+            if (!$user || ($user['tipo_usuario'] !== 'administrador' && $user['tipo_usuario'] !== 'mentor')) {
                 $filters['estado'] = 'publicado';
             } elseif (isset($_GET['estado'])) {
                 $filters['estado'] = $_GET['estado'];
             }
             
-            // Si es instructor, filtrar por sus cursos
-            if ($user && $user['rol'] === 'instructor' && !isset($_GET['all'])) {
+            // Si es mentor, filtrar por sus cursos
+            if ($user && $user['tipo_usuario'] === 'mentor' && !isset($_GET['all'])) {
                 $filters['id_instructor'] = $user['id_usuario'];
             }
             
@@ -84,19 +84,19 @@ class CursoController {
             // Verificar permisos de visualización
             $user = AuthMiddleware::getCurrentUser();
             
-            // Si el curso no está publicado, solo admin/instructor pueden verlo
+            // Si el curso no está publicado, solo administrador/mentor pueden verlo
             if ($curso['estado'] !== 'publicado') {
                 if (!$user) {
                     Response::unauthorized('Debes iniciar sesión para ver este curso');
                     return;
                 }
                 
-                if ($user['rol'] === 'estudiante') {
+                if ($user['tipo_usuario'] !== 'administrador' && $user['tipo_usuario'] !== 'mentor') {
                     Response::forbidden('No tienes permiso para ver este curso');
                     return;
                 }
                 
-                if ($user['rol'] === 'instructor' && $curso['id_instructor'] != $user['id_usuario']) {
+                if ($user['tipo_usuario'] === 'mentor' && $curso['id_instructor'] != $user['id_usuario']) {
                     Response::forbidden('No tienes permiso para ver este curso');
                     return;
                 }
@@ -130,7 +130,7 @@ class CursoController {
      */
     public function createCourse() {
         try {
-            $user = AuthMiddleware::requireAuth(['instructor', 'admin']);
+            $user = AuthMiddleware::requireAuth(['mentor', 'administrador']);
             
             $data = json_decode(file_get_contents('php://input'), true);
             
@@ -153,8 +153,8 @@ class CursoController {
                 $data['id_instructor'] = $user['id_usuario'];
             }
             
-            // Solo admin puede asignar otro instructor
-            if ($user['rol'] !== 'admin' && $data['id_instructor'] != $user['id_usuario']) {
+            // Solo administrador puede asignar otro instructor
+            if ($user['tipo_usuario'] !== 'administrador' && $data['id_instructor'] != $user['id_usuario']) {
                 Response::forbidden('No tienes permiso para asignar otro instructor');
                 return;
             }
@@ -180,7 +180,7 @@ class CursoController {
      */
     public function updateCourse($id) {
         try {
-            $user = AuthMiddleware::requireAuth(['instructor', 'admin']);
+            $user = AuthMiddleware::requireAuth(['mentor', 'administrador']);
             
             $curso = $this->cursoModel->findById($id, false);
             if (!$curso) {
@@ -188,8 +188,8 @@ class CursoController {
                 return;
             }
             
-            // Verificar permisos (solo el instructor del curso o admin)
-            if ($user['rol'] !== 'admin' && $curso['id_instructor'] != $user['id_usuario']) {
+            // Verificar permisos (solo el instructor del curso o administrador)
+            if ($user['tipo_usuario'] !== 'administrador' && $curso['id_instructor'] != $user['id_usuario']) {
                 Response::forbidden('No tienes permiso para editar este curso');
                 return;
             }
@@ -213,12 +213,10 @@ class CursoController {
                 }
             }
             
-            // Solo admin puede cambiar instructor
-            if (isset($data['id_instructor']) && $user['rol'] !== 'admin') {
+            // Solo administrador puede cambiar instructor
+            if (isset($data['id_instructor']) && $user['tipo_usuario'] !== 'administrador') {
                 unset($data['id_instructor']);
             }
-            
-            $data['id_instructor'] = $user['id_usuario'];
             
             $result = $this->cursoModel->update($id, $data);
             
@@ -241,7 +239,7 @@ class CursoController {
      */
     public function deleteCourse($id) {
         try {
-            $user = AuthMiddleware::requireAuth(['instructor', 'admin']);
+            $user = AuthMiddleware::requireAuth(['mentor', 'administrador']);
             
             $curso = $this->cursoModel->findById($id, false);
             if (!$curso) {
@@ -250,7 +248,7 @@ class CursoController {
             }
             
             // Verificar permisos
-            if ($user['rol'] !== 'admin' && $curso['id_instructor'] != $user['id_usuario']) {
+            if ($user['tipo_usuario'] !== 'administrador' && $curso['id_instructor'] != $user['id_usuario']) {
                 Response::forbidden('No tienes permiso para eliminar este curso');
                 return;
             }
@@ -331,7 +329,7 @@ class CursoController {
      */
     public function getCourseStudents($id) {
         try {
-            $user = AuthMiddleware::requireAuth(['instructor', 'admin']);
+            $user = AuthMiddleware::requireAuth(['mentor', 'administrador']);
             
             $curso = $this->cursoModel->findById($id, false);
             if (!$curso) {
@@ -340,7 +338,7 @@ class CursoController {
             }
             
             // Verificar permisos
-            if ($user['rol'] !== 'admin' && $curso['id_instructor'] != $user['id_usuario']) {
+            if ($user['tipo_usuario'] !== 'administrador' && $curso['id_instructor'] != $user['id_usuario']) {
                 Response::forbidden('No tienes permiso para ver los estudiantes de este curso');
                 return;
             }

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Categorías - Nenis y Bros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
+    <style>
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .category-description {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .category-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .category-courses {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        .category-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-inactive {
+            background: rgba(107, 114, 128, 0.15);
+            color: #9ca3af;
+            border: 1px solid rgba(107, 114, 128, 0.3);
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn-action-sm {
+            flex: 1;
+            padding: 0.4rem;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .btn-action-sm:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .admin-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">🛡️</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+        <ul class="nav-menu"></ul>
+        <div class="admin-user">
+            <div class="admin-avatar-glow">A</div>
+            <div>
+                <div id="userName" style="font-weight: 600; color: var(--text-main);">Admin</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Super Admin</div>
+            </div>
+            <button class="btn-outline" onclick="logout()" style="margin-left: 1rem; padding: 0.5rem 1rem;">
+                <span>🚪</span> Salir
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-section">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+                <h1 class="hero-welcome">Gestión de <span class="text-gradient">Categorías</span> 🗂️</h1>
+                <p class="hero-subtitle">Organiza y administra las categorías de cursos de tu plataforma.</p>
+            </div>
+            <button class="btn-modern" onclick="openModal('createCategoryModal')">
+                <span>➕</span> Nueva Categoría
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dashboard-grid">
+        <div class="col-span-12">
+            <div id="categoriasContent">
+                <div class="empty-state">
+                    <div class="spinner"></div>
+                    <p>Cargando categorías...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Category Modal -->
+    <div class="modal-overlay" id="createCategoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><span>📁</span> Crear Nueva Categoría</h3>
+                <button class="btn-close" onclick="closeModal('createCategoryModal')">✕</button>
+            </div>
+            <form id="createCategoryForm" onsubmit="handleCreateCategory(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Nombre *</label>
+                        <input type="text" name="nombre" class="form-input" required minlength="3" placeholder="Ej: Marketing Digital">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descripción</label>
+                        <textarea name="descripcion" class="form-textarea" placeholder="Describe el contenido de esta categoría"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Icono (emoji)</label>
+                            <input type="text" name="icono" class="form-input" placeholder="📊" maxlength="2">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Color</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" name="color" class="form-input" value="#6366f1" style="width: 60px; height: 40px; padding: 0;">
+                                <div class="color-preview" id="colorPreview" style="background: #6366f1;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Orden</label>
+                        <input type="number" name="orden" class="form-input" value="0" min="0">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" onclick="closeModal('createCategoryModal')">Cancelar</button>
+                    <button type="submit" class="btn-modern">Crear Categoría</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Category Modal -->
+    <div class="modal-overlay" id="editCategoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title"><span>✏️</span> Editar Categoría</h3>
+                <button class="btn-close" onclick="closeModal('editCategoryModal')">✕</button>
+            </div>
+            <form id="editCategoryForm" onsubmit="handleEditCategory(event)">
+                <input type="hidden" id="editCategoryId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Nombre *</label>
+                        <input type="text" id="editNombre" name="nombre" class="form-input" required minlength="3">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descripción</label>
+                        <textarea id="editDescripcion" name="descripcion" class="form-textarea"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Icono (emoji)</label>
+                            <input type="text" id="editIcono" name="icono" class="form-input" maxlength="2">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Color</label>
+                            <input type="color" id="editColor" name="color" class="form-input" style="width: 100px; height: 40px; padding: 0;">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Orden</label>
+                            <input type="number" id="editOrden" name="orden" class="form-input" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Estado</label>
+                            <select id="editActivo" name="activo" class="form-select">
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" onclick="closeModal('editCategoryModal')">Cancelar</button>
+                    <button type="submit" class="btn-modern">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script>
+        if (!checkAuth() || !isAdmin()) {
+            window.location.href = ROUTES.login;
+        }
+
+        function logout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            window.location.href = ROUTES.login;
+        }
+
+        // Modal Logic
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('active'), 10);
+                document.body.style.overflow = 'hidden';
+                if (modalId === 'createCategoryModal') {
+                    document.getElementById('createCategoryForm').reset();
+                }
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                }, 300);
+            }
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function (e) {
+                if (e.target === this) closeModal(this.id);
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => closeModal(modal.id));
+            }
+        });
+
+        // Data Loading
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Administrador';
+                document.querySelector('.admin-avatar-glow').textContent = (user.nombre || 'A').charAt(0).toUpperCase();
+            }
+            cargarCategorias();
+            
+            // Color preview update
+            document.querySelector('input[name="color"]')?.addEventListener('input', (e) => {
+                document.getElementById('colorPreview').style.background = e.target.value;
+            });
+        });
+
+        async function cargarCategorias() {
+            const container = document.getElementById('categoriasContent');
+            container.innerHTML = '<div class="empty-state"><div class="spinner"></div><p>Cargando categorías...</p></div>';
+
+            try {
+                const response = await apiGet('/categories');
+                const categorias = response.data?.categorias || [];
+
+                if (categorias.length > 0) {
+                    container.innerHTML = `<div class="category-grid">${categorias.map(renderCategoryCard).join('')}</div>`;
+                } else {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div style="font-size: 3rem; opacity: 0.5;">📁</div>
+                            <h3>No hay categorías</h3>
+                            <p>Crea tu primera categoría para comenzar.</p>
+                        </div>`;
+                }
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 3rem; color: var(--danger);">⚠️</div>
+                        <h3>Error al cargar</h3>
+                        <p>${error.message || 'No se pudieron cargar las categorías'}</p>
+                    </div>`;
+            }
+        }
+
+        function renderCategoryCard(cat) {
+            const isActive = cat.activo == 1;
+            return `
+                <div class="category-card">
+                    <div class="category-icon" style="background: ${cat.color || '#6366f1'}22; color: ${cat.color || '#6366f1'}">
+                        ${cat.icono || '📁'}
+                    </div>
+                    <div class="category-name">${cat.nombre}</div>
+                    <div class="category-description">${cat.descripcion || 'Sin descripción'}</div>
+                    <div class="category-stats">
+                        <span class="category-courses">📚 ${cat.total_cursos || 0} cursos</span>
+                        <span class="category-status ${isActive ? 'status-active' : 'status-inactive'}">
+                            ${isActive ? 'Activo' : 'Inactivo'}
+                        </span>
+                    </div>
+                    <div class="category-actions">
+                        <button class="btn-action-sm" onclick='editarCategoria(${JSON.stringify(cat).replace(/'/g, "&#39;")})'>✏️ Editar</button>
+                        <button class="btn-action-sm" onclick="eliminarCategoria(${cat.id_categoria}, '${cat.nombre}', ${cat.total_cursos})">🗑️ Eliminar</button>
+                    </div>
+                </div>`;
+        }
+
+        async function handleCreateCategory(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.innerHTML = '<span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span> Creando...';
+            btn.disabled = true;
+
+            const formData = new FormData(e.target);
+            const data = {
+                nombre: formData.get('nombre'),
+                descripcion: formData.get('descripcion'),
+                icono: formData.get('icono'),
+                color: formData.get('color'),
+                orden: parseInt(formData.get('orden')) || 0,
+                activo: 1
+            };
+
+            try {
+                const response = await apiPost('/categories', data);
+                if (response.success) {
+                    showNotification('✅ Categoría creada exitosamente', 'success');
+                    closeModal('createCategoryModal');
+                    cargarCategorias();
+                } else {
+                    showNotification('❌ ' + (response.message || 'Error al crear categoría'), 'error');
+                }
+            } catch (error) {
+                showNotification('❌ Error de conexión', 'error');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        function editarCategoria(cat) {
+            document.getElementById('editCategoryId').value = cat.id_categoria;
+            document.getElementById('editNombre').value = cat.nombre;
+            document.getElementById('editDescripcion').value = cat.descripcion || '';
+            document.getElementById('editIcono').value = cat.icono || '';
+            document.getElementById('editColor').value = cat.color || '#6366f1';
+            document.getElementById('editOrden').value = cat.orden || 0;
+            document.getElementById('editActivo').value = cat.activo ? '1' : '0';
+            openModal('editCategoryModal');
+        }
+
+        async function handleEditCategory(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.innerHTML = '<span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span> Guardando...';
+            btn.disabled = true;
+
+            const catId = document.getElementById('editCategoryId').value;
+            const formData = new FormData(e.target);
+            const data = {
+                nombre: formData.get('nombre'),
+                descripcion: formData.get('descripcion'),
+                icono: formData.get('icono'),
+                color: formData.get('color'),
+                orden: parseInt(formData.get('orden')),
+                activo: parseInt(formData.get('activo'))
+            };
+
+            try {
+                const response = await apiPut(`/categories/${catId}`, data);
+                if (response.success) {
+                    showNotification('✅ Categoría actualizada exitosamente', 'success');
+                    closeModal('editCategoryModal');
+                    cargarCategorias();
+                } else {
+                    showNotification('❌ ' + (response.message || 'Error al actualizar'), 'error');
+                }
+            } catch (error) {
+                showNotification('❌ Error de conexión', 'error');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function eliminarCategoria(id, nombre, totalCursos) {
+            if (totalCursos > 0) {
+                alert(`No se puede eliminar la categoría "${nombre}" porque tiene ${totalCursos} cursos asociados.\n\nPrimero debes reasignar o eliminar esos cursos.`);
+                return;
+            }
+
+            if (!confirm(`¿Estás seguro de que deseas eliminar la categoría "${nombre}"?\n\nEsta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                const response = await apiDelete(`/categories/${id}`);
+                if (response.success) {
+                    showNotification('✅ Categoría eliminada exitosamente', 'success');
+                    cargarCategorias();
+                } else {
+                    showNotification('❌ ' + (response.message || 'Error al eliminar'), 'error');
+                }
+            } catch (error) {
+                showNotification('❌ Error de conexión', 'error');
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; padding: 1rem 1.5rem; border-radius: 12px;
+                background: ${type === 'success' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(239, 68, 68, 0.9)'};
+                color: white; font-weight: 500; z-index: 10000; animation: slideIn 0.3s ease;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3); backdrop-filter: blur(5px);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease forwards';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+            @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <script src="../../assets/js/navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            initDynamicNavbar();
+        });
+    </script>
+</body>
+
+</html>

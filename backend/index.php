@@ -26,6 +26,7 @@ require_once __DIR__ . '/config/database.php';
 
 // Cargar modelos
 require_once __DIR__ . '/models/Usuario.php';
+require_once __DIR__ . '/models/Categoria.php';
 require_once __DIR__ . '/models/Curso.php';
 require_once __DIR__ . '/models/Modulo.php';
 require_once __DIR__ . '/models/Leccion.php';
@@ -71,6 +72,7 @@ require_once __DIR__ . '/middleware/AuthMiddleware.php';
 require_once __DIR__ . '/controllers/AuthController.php';
 require_once __DIR__ . '/controllers/UserController.php';
 require_once __DIR__ . '/controllers/AdminController.php';
+require_once __DIR__ . '/controllers/CategoriaController.php';
 require_once __DIR__ . '/controllers/CursoController.php';
 require_once __DIR__ . '/controllers/ModuloController.php';
 require_once __DIR__ . '/controllers/LeccionController.php';

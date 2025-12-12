@@ -566,6 +566,85 @@
         </div>
     </div>
 
+    <!-- Edit Course Modal -->
+    <div class="modal-overlay" id="editCourseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <span style="font-size: 1.5rem;">✏️</span>
+                    Editar Curso
+                </h3>
+                <button class="btn-close" onclick="closeModal('editCourseModal')">✕</button>
+            </div>
+            <form id="editCourseForm" onsubmit="handleEditCourse(event)">
+                <input type="hidden" id="editCursoId">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">Título del Curso *</label>
+                        <input type="text" id="editTitulo" name="titulo" class="form-input" required minlength="5"
+                            placeholder="Ej: Marketing Digital para Principiantes">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Categoría *</label>
+                            <select id="editCategoria" name="id_categoria" class="form-select" required>
+                                <option value="">Cargando...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nivel</label>
+                            <select id="editNivel" name="nivel" class="form-select">
+                                <option value="principiante">Principiante</option>
+                                <option value="intermedio">Intermedio</option>
+                                <option value="avanzado">Avanzado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Descripción</label>
+                        <textarea id="editDescripcion" name="descripcion" class="form-textarea"
+                            placeholder="¿De qué trata este curso?"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Duración (horas)</label>
+                            <input type="number" id="editDuracion" name="duracion_horas" class="form-input" min="1" value="1">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Estado</label>
+                            <select id="editEstado" name="estado" class="form-select">
+                                <option value="borrador">Borrador</option>
+                                <option value="publicado">Publicado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Precio ($)</label>
+                            <input type="number" id="editPrecio" name="precio" class="form-input" min="0" step="0.01" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tipo de Acceso</label>
+                            <select id="editGratuito" name="es_gratuito" class="form-select">
+                                <option value="1">Gratuito</option>
+                                <option value="0">De Pago</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline"
+                        onclick="closeModal('editCourseModal')">Cancelar</button>
+                    <button type="submit" class="btn-modern">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
@@ -640,27 +719,35 @@
         }
 
         async function cargarCategorias() {
-            const select = document.getElementById('id_categoria');
+            const selects = [document.getElementById('id_categoria'), document.getElementById('editCategoria')];
             try {
                 const response = await apiGet('/courses/categories');
                 const categorias = response.message?.data || response.data || [];
 
-                select.innerHTML = '<option value="">Seleccionar categoría</option>';
+                selects.forEach(select => {
+                    if (select) {
+                        select.innerHTML = '<option value="">Seleccionar categoría</option>';
 
-                if (Array.isArray(categorias)) {
-                    categorias.forEach(cat => {
-                        select.innerHTML += `<option value="${cat.id_categoria}">${cat.nombre}</option>`;
-                    });
-                }
+                        if (Array.isArray(categorias)) {
+                            categorias.forEach(cat => {
+                                select.innerHTML += `<option value="${cat.id_categoria}">${cat.nombre}</option>`;
+                            });
+                        }
+                    }
+                });
             } catch (error) {
                 console.log('Using default categories');
-                select.innerHTML = `
-                    <option value="">Seleccionar categoría</option>
-                    <option value="1">Emprendimiento</option>
-                    <option value="2">Finanzas</option>
-                    <option value="3">Marketing</option>
-                    <option value="4">Liderazgo</option>
-                `;
+                selects.forEach(select => {
+                    if (select) {
+                        select.innerHTML = `
+                            <option value="">Seleccionar categoría</option>
+                            <option value="1">Emprendimiento</option>
+                            <option value="2">Finanzas</option>
+                            <option value="3">Marketing</option>
+                            <option value="4">Liderazgo</option>
+                        `;
+                    }
+                });
             }
         }
 
@@ -734,9 +821,16 @@
                             <button class="btn-action" onclick="verCurso(${curso.id_curso})">
                                 👁️ Ver
                             </button>
+                            <button class="btn-action" onclick='editarCurso(${JSON.stringify(curso).replace(/'/g, "&#39;")})'>
+                                ✏️ Editar
+                            </button>
                             <button class="btn-action ${curso.estado === 'publicado' ? 'warning' : 'primary'}" 
                                     onclick="cambiarEstado(${curso.id_curso}, '${curso.estado}')">
                                 ${curso.estado === 'publicado' ? '📝 Borrador' : '✅ Publicar'}
+                            </button>
+                            <button class="btn-action" style="color: #fca5a5; border-color: rgba(239, 68, 68, 0.3);" 
+                                    onclick="eliminarCurso(${curso.id_curso}, '${curso.titulo}')">
+                                🗑️ Eliminar
                             </button>
                         </div>
                     </div>
@@ -811,6 +905,76 @@
 
         function verCurso(id) {
             window.open(`../public/curso-detalle.html?id=${id}`, '_blank');
+        }
+
+        function editarCurso(curso) {
+            document.getElementById('editCursoId').value = curso.id_curso;
+            document.getElementById('editTitulo').value = curso.titulo;
+            document.getElementById('editCategoria').value = curso.id_categoria;
+            document.getElementById('editNivel').value = curso.nivel || 'principiante';
+            document.getElementById('editDescripcion').value = curso.descripcion || '';
+            document.getElementById('editDuracion').value = curso.duracion_horas || 1;
+            document.getElementById('editEstado').value = curso.estado || 'borrador';
+            document.getElementById('editPrecio').value = curso.precio || 0;
+            document.getElementById('editGratuito').value = curso.es_gratuito ? '1' : '0';
+            openModal('editCourseModal');
+        }
+
+        async function handleEditCourse(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            btn.innerHTML = '<span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span> Guardando...';
+            btn.disabled = true;
+
+            const cursoId = document.getElementById('editCursoId').value;
+            const formData = new FormData(e.target);
+            const data = {
+                titulo: formData.get('titulo'),
+                id_categoria: parseInt(formData.get('id_categoria')),
+                descripcion: formData.get('descripcion'),
+                nivel: formData.get('nivel'),
+                duracion_horas: parseInt(formData.get('duracion_horas')) || 1,
+                estado: formData.get('estado'),
+                precio: parseFloat(formData.get('precio')) || 0,
+                es_gratuito: parseInt(formData.get('es_gratuito'))
+            };
+
+            try {
+                const response = await apiPut(`/courses/${cursoId}`, data);
+                if (response.success) {
+                    showNotification('✅ Curso actualizado exitosamente', 'success');
+                    closeModal('editCourseModal');
+                    cargarCursos();
+                } else {
+                    showNotification('❌ ' + (response.message || 'Error al actualizar curso'), 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                showNotification('❌ Error de conexión', 'error');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        async function eliminarCurso(id, titulo) {
+            if (!confirm(`¿Estás seguro de que deseas eliminar el curso "${titulo}"?\n\nEsta acción no se puede deshacer y se eliminarán todos los módulos y lecciones asociados.`)) {
+                return;
+            }
+
+            try {
+                const response = await apiDelete(`/courses/${id}`);
+                if (response.success) {
+                    showNotification('✅ Curso eliminado exitosamente', 'success');
+                    cargarCursos();
+                } else {
+                    showNotification('❌ ' + (response.message || 'Error al eliminar curso'), 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                showNotification('❌ Error de conexión', 'error');
+            }
         }
 
         // Notification System (Copied from Dashboard)
