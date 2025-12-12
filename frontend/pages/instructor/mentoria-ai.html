@@ -4,106 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MentorIA - Asistente Virtual | Nenis y Bros</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
-            color: #2d3748;
-        }
-
-        /* Admin Container Layout */
-        .admin-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .admin-sidebar {
-            width: 260px;
-            background: #2c3e50;
-            color: white;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .admin-logo {
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            text-decoration: none;
-            color: white;
-            display: block;
-        }
-
-        .admin-menu {
-            list-style: none;
-            padding: 20px 0;
-        }
-
-        .admin-menu li {
-            margin: 5px 0;
-        }
-
-        .admin-menu a {
+        .mentor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-secondary);
             display: flex;
             align-items: center;
-            padding: 12px 20px;
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .admin-menu a:hover {
-            background: rgba(255,255,255,0.1);
+            justify-content: center;
             color: white;
-        }
-
-        .admin-menu a.active {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border-left: 4px solid #667eea;
-        }
-
-        .admin-menu a span:first-child {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .admin-main {
-            margin-left: 260px;
-            flex: 1;
-            padding: 30px;
-            width: calc(100% - 260px);
+            font-weight: bold;
+            box-shadow: 0 0 15px var(--secondary-glow);
+            border: 2px solid rgba(255, 255, 255, 0.2);
         }
 
         .chat-interface {
             background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
             overflow: hidden;
-            max-width: 900px;
-            margin: 0 auto;
+            max-width: 1000px;
+            margin: 2rem auto;
         }
 
         .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
             color: white;
-            padding: 30px;
+            padding: 2rem;
             text-align: center;
+            border-bottom: 3px solid rgba(255, 255, 255, 0.1);
         }
 
         .chat-header h1 {
-            margin: 0 0 10px 0;
-            font-size: 28px;
+            margin: 0 0 0.5rem 0;
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
         }
 
         .chat-status {
@@ -158,12 +98,12 @@
         }
 
         .message.ai .message-avatar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
             color: white;
         }
 
         .message.user .message-avatar {
-            background: #10b981;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
 
@@ -183,7 +123,7 @@
         }
 
         .message.user .message-bubble {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
             color: white;
         }
 
@@ -214,7 +154,7 @@
         .typing-dots span {
             width: 8px;
             height: 8px;
-            background: #667eea;
+            background: #06b6d4;
             border-radius: 50%;
             animation: typing 1.4s infinite;
         }
@@ -252,14 +192,14 @@
 
         .message-input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #06b6d4;
         }
 
         .btn-send {
             width: 48px;
             height: 48px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
             color: white;
             border: none;
             cursor: pointer;
@@ -268,6 +208,7 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.2s;
+            box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
         }
 
         .btn-send:hover:not(:disabled) {
@@ -308,27 +249,47 @@
         }
 
         .suggestion-chip:hover {
-            background: #667eea;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
             color: white;
-            border-color: #667eea;
+            border-color: #06b6d4;
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <aside class="admin-sidebar">
-            <a href="./dashboard.html" class="admin-logo">🚀 Nenis y Bros</a>
-            <ul class="admin-menu">
-                <!-- Menú dinámico generado por navigation.js -->
-            </ul>
-        </aside>
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">👨‍🏫</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./estudiantes.html" class="nav-link">Estudiantes</a></li>
+            <li><a href="./sesiones.html" class="nav-link">Sesiones</a></li>
+            <li><a href="./disponibilidad-instructor.html" class="nav-link">Disponibilidad</a></li>
+            <li><a href="./cursos.html" class="nav-link">Cursos</a></li>
+            <li><a href="./mentoria-ai.html" class="nav-link active">MentorIA</a></li>
+            <li><a href="./mis-conversaciones.html" class="nav-link">Mensajes</a></li>
+        </ul>
+        <div class="admin-user">
+            <div class="mentor-avatar-glow user-avatar">M</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Mentor</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Instructor</div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
+        </div>
+    </nav>
 
-        <!-- Main Content -->
-        <main class="admin-main">
+    <header class="hero-section">
+        <h1 class="hero-welcome">🤖 <span class="text-gradient">MentorIA</span></h1>
+        <p class="hero-subtitle">Asistente virtual con inteligencia artificial para ayudarte en tu emprendimiento.</p>
+    </header>
+
+    <main class="dashboard-grid" style="max-width: 1400px; margin: 0 auto; padding: 0 2rem 2rem;">
+        <div class="col-span-12">
             <div class="chat-interface">
                 <div class="chat-header">
-                    <h1>🤖 MentorIA</h1>
                     <div class="chat-status">
                         <span class="status-indicator"></span>
                         <span>Asistente Virtual Disponible</span>
@@ -391,8 +352,8 @@
                     <button class="btn-send" id="btn-send" onclick="enviarMensaje()">📤</button>
                 </div>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
 
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
@@ -408,22 +369,19 @@
         const btnSend = document.getElementById('btn-send');
         const typingIndicator = document.getElementById('typing-indicator');
 
+        // Mostrar información del usuario
         document.addEventListener('DOMContentLoaded', () => {
-            highlightActiveLink();
+            const user = getAuthUser();
+            const userNameElement = document.getElementById('userName');
+            const avatarElements = document.querySelectorAll('.mentor-avatar-glow');
+            
+            if (user && userNameElement) {
+                userNameElement.textContent = user.nombre || 'Mentor';
+                avatarElements.forEach(avatar => {
+                    avatar.textContent = user.nombre ? user.nombre.charAt(0).toUpperCase() : 'M';
+                });
+            }
         });
-
-        function highlightActiveLink() {
-            const currentPath = window.location.pathname;
-            const links = document.querySelectorAll('.admin-menu a');
-            links.forEach(link => {
-                const linkPath = new URL(link.href).pathname;
-                if (currentPath.includes(linkPath.split('/').pop())) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        }
 
         function agregarMensaje(contenido, esUsuario = false) {
             const messageDiv = document.createElement('div');
@@ -494,12 +452,12 @@
                 enviarMensaje();
             }
         }
-    </script>
-    <script src="../../assets/js/navigation.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            initDynamicNavbar();
-        });
+
+        // Función de logout
+        function logout() {
+            localStorage.clear();
+            window.location.href = ROUTES.login;
+        }
     </script>
 </body>
 </html>
