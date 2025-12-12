@@ -333,15 +333,10 @@
 
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/instructor-conversaciones.js"></script>
     <script>
-        // Verificar autenticación y rol
-        if (!checkAuth() || !isMentor()) {
-            alert('Acceso denegado. Solo instructores pueden acceder a esta página.');
-            window.location.href = ROUTES.login;
-        }
-
-        // Datos de ejemplo
-        const conversacionesData = [
+        // Datos de ejemplo (comentados - ahora se cargan desde el backend)
+        /* const conversacionesData = [
             {
                 id: 1,
                 nombre: "Ana Martínez",
@@ -392,130 +387,7 @@
                 noLeidos: 0,
                 tipo: "estudiante"
             }
-        ];
-
-        let filtroActual = 'todas';
-        let busquedaActual = '';
-
-        function logout() {
-            localStorage.removeItem(AUTH_TOKEN_KEY);
-            localStorage.removeItem(AUTH_USER_KEY);
-            window.location.href = ROUTES.login;
-        }
-
-        function cargarDatosUsuario() {
-            const user = getAuthUser();
-            if (user) {
-                document.getElementById('userName').textContent = user.nombre || 'Mentor';
-                const avatar = document.querySelector('.mentor-avatar-glow');
-                if (avatar && user.nombre) {
-                    avatar.textContent = user.nombre.charAt(0).toUpperCase();
-                }
-            }
-        }
-
-        function filtrarConversaciones(filtro, elementoBtn) {
-            filtroActual = filtro;
-
-            // Actualizar botones
-            if (elementoBtn) {
-                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                elementoBtn.classList.add('active');
-            }
-
-            renderizarConversaciones();
-        }
-
-        function buscarConversacion(texto) {
-            busquedaActual = texto.toLowerCase();
-            renderizarConversaciones();
-        }
-
-        function renderizarConversaciones() {
-            const contenedor = document.getElementById('conversations-grid');
-            const emptyState = document.getElementById('empty-state');
-
-            let filtradas = conversacionesData.filter(c => {
-                // Filtro por Tab
-                if (filtroActual === 'no_leidas' && c.noLeidos === 0) return false;
-                if (filtroActual === 'estudiantes' && c.tipo !== 'estudiante') return false;
-
-                // Filtro por Búsqueda
-                if (busquedaActual &&
-                    !c.nombre.toLowerCase().includes(busquedaActual) &&
-                    !c.ultimoMensaje.toLowerCase().includes(busquedaActual)) {
-                    return false;
-                }
-
-                return true;
-            });
-
-            if (filtradas.length === 0) {
-                contenedor.style.display = 'none';
-                emptyState.style.display = 'flex';
-                return;
-            }
-
-            contenedor.style.display = 'grid';
-            emptyState.style.display = 'none';
-
-            contenedor.innerHTML = filtradas.map(conv => `
-                <div class="conversation-card" onclick="irAlChat(${conv.id})">
-                    <div class="card-header">
-                        <div class="conversation-avatar" style="${conv.tipo === 'sistema' ? 'background: var(--gradient-accent);' : ''}">
-                            ${conv.avatar}
-                        </div>
-                        <div class="conversation-info">
-                            <div class="conversation-name">${conv.nombre}</div>
-                            <div class="conversation-role">
-                                ${conv.tipo === 'estudiante' ? '👤' : '🛠️'} ${conv.rol}
-                            </div>
-                        </div>
-                        ${conv.noLeidos > 0 ? `
-                            <div class="unread-badge">${conv.noLeidos}</div>
-                        ` : ''}
-                    </div>
-                    
-                    <div class="conversation-preview">
-                        ${conv.ultimoMensaje}
-                    </div>
-
-                    <div class="card-footer">
-                        <div class="conversation-time">
-                            🕒 ${formatearFecha(conv.fecha)}
-                        </div>
-                        <div style="color: var(--primary); font-size: 0.8rem; font-weight: 500;">
-                            Ver chat →
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function formatearFecha(date) {
-            const ahora = new Date();
-            const diff = ahora - date;
-            const minutos = Math.floor(diff / 60000);
-            const horas = Math.floor(minutos / 60);
-            const dias = Math.floor(horas / 24);
-
-            if (minutos < 60) return `Hace ${minutos} min`;
-            if (horas < 24) return `Hace ${horas} h`;
-            if (dias === 1) return 'Ayer';
-            return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
-        }
-
-        function irAlChat(id) {
-            // Aquí redirigiríamos al chat específico
-            // window.location.href = './chat.html?id=' + id;
-            alert('Navegando al chat ' + id);
-        }
-
-        // Init
-        document.addEventListener('DOMContentLoaded', () => {
-            cargarDatosUsuario();
-            renderizarConversaciones();
-        });
+        ]; */
 
     </script>
 </body>
