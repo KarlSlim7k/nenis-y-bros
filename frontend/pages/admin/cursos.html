@@ -93,6 +93,99 @@
             border: 1px solid rgba(251, 191, 36, 0.3);
         }
 
+        /* Cursos borrador con estilo diferente */
+        .course-card-draft {
+            opacity: 0.7;
+            border: 2px dashed rgba(251, 191, 36, 0.3) !important;
+        }
+
+        .course-card-draft:hover {
+            opacity: 1;
+        }
+
+        /* Botón para crear categoría */
+        .btn-create-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 8px;
+            color: var(--primary);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .btn-create-category:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        /* Modal más ancho para formularios extendidos */
+        .modal-content-wide {
+            max-width: 700px;
+        }
+
+        /* Lista de objetivos */
+        .objetivos-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .objetivo-item {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .objetivo-item input {
+            flex: 1;
+        }
+
+        .btn-remove-item {
+            padding: 0.5rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 6px;
+            color: #f87171;
+            cursor: pointer;
+        }
+
+        /* Tabs para organizar información */
+        .form-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .form-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .form-tab-content {
+            display: none;
+        }
+
+        .form-tab-content.active {
+            display: block;
+        }
+
         .course-content {
             padding: 1.5rem;
             flex: 1;
@@ -490,7 +583,7 @@
 
     <!-- Create Course Modal -->
     <div class="modal-overlay" id="createCourseModal">
-        <div class="modal-content">
+        <div class="modal-content modal-content-wide">
             <div class="modal-header">
                 <h3 class="modal-title">
                     <span style="font-size: 1.5rem;">🎓</span>
@@ -500,59 +593,124 @@
             </div>
             <form id="createCourseForm" onsubmit="handleCreateCourse(event)">
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label">Título del Curso *</label>
-                        <input type="text" name="titulo" class="form-input" required minlength="5"
-                            placeholder="Ej: Marketing Digital para Principiantes">
+                    <!-- Tabs -->
+                    <div class="form-tabs">
+                        <button type="button" class="form-tab active" onclick="switchTab(event, 'create-basic')">📋 Básico</button>
+                        <button type="button" class="form-tab" onclick="switchTab(event, 'create-details')">📝 Detalles</button>
+                        <button type="button" class="form-tab" onclick="switchTab(event, 'create-config')">⚙️ Configuración</button>
                     </div>
 
-                    <div class="form-row">
+                    <!-- Tab: Básico -->
+                    <div id="create-basic" class="form-tab-content active">
+                        <div class="form-group">
+                            <label class="form-label">Título del Curso *</label>
+                            <input type="text" name="titulo" class="form-input" required minlength="5"
+                                placeholder="Ej: Marketing Digital para Principiantes">
+                        </div>
+
                         <div class="form-group">
                             <label class="form-label">Categoría *</label>
                             <select name="id_categoria" id="id_categoria" class="form-select" required>
                                 <option value="">Cargando...</option>
                             </select>
+                            <button type="button" class="btn-create-category" onclick="openQuickCategoryModal()">
+                                <span>➕</span> Crear nueva categoría
+                            </button>
                         </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Nivel *</label>
+                                <select name="nivel" class="form-select" required>
+                                    <option value="principiante">🌱 Principiante</option>
+                                    <option value="intermedio">📈 Intermedio</option>
+                                    <option value="avanzado">🚀 Avanzado</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Duración (horas) *</label>
+                                <input type="number" name="duracion_horas" class="form-input" min="1" value="8" required>
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label class="form-label">Nivel</label>
-                            <select name="nivel" class="form-select">
-                                <option value="principiante">Principiante</option>
-                                <option value="intermedio">Intermedio</option>
-                                <option value="avanzado">Avanzado</option>
-                            </select>
+                            <label class="form-label">Descripción Corta *</label>
+                            <textarea name="descripcion" class="form-textarea" required rows="3"
+                                placeholder="Descripción breve que aparecerá en la tarjeta del curso (max 200 caracteres)"></textarea>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Descripción</label>
-                        <textarea name="descripcion" class="form-textarea"
-                            placeholder="¿De qué trata este curso?"></textarea>
+                    <!-- Tab: Detalles -->
+                    <div id="create-details" class="form-tab-content">
+                        <div class="form-group">
+                            <label class="form-label">Descripción Completa</label>
+                            <textarea name="descripcion_larga" class="form-textarea" rows="5"
+                                placeholder="Descripción detallada del curso, lo que aprenderán, para quién es, etc."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Objetivos de Aprendizaje</label>
+                            <div class="objetivos-list" id="objetivos-list-create">
+                                <div class="objetivo-item">
+                                    <input type="text" class="form-input" placeholder="Ej: Dominar las bases del marketing digital"
+                                        data-objetivo>
+                                    <button type="button" class="btn-remove-item" onclick="removeObjetivo(this)">✕</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-create-category" onclick="addObjetivo('create')" style="width: 100%;">
+                                <span>➕</span> Agregar objetivo
+                            </button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Requisitos Previos</label>
+                            <textarea name="requisitos" class="form-textarea" rows="3"
+                                placeholder="Ej: Conocimientos básicos de computación, acceso a internet"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Icono del Curso (emoji)</label>
+                            <input type="text" name="icono" class="form-input" placeholder="📚" maxlength="2">
+                        </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Duración (horas)</label>
-                            <input type="number" name="duracion_horas" class="form-input" min="1" value="1">
+                    <!-- Tab: Configuración -->
+                    <div id="create-config" class="form-tab-content">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Estado Inicial *</label>
+                                <select name="estado" class="form-select" required>
+                                    <option value="borrador">📝 Borrador (no visible)</option>
+                                    <option value="publicado">✅ Publicado (visible)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Acceso *</label>
+                                <select name="es_gratuito" class="form-select" required>
+                                    <option value="1">🆓 Gratuito</option>
+                                    <option value="0">💰 De Pago</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Estado Inicial</label>
-                            <select name="estado" class="form-select">
-                                <option value="borrador">Borrador</option>
-                                <option value="publicado">Publicado</option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Precio ($)</label>
-                            <input type="number" name="precio" class="form-input" min="0" step="0.01" value="0">
+                            <input type="number" name="precio" class="form-input" min="0" step="0.01" value="0"
+                                placeholder="0.00">
+                            <small style="color: var(--text-muted); font-size: 0.85rem;">Dejar en 0 si es gratuito</small>
                         </div>
+
                         <div class="form-group">
-                            <label class="form-label">Tipo de Acceso</label>
-                            <select name="es_gratuito" class="form-select">
-                                <option value="1">Gratuito</option>
-                                <option value="0">De Pago</option>
+                            <label class="form-label">Número Máximo de Estudiantes</label>
+                            <input type="number" name="max_estudiantes" class="form-input" min="0" value="0"
+                                placeholder="0 = ilimitado">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Certificado al Completar</label>
+                            <select name="certificado" class="form-select">
+                                <option value="1">✓ Sí, otorgar certificado</option>
+                                <option value="0">✗ No otorgar certificado</option>
                             </select>
                         </div>
                     </div>
@@ -568,7 +726,7 @@
 
     <!-- Edit Course Modal -->
     <div class="modal-overlay" id="editCourseModal">
-        <div class="modal-content">
+        <div class="modal-content modal-content-wide">
             <div class="modal-header">
                 <h3 class="modal-title">
                     <span style="font-size: 1.5rem;">✏️</span>
@@ -579,59 +737,122 @@
             <form id="editCourseForm" onsubmit="handleEditCourse(event)">
                 <input type="hidden" id="editCursoId">
                 <div class="modal-body">
-                    <div class="form-group">
-                        <label class="form-label">Título del Curso *</label>
-                        <input type="text" id="editTitulo" name="titulo" class="form-input" required minlength="5"
-                            placeholder="Ej: Marketing Digital para Principiantes">
+                    <!-- Tabs -->
+                    <div class="form-tabs">
+                        <button type="button" class="form-tab active" onclick="switchTab(event, 'edit-basic')">📋 Básico</button>
+                        <button type="button" class="form-tab" onclick="switchTab(event, 'edit-details')">📝 Detalles</button>
+                        <button type="button" class="form-tab" onclick="switchTab(event, 'edit-config')">⚙️ Configuración</button>
                     </div>
 
-                    <div class="form-row">
+                    <!-- Tab: Básico -->
+                    <div id="edit-basic" class="form-tab-content active">
+                        <div class="form-group">
+                            <label class="form-label">Título del Curso *</label>
+                            <input type="text" id="editTitulo" name="titulo" class="form-input" required minlength="5"
+                                placeholder="Ej: Marketing Digital para Principiantes">
+                        </div>
+
                         <div class="form-group">
                             <label class="form-label">Categoría *</label>
                             <select id="editCategoria" name="id_categoria" class="form-select" required>
                                 <option value="">Cargando...</option>
                             </select>
+                            <button type="button" class="btn-create-category" onclick="openQuickCategoryModal()">
+                                <span>➕</span> Crear nueva categoría
+                            </button>
                         </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Nivel *</label>
+                                <select id="editNivel" name="nivel" class="form-select" required>
+                                    <option value="principiante">🌱 Principiante</option>
+                                    <option value="intermedio">📈 Intermedio</option>
+                                    <option value="avanzado">🚀 Avanzado</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Duración (horas) *</label>
+                                <input type="number" id="editDuracion" name="duracion_horas" class="form-input" min="1" value="8" required>
+                            </div>
+                        </div>
+
                         <div class="form-group">
-                            <label class="form-label">Nivel</label>
-                            <select id="editNivel" name="nivel" class="form-select">
-                                <option value="principiante">Principiante</option>
-                                <option value="intermedio">Intermedio</option>
-                                <option value="avanzado">Avanzado</option>
-                            </select>
+                            <label class="form-label">Descripción Corta *</label>
+                            <textarea id="editDescripcion" name="descripcion" class="form-textarea" required rows="3"
+                                placeholder="Descripción breve que aparecerá en la tarjeta del curso"></textarea>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Descripción</label>
-                        <textarea id="editDescripcion" name="descripcion" class="form-textarea"
-                            placeholder="¿De qué trata este curso?"></textarea>
+                    <!-- Tab: Detalles -->
+                    <div id="edit-details" class="form-tab-content">
+                        <div class="form-group">
+                            <label class="form-label">Descripción Completa</label>
+                            <textarea id="editDescripcionLarga" name="descripcion_larga" class="form-textarea" rows="5"
+                                placeholder="Descripción detallada del curso"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Objetivos de Aprendizaje</label>
+                            <div class="objetivos-list" id="objetivos-list-edit">
+                                <div class="objetivo-item">
+                                    <input type="text" class="form-input" placeholder="Ej: Dominar las bases del marketing digital"
+                                        data-objetivo>
+                                    <button type="button" class="btn-remove-item" onclick="removeObjetivo(this)">✕</button>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-create-category" onclick="addObjetivo('edit')" style="width: 100%;">
+                                <span>➕</span> Agregar objetivo
+                            </button>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Requisitos Previos</label>
+                            <textarea id="editRequisitos" name="requisitos" class="form-textarea" rows="3"
+                                placeholder="Ej: Conocimientos básicos de computación"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Icono del Curso (emoji)</label>
+                            <input type="text" id="editIcono" name="icono" class="form-input" placeholder="📚" maxlength="2">
+                        </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Duración (horas)</label>
-                            <input type="number" id="editDuracion" name="duracion_horas" class="form-input" min="1" value="1">
+                    <!-- Tab: Configuración -->
+                    <div id="edit-config" class="form-tab-content">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Estado *</label>
+                                <select id="editEstado" name="estado" class="form-select" required>
+                                    <option value="borrador">📝 Borrador (no visible)</option>
+                                    <option value="publicado">✅ Publicado (visible)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Tipo de Acceso *</label>
+                                <select id="editGratuito" name="es_gratuito" class="form-select" required>
+                                    <option value="1">🆓 Gratuito</option>
+                                    <option value="0">💰 De Pago</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Estado</label>
-                            <select id="editEstado" name="estado" class="form-select">
-                                <option value="borrador">Borrador</option>
-                                <option value="publicado">Publicado</option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Precio ($)</label>
                             <input type="number" id="editPrecio" name="precio" class="form-input" min="0" step="0.01" value="0">
+                            <small style="color: var(--text-muted); font-size: 0.85rem;">Dejar en 0 si es gratuito</small>
                         </div>
+
                         <div class="form-group">
-                            <label class="form-label">Tipo de Acceso</label>
-                            <select id="editGratuito" name="es_gratuito" class="form-select">
-                                <option value="1">Gratuito</option>
-                                <option value="0">De Pago</option>
+                            <label class="form-label">Número Máximo de Estudiantes</label>
+                            <input type="number" id="editMaxEstudiantes" name="max_estudiantes" class="form-input" min="0" value="0">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Certificado al Completar</label>
+                            <select id="editCertificado" name="certificado" class="form-select">
+                                <option value="1">✓ Sí, otorgar certificado</option>
+                                <option value="0">✗ No otorgar certificado</option>
                             </select>
                         </div>
                     </div>
@@ -800,37 +1021,49 @@
         function renderCourseCard(curso) {
             const gradient = getGradient(curso.id_categoria);
             const statusClass = curso.estado === 'publicado' ? 'status-published' : 'status-draft';
-            const statusLabel = curso.estado === 'publicado' ? 'Publicado' : 'Borrador';
+            const statusLabel = curso.estado === 'publicado' ? '✅ Publicado' : '📝 Borrador';
+            const isDraft = curso.estado === 'borrador';
+            const cardClass = isDraft ? 'course-card-modern course-card-draft' : 'course-card-modern';
+            
+            // Información adicional para admin
+            const fechaCreacion = curso.fecha_creacion ? new Date(curso.fecha_creacion).toLocaleDateString('es-MX', {day: 'numeric', month: 'short'}) : 'N/A';
+            const nivelEmoji = curso.nivel === 'principiante' ? '🌱' : curso.nivel === 'intermedio' ? '📈' : '🚀';
 
             return `
-                <div class="course-card-modern">
-                    <div class="course-image-box" style="background: ${gradient}">
-                        ${curso.icono || '📚'}
+                <div class="${cardClass}">
+                    <div class="course-image-box" style="background: ${gradient}; ${isDraft ? 'opacity: 0.6;' : ''}">
+                        <span style="font-size: 3.5rem;">${curso.icono || '📚'}</span>
                         <span class="course-status-badge ${statusClass}">${statusLabel}</span>
                     </div>
                     <div class="course-content">
                         <div class="course-title">${curso.titulo}</div>
                         <div class="course-meta">
-                            <span>⏱️ ${curso.duracion_horas || 0}h</span>
-                            <span>👥 ${curso.total_inscritos || 0} alumnos</span>
+                            <span title="Duración">⏱️ ${curso.duracion_horas || 0}h</span>
+                            <span title="Estudiantes inscritos">👥 ${curso.total_inscritos || 0}</span>
+                            <span title="Nivel">${nivelEmoji} ${curso.nivel || 'N/A'}</span>
                         </div>
                         <div class="course-description">
                             ${curso.descripcion || 'Sin descripción disponible.'}
                         </div>
+                        <div style="font-size: 0.75rem; color: var(--text-dim); margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.05);">
+                            <span title="Fecha de creación">📅 ${fechaCreacion}</span>
+                            ${curso.es_gratuito ? '<span style="margin-left: 0.5rem;">🆓 Gratis</span>' : `<span style="margin-left: 0.5rem;">💰 $${curso.precio || 0}</span>`}
+                        </div>
                         <div class="course-actions">
-                            <button class="btn-action" onclick="verCurso(${curso.id_curso})">
+                            <button class="btn-action" onclick="verCurso(${curso.id_curso})" title="Ver detalles">
                                 👁️ Ver
                             </button>
-                            <button class="btn-action" onclick='editarCurso(${JSON.stringify(curso).replace(/'/g, "&#39;")})'>
+                            <button class="btn-action" onclick='editarCurso(${JSON.stringify(curso).replace(/'/g, "&#39;")})' title="Editar curso">
                                 ✏️ Editar
                             </button>
                             <button class="btn-action ${curso.estado === 'publicado' ? 'warning' : 'primary'}" 
-                                    onclick="cambiarEstado(${curso.id_curso}, '${curso.estado}')">
-                                ${curso.estado === 'publicado' ? '📝 Borrador' : '✅ Publicar'}
+                                    onclick="cambiarEstado(${curso.id_curso}, '${curso.estado}')" 
+                                    title="${curso.estado === 'publicado' ? 'Pasar a borrador' : 'Publicar curso'}">
+                                ${curso.estado === 'publicado' ? '📝 Ocultar' : '✅ Publicar'}
                             </button>
                             <button class="btn-action" style="color: #fca5a5; border-color: rgba(239, 68, 68, 0.3);" 
-                                    onclick="eliminarCurso(${curso.id_curso}, '${curso.titulo}')">
-                                🗑️ Eliminar
+                                    onclick="eliminarCurso(${curso.id_curso}, '${curso.titulo}')" title="Eliminar curso">
+                                🗑️
                             </button>
                         </div>
                     </div>
@@ -857,15 +1090,25 @@
             btn.disabled = true;
 
             const formData = new FormData(e.target);
+            
+            // Recopilar objetivos
+            const objetivos = getObjetivos('createCourseForm');
+            
             const data = {
                 titulo: formData.get('titulo'),
                 id_categoria: parseInt(formData.get('id_categoria')),
                 descripcion: formData.get('descripcion'),
+                descripcion_larga: formData.get('descripcion_larga') || null,
                 nivel: formData.get('nivel'),
                 duracion_horas: parseInt(formData.get('duracion_horas')) || 1,
                 estado: formData.get('estado'),
                 precio: parseFloat(formData.get('precio')) || 0,
-                es_gratuito: parseInt(formData.get('es_gratuito'))
+                es_gratuito: parseInt(formData.get('es_gratuito')),
+                icono: formData.get('icono') || null,
+                requisitos: formData.get('requisitos') || null,
+                objetivos: objetivos.length > 0 ? JSON.stringify(objetivos) : null,
+                max_estudiantes: parseInt(formData.get('max_estudiantes')) || 0,
+                certificado: parseInt(formData.get('certificado')) || 0
             };
 
             try {
@@ -873,6 +1116,7 @@
                 if (response.success) {
                     showNotification('✅ Curso creado exitosamente', 'success');
                     closeModal('createCourseModal');
+                    e.target.reset();
                     cargarCursos();
                 } else {
                     showNotification('❌ ' + (response.message || 'Error al crear curso'), 'error');
@@ -908,16 +1152,231 @@
         }
 
         function editarCurso(curso) {
+            // Tab básico
             document.getElementById('editCursoId').value = curso.id_curso;
             document.getElementById('editTitulo').value = curso.titulo;
             document.getElementById('editCategoria').value = curso.id_categoria;
             document.getElementById('editNivel').value = curso.nivel || 'principiante';
             document.getElementById('editDescripcion').value = curso.descripcion || '';
             document.getElementById('editDuracion').value = curso.duracion_horas || 1;
+            
+            // Tab detalles
+            document.getElementById('editDescripcionLarga').value = curso.descripcion_larga || '';
+            document.getElementById('editRequisitos').value = curso.requisitos || '';
+            document.getElementById('editIcono').value = curso.icono || '';
+            
+            // Cargar objetivos si existen
+            const objetivosList = document.getElementById('objetivos-list-edit');
+            objetivosList.innerHTML = ''; // Limpiar objetivos previos
+            
+            if (curso.objetivos) {
+                try {
+                    const objetivos = typeof curso.objetivos === 'string' ? JSON.parse(curso.objetivos) : curso.objetivos;
+                    if (Array.isArray(objetivos) && objetivos.length > 0) {
+                        objetivos.forEach(objetivo => {
+                            const item = document.createElement('div');
+                            item.className = 'objetivo-item';
+                            item.innerHTML = `
+                                <input type="text" class="form-input" value="${objetivo}" data-objetivo>
+                                <button type="button" class="btn-remove-item" onclick="removeObjetivo(this)">✕</button>
+                            `;
+                            objetivosList.appendChild(item);
+                        });
+                    } else {
+                        addDefaultObjetivo('edit');
+                    }
+                } catch (e) {
+                    addDefaultObjetivo('edit');
+                }
+            } else {
+                addDefaultObjetivo('edit');
+            }
+            
+            // Tab configuración
             document.getElementById('editEstado').value = curso.estado || 'borrador';
             document.getElementById('editPrecio').value = curso.precio || 0;
             document.getElementById('editGratuito').value = curso.es_gratuito ? '1' : '0';
+            document.getElementById('editMaxEstudiantes').value = curso.max_estudiantes || 0;
+            document.getElementById('editCertificado').value = curso.certificado || 0;
+            
+            // Reset a la primera tab
+            const editModal = document.getElementById('editCourseModal');
+            editModal.querySelectorAll('.form-tab').forEach(tab => tab.classList.remove('active'));
+            editModal.querySelectorAll('.form-tab-content').forEach(content => content.classList.remove('active'));
+            editModal.querySelector('.form-tab').classList.add('active');
+            editModal.querySelector('#edit-basic').classList.add('active');
+            
             openModal('editCourseModal');
+        }
+        
+        function addDefaultObjetivo(formType) {
+            const listId = formType === 'create' ? 'objetivos-list-create' : 'objetivos-list-edit';
+            const list = document.getElementById(listId);
+            list.innerHTML = `
+                <div class="objetivo-item">
+                    <input type="text" class="form-input" placeholder="Ej: Dominar las bases del marketing digital" data-objetivo>
+                    <button type="button" class="btn-remove-item" onclick="removeObjetivo(this)">✕</button>
+                </div>
+            `;
+        }
+
+        // Switch tabs en el formulario
+        function switchTab(event, tabId) {
+            event.preventDefault();
+            
+            // Remover clase active de todos los tabs y contenidos
+            const allTabs = event.target.closest('.form-tabs').querySelectorAll('.form-tab');
+            const allContents = event.target.closest('form').querySelectorAll('.form-tab-content');
+            
+            allTabs.forEach(tab => tab.classList.remove('active'));
+            allContents.forEach(content => content.classList.remove('active'));
+            
+            // Activar tab seleccionado
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Agregar objetivo a la lista
+        function addObjetivo(formType) {
+            const listId = formType === 'create' ? 'objetivos-list-create' : 'objetivos-list-edit';
+            const list = document.getElementById(listId);
+            
+            const newItem = document.createElement('div');
+            newItem.className = 'objetivo-item';
+            newItem.innerHTML = `
+                <input type="text" class="form-input" placeholder="Ej: Dominar las bases del marketing digital" data-objetivo>
+                <button type="button" class="btn-remove-item" onclick="removeObjetivo(this)">✕</button>
+            `;
+            
+            list.appendChild(newItem);
+        }
+
+        // Remover objetivo de la lista
+        function removeObjetivo(button) {
+            const item = button.closest('.objetivo-item');
+            const list = item.parentElement;
+            
+            // No permitir eliminar si solo hay un objetivo
+            if (list.querySelectorAll('.objetivo-item').length > 1) {
+                item.remove();
+            } else {
+                showNotification('⚠️ Debe haber al menos un campo de objetivo', 'warning');
+            }
+        }
+
+        // Recopilar objetivos del formulario
+        function getObjetivos(formId) {
+            const form = document.getElementById(formId);
+            const inputs = form.querySelectorAll('[data-objetivo]');
+            const objetivos = [];
+            
+            inputs.forEach(input => {
+                if (input.value.trim()) {
+                    objetivos.push(input.value.trim());
+                }
+            });
+            
+            return objetivos;
+        }
+
+        // Modal rápido para crear categoría sin salir del formulario de curso
+        function openQuickCategoryModal() {
+            const modalHTML = `
+                <div class="modal-overlay active" id="quickCategoryModal" style="z-index: 10001;">
+                    <div class="modal-content" style="max-width: 450px;">
+                        <div class="modal-header">
+                            <h3 class="modal-title">
+                                <span style="font-size: 1.5rem;">📁</span>
+                                Crear Categoría Rápida
+                            </h3>
+                            <button class="btn-close" onclick="closeQuickCategoryModal()">✕</button>
+                        </div>
+                        <form id="quickCategoryForm" onsubmit="handleQuickCreateCategory(event)">
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label class="form-label">Nombre de la Categoría *</label>
+                                    <input type="text" name="nombre" class="form-input" required 
+                                        placeholder="Ej: Marketing Digital" autofocus>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">Color</label>
+                                        <input type="color" name="color" class="form-input" value="#6366f1">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Icono</label>
+                                        <input type="text" name="icono" class="form-input" placeholder="📚" maxlength="2">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Descripción</label>
+                                    <textarea name="descripcion" class="form-textarea" rows="2" 
+                                        placeholder="Breve descripción de la categoría"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn-outline" onclick="closeQuickCategoryModal()">Cancelar</button>
+                                <button type="submit" class="btn-modern">Crear y Seleccionar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        function closeQuickCategoryModal() {
+            const modal = document.getElementById('quickCategoryModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        async function handleQuickCreateCategory(e) {
+            e.preventDefault();
+            const form = e.target;
+            const btn = form.querySelector('button[type="submit"]');
+            const originalText = btn.textContent;
+            
+            btn.innerHTML = '<span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span> Creando...';
+            btn.disabled = true;
+
+            try {
+                const formData = new FormData(form);
+                const data = {
+                    nombre: formData.get('nombre'),
+                    descripcion: formData.get('descripcion') || '',
+                    color: formData.get('color') || '#6366f1',
+                    icono: formData.get('icono') || '📚',
+                    activo: 1
+                };
+
+                const response = await apiPost('/categories', data);
+                
+                if (response.success) {
+                    showNotification('✅ Categoría creada exitosamente', 'success');
+                    
+                    // Recargar el dropdown de categorías
+                    await loadCategorias();
+                    
+                    // Seleccionar la nueva categoría en el dropdown
+                    const selectCategoria = document.getElementById('id_categoria');
+                    if (selectCategoria && response.data.id_categoria) {
+                        selectCategoria.value = response.data.id_categoria;
+                    }
+                    
+                    closeQuickCategoryModal();
+                } else {
+                    showNotification(response.message || '❌ Error al crear categoría', 'error');
+                }
+            } catch (error) {
+                console.error(error);
+                showNotification('❌ Error de conexión', 'error');
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
         }
 
         async function handleEditCourse(e) {
@@ -929,15 +1388,25 @@
 
             const cursoId = document.getElementById('editCursoId').value;
             const formData = new FormData(e.target);
+            
+            // Recopilar objetivos
+            const objetivos = getObjetivos('editCourseForm');
+            
             const data = {
                 titulo: formData.get('titulo'),
                 id_categoria: parseInt(formData.get('id_categoria')),
                 descripcion: formData.get('descripcion'),
+                descripcion_larga: formData.get('descripcion_larga') || null,
                 nivel: formData.get('nivel'),
                 duracion_horas: parseInt(formData.get('duracion_horas')) || 1,
                 estado: formData.get('estado'),
                 precio: parseFloat(formData.get('precio')) || 0,
-                es_gratuito: parseInt(formData.get('es_gratuito'))
+                es_gratuito: parseInt(formData.get('es_gratuito')),
+                icono: formData.get('icono') || null,
+                requisitos: formData.get('requisitos') || null,
+                objetivos: objetivos.length > 0 ? JSON.stringify(objetivos) : null,
+                max_estudiantes: parseInt(formData.get('max_estudiantes')) || 0,
+                certificado: parseInt(formData.get('certificado')) || 0
             };
 
             try {

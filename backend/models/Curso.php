@@ -21,23 +21,42 @@ class Curso {
      */
     public function create($data) {
         $query = "INSERT INTO cursos (
-            id_categoria, id_instructor, titulo, slug, descripcion, descripcion_corta,
-            imagen_portada, nivel, duracion_estimada, precio, estado, fecha_publicacion
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            id_categoria, id_instructor, titulo, descripcion, descripcion_larga,
+            objetivo_aprendizaje, requisitos, objetivos,
+            imagen_portada, icono, nivel, duracion_horas, 
+            es_gratuito, precio, max_estudiantes, certificado,
+            estado, fecha_publicacion
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        // Mapear nivel del frontend al formato de la base de datos
+        $nivelMap = [
+            'principiante' => 'basico',
+            'intermedio' => 'intermedio',
+            'avanzado' => 'avanzado'
+        ];
+        
+        $nivel = $data['nivel'] ?? 'principiante';
+        $nivelDB = $nivelMap[$nivel] ?? 'basico';
         
         $params = [
             $data['id_categoria'],
             $data['id_instructor'],
             $data['titulo'],
-            $data['slug'],
             $data['descripcion'] ?? null,
-            $data['descripcion_corta'] ?? null,
+            $data['descripcion_larga'] ?? null,
+            $data['objetivo_aprendizaje'] ?? null,
+            $data['requisitos'] ?? null,
+            $data['objetivos'] ?? null,
             $data['imagen_portada'] ?? null,
-            $data['nivel'] ?? 'principiante',
-            $data['duracion_estimada'] ?? 0,
+            $data['icono'] ?? '📚',
+            $nivelDB,
+            $data['duracion_horas'] ?? 1,
+            $data['es_gratuito'] ?? 1,
             $data['precio'] ?? 0.00,
+            $data['max_estudiantes'] ?? 0,
+            $data['certificado'] ?? 0,
             $data['estado'] ?? 'borrador',
-            $data['fecha_publicacion'] ?? null
+            ($data['estado'] ?? 'borrador') === 'publicado' ? date('Y-m-d H:i:s') : null
         ];
         
         try {
@@ -79,7 +98,20 @@ class Curso {
             LEFT JOIN usuarios u ON c.id_instructor = u.id_usuario
             WHERE c.id_curso = ?";
         
-        return $this->db->fetchOne($query, [$id]);
+        $curso = $this->db->fetchOne($query, [$id]);
+        
+        // Mapear nivel de DB al formato del frontend
+        if ($curso && isset($curso['nivel'])) {
+            $nivelMap = [
+                'basico' => 'principiante',
+                'intermedio' => 'intermedio',
+                'avanzado' => 'avanzado',
+                'experto' => 'avanzado'
+            ];
+            $curso['nivel'] = $nivelMap[$curso['nivel']] ?? $curso['nivel'];
+        }
+        
+        return $curso;
     }
     
     /**
@@ -175,6 +207,20 @@ class Curso {
         
         $cursos = $this->db->fetchAll($query, $params);
         
+        // Mapear nivel de DB al formato del frontend
+        $nivelMap = [
+            'basico' => 'principiante',
+            'intermedio' => 'intermedio',
+            'avanzado' => 'avanzado',
+            'experto' => 'avanzado'
+        ];
+        
+        foreach ($cursos as &$curso) {
+            if (isset($curso['nivel'])) {
+                $curso['nivel'] = $nivelMap[$curso['nivel']] ?? $curso['nivel'];
+            }
+        }
+        
         return [
             'data' => $cursos,
             'pagination' => [
@@ -196,15 +242,36 @@ class Curso {
         $params = [];
         
         $allowedFields = [
-            'id_categoria', 'titulo', 'slug', 'descripcion', 'descripcion_corta',
-            'imagen_portada', 'nivel', 'duracion_estimada', 'precio', 'estado',
-            'fecha_publicacion'
+            'id_categoria', 'id_instructor', 'titulo', 'descripcion', 'descripcion_larga',
+            'objetivo_aprendizaje', 'requisitos', 'objetivos',
+            'imagen_portada', 'icono', 'nivel', 'duracion_horas', 
+            'es_gratuito', 'precio', 'max_estudiantes', 'certificado',
+            'estado', 'fecha_publicacion'
+        ];
+        
+        // Mapear nivel del frontend al formato de la base de datos
+        $nivelMap = [
+            'principiante' => 'basico',
+            'intermedio' => 'intermedio',
+            'avanzado' => 'avanzado'
         ];
         
         foreach ($allowedFields as $field) {
             if (array_key_exists($field, $data)) {
+                $value = $data[$field];
+                
+                // Convertir nivel si es necesario
+                if ($field === 'nivel' && isset($nivelMap[$value])) {
+                    $value = $nivelMap[$value];
+                }
+                
+                // Actualizar fecha_publicacion si se cambia estado a publicado
+                if ($field === 'estado' && $value === 'publicado') {
+                    $fields[] = "fecha_publicacion = NOW()";
+                }
+                
                 $fields[] = "$field = ?";
-                $params[] = $data[$field];
+                $params[] = $value;
             }
         }
         
