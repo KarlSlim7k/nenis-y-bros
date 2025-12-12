@@ -893,6 +893,13 @@
                 // Reset form if opening create modal
                 if (modalId === 'createCourseModal') {
                     document.getElementById('createCourseForm').reset();
+                    // Reset a la primera tab
+                    modal.querySelectorAll('.form-tab').forEach(tab => tab.classList.remove('active'));
+                    modal.querySelectorAll('.form-tab-content').forEach(content => content.classList.remove('active'));
+                    modal.querySelector('.form-tab').classList.add('active');
+                    modal.querySelector('#create-basic').classList.add('active');
+                    // Reset objetivos a un solo campo vacío
+                    addDefaultObjetivo('create');
                 }
             }
         }
@@ -1089,29 +1096,31 @@
             btn.innerHTML = '<span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span> Creando...';
             btn.disabled = true;
 
-            const formData = new FormData(e.target);
-            
-            // Recopilar objetivos
-            const objetivos = getObjetivos('createCourseForm');
-            
-            const data = {
-                titulo: formData.get('titulo'),
-                id_categoria: parseInt(formData.get('id_categoria')),
-                descripcion: formData.get('descripcion'),
-                descripcion_larga: formData.get('descripcion_larga') || null,
-                nivel: formData.get('nivel'),
-                duracion_horas: parseInt(formData.get('duracion_horas')) || 1,
-                estado: formData.get('estado'),
-                precio: parseFloat(formData.get('precio')) || 0,
-                es_gratuito: parseInt(formData.get('es_gratuito')),
-                icono: formData.get('icono') || null,
-                requisitos: formData.get('requisitos') || null,
-                objetivos: objetivos.length > 0 ? JSON.stringify(objetivos) : null,
-                max_estudiantes: parseInt(formData.get('max_estudiantes')) || 0,
-                certificado: parseInt(formData.get('certificado')) || 0
-            };
-
             try {
+                const formData = new FormData(e.target);
+                
+                // Recopilar objetivos
+                const objetivos = getObjetivos('createCourseForm');
+                
+                const data = {
+                    titulo: formData.get('titulo'),
+                    id_categoria: parseInt(formData.get('id_categoria')),
+                    descripcion: formData.get('descripcion') || '',
+                    descripcion_larga: formData.get('descripcion_larga') || '',
+                    nivel: formData.get('nivel') || 'principiante',
+                    duracion_horas: parseInt(formData.get('duracion_horas')) || 1,
+                    estado: formData.get('estado') || 'borrador',
+                    precio: parseFloat(formData.get('precio')) || 0,
+                    es_gratuito: parseInt(formData.get('es_gratuito')) || 1,
+                    icono: formData.get('icono') || '📚',
+                    requisitos: formData.get('requisitos') || '',
+                    objetivos: objetivos.length > 0 ? JSON.stringify(objetivos) : '',
+                    max_estudiantes: parseInt(formData.get('max_estudiantes')) || 0,
+                    certificado: parseInt(formData.get('certificado')) || 0
+                };
+
+                console.log('Datos a enviar:', data);
+
                 const response = await apiPost('/courses', data);
                 if (response.success) {
                     showNotification('✅ Curso creado exitosamente', 'success');
@@ -1212,17 +1221,20 @@
         function addDefaultObjetivo(formType) {
             const listId = formType === 'create' ? 'objetivos-list-create' : 'objetivos-list-edit';
             const list = document.getElementById(listId);
-            list.innerHTML = `
-                <div class="objetivo-item">
-                    <input type="text" class="form-input" placeholder="Ej: Dominar las bases del marketing digital" data-objetivo>
-                    <button type="button" class="btn-remove-item" onclick="removeObjetivo(this)">✕</button>
-                </div>
-            `;
+            if (list) {
+                list.innerHTML = `
+                    <div class="objetivo-item">
+                        <input type="text" class="form-input" placeholder="Ej: Dominar las bases del marketing digital" data-objetivo>
+                        <button type="button" class="btn-remove-item" onclick="removeObjetivo(this)">✕</button>
+                    </div>
+                `;
+            }
         }
 
         // Switch tabs en el formulario
         function switchTab(event, tabId) {
             event.preventDefault();
+            event.stopPropagation();
             
             // Remover clase active de todos los tabs y contenidos
             const allTabs = event.target.closest('.form-tabs').querySelectorAll('.form-tab');
@@ -1233,7 +1245,10 @@
             
             // Activar tab seleccionado
             event.target.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            const targetContent = document.getElementById(tabId);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
         }
 
         // Agregar objetivo a la lista
@@ -1358,12 +1373,17 @@
                     showNotification('✅ Categoría creada exitosamente', 'success');
                     
                     // Recargar el dropdown de categorías
-                    await loadCategorias();
+                    await cargarCategorias();
                     
-                    // Seleccionar la nueva categoría en el dropdown
-                    const selectCategoria = document.getElementById('id_categoria');
-                    if (selectCategoria && response.data.id_categoria) {
-                        selectCategoria.value = response.data.id_categoria;
+                    // Seleccionar la nueva categoría en ambos dropdowns (crear y editar)
+                    const selectCategoriaCreate = document.getElementById('id_categoria');
+                    const selectCategoriaEdit = document.getElementById('editCategoria');
+                    
+                    if (selectCategoriaCreate && response.data.id_categoria) {
+                        selectCategoriaCreate.value = response.data.id_categoria;
+                    }
+                    if (selectCategoriaEdit && response.data.id_categoria) {
+                        selectCategoriaEdit.value = response.data.id_categoria;
                     }
                     
                     closeQuickCategoryModal();
@@ -1387,29 +1407,31 @@
             btn.disabled = true;
 
             const cursoId = document.getElementById('editCursoId').value;
-            const formData = new FormData(e.target);
-            
-            // Recopilar objetivos
-            const objetivos = getObjetivos('editCourseForm');
-            
-            const data = {
-                titulo: formData.get('titulo'),
-                id_categoria: parseInt(formData.get('id_categoria')),
-                descripcion: formData.get('descripcion'),
-                descripcion_larga: formData.get('descripcion_larga') || null,
-                nivel: formData.get('nivel'),
-                duracion_horas: parseInt(formData.get('duracion_horas')) || 1,
-                estado: formData.get('estado'),
-                precio: parseFloat(formData.get('precio')) || 0,
-                es_gratuito: parseInt(formData.get('es_gratuito')),
-                icono: formData.get('icono') || null,
-                requisitos: formData.get('requisitos') || null,
-                objetivos: objetivos.length > 0 ? JSON.stringify(objetivos) : null,
-                max_estudiantes: parseInt(formData.get('max_estudiantes')) || 0,
-                certificado: parseInt(formData.get('certificado')) || 0
-            };
-
             try {
+                const formData = new FormData(e.target);
+                
+                // Recopilar objetivos
+                const objetivos = getObjetivos('editCourseForm');
+                
+                const data = {
+                    titulo: formData.get('titulo'),
+                    id_categoria: parseInt(formData.get('id_categoria')),
+                    descripcion: formData.get('descripcion') || '',
+                    descripcion_larga: formData.get('descripcion_larga') || '',
+                    nivel: formData.get('nivel') || 'principiante',
+                    duracion_horas: parseInt(formData.get('duracion_horas')) || 1,
+                    estado: formData.get('estado') || 'borrador',
+                    precio: parseFloat(formData.get('precio')) || 0,
+                    es_gratuito: parseInt(formData.get('es_gratuito')) || 1,
+                    icono: formData.get('icono') || '📚',
+                    requisitos: formData.get('requisitos') || '',
+                    objetivos: objetivos.length > 0 ? JSON.stringify(objetivos) : '',
+                    max_estudiantes: parseInt(formData.get('max_estudiantes')) || 0,
+                    certificado: parseInt(formData.get('certificado')) || 0
+                };
+
+                console.log('Datos a actualizar:', data);
+
                 const response = await apiPut(`/courses/${cursoId}`, data);
                 if (response.success) {
                     showNotification('✅ Curso actualizado exitosamente', 'success');
