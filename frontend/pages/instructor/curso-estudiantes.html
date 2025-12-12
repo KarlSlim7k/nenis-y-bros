@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudiantes del Curso - Mentor</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
+    <style>
+        .mentor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .breadcrumb {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .breadcrumb a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .students-table-container {
+            background: var(--bg-panel);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .search-bar {
+            margin-bottom: 1.5rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .students-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .students-table thead {
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .students-table th {
+            text-align: left;
+            padding: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .students-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .students-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .students-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .student-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .student-name {
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .student-email {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .progress-cell {
+            min-width: 150px;
+        }
+
+        .progress-bar-wrapper {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.25rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.35rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-activo {
+            background: rgba(34, 197, 94, 0.2);
+            color: #6ee7b7;
+        }
+
+        .status-en-progreso {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .status-completado {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(6, 182, 212, 0.2);
+            border-top-color: #06b6d4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .students-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">👨‍🏫</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./estudiantes.html" class="nav-link">Estudiantes</a></li>
+            <li><a href="./sesiones.html" class="nav-link">Sesiones</a></li>
+            <li><a href="./disponibilidad-instructor.html" class="nav-link">Disponibilidad</a></li>
+            <li><a href="./cursos.html" class="nav-link active">Cursos</a></li>
+            <li><a href="./mentoria-ai.html" class="nav-link">MentorIA</a></li>
+            <li><a href="./mis-conversaciones.html" class="nav-link">Mensajes</a></li>
+        </ul>
+
+        <div class="admin-user">
+            <div class="mentor-avatar-glow user-avatar">M</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Mentor</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Instructor</div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                <span style="margin-right: 0.25rem;">🚪</span> Salir
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="./cursos.html">Mis Cursos</a>
+            <span>›</span>
+            <span id="breadcrumbCourse">Cargando...</span>
+            <span>›</span>
+            <span>Estudiantes</span>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Estudiantes del <span class="text-gradient" id="courseTitle">Curso</span></h1>
+                <p style="color: var(--text-muted); margin-top: 0.5rem;">Visualiza el progreso de tus estudiantes</p>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state">
+            <div class="spinner"></div>
+            <p>Cargando estudiantes...</p>
+        </div>
+
+        <!-- Content -->
+        <div id="studentsContent" style="display: none;">
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalEstudiantes">0</div>
+                    <div class="stat-label">Total Estudiantes</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="estudiantesActivos">0</div>
+                    <div class="stat-label">Activos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="estudiantesCompletados">0</div>
+                    <div class="stat-label">Completados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="progresoPromedio">0%</div>
+                    <div class="stat-label">Progreso Promedio</div>
+                </div>
+            </div>
+
+            <!-- Students Table -->
+            <div class="students-table-container">
+                <div class="search-bar">
+                    <input type="text" class="search-input" placeholder="🔍 Buscar estudiante..." id="searchInput" onkeyup="filtrarEstudiantes()">
+                </div>
+
+                <table class="students-table" id="studentsTable">
+                    <thead>
+                        <tr>
+                            <th>Estudiante</th>
+                            <th>Progreso</th>
+                            <th>Lecciones Completadas</th>
+                            <th>Estado</th>
+                            <th>Fecha Inscripción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentsTableBody">
+                        <!-- Se llenará con JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        let cursoId = null;
+        let estudiantesData = [];
+        let estudiantesOriginales = [];
+
+        // Función logout
+        function logout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            window.location.href = ROUTES.login;
+        }
+
+        // Cargar datos de usuario
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Mentor';
+                const avatar = document.querySelector('.mentor-avatar-glow');
+                if (avatar && user.nombre) {
+                    avatar.textContent = user.nombre.charAt(0).toUpperCase();
+                }
+            }
+        }
+
+        // Obtener ID del curso desde URL
+        function getCursoId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Cargar información del curso
+        async function cargarCurso() {
+            try {
+                const token = localStorage.getItem(AUTH_TOKEN_KEY);
+                const response = await fetch(`${API_BASE_URL}/courses/${cursoId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Error al cargar curso');
+
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    document.getElementById('breadcrumbCourse').textContent = result.data.titulo;
+                    document.getElementById('courseTitle').textContent = result.data.titulo;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Cargar estudiantes del curso
+        async function cargarEstudiantes() {
+            try {
+                const token = localStorage.getItem(AUTH_TOKEN_KEY);
+                const response = await fetch(`${API_BASE_URL}/courses/${cursoId}/students`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Error al cargar estudiantes');
+
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    estudiantesOriginales = result.data.students || result.data || [];
+                    estudiantesData = [...estudiantesOriginales];
+                    mostrarEstudiantes();
+                } else {
+                    mostrarEstadoVacio();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar los estudiantes del curso');
+            } finally {
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('studentsContent').style.display = 'block';
+            }
+        }
+
+        // Mostrar estudiantes
+        function mostrarEstudiantes() {
+            const tbody = document.getElementById('studentsTableBody');
+
+            if (!estudiantesData || estudiantesData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+                                <p>No hay estudiantes inscritos en este curso</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                actualizarEstadisticas(0, 0, 0, 0);
+                return;
+            }
+
+            // Calcular estadísticas
+            const total = estudiantesData.length;
+            const activos = estudiantesData.filter(e => e.estado === 'activo' || e.estado === 'en_progreso').length;
+            const completados = estudiantesData.filter(e => e.estado === 'completado' || (e.progreso_porcentaje && e.progreso_porcentaje >= 100)).length;
+            const progresoTotal = estudiantesData.reduce((sum, e) => sum + (parseFloat(e.progreso_porcentaje) || 0), 0);
+            const progresoPromedio = total > 0 ? (progresoTotal / total).toFixed(0) : 0;
+
+            actualizarEstadisticas(total, activos, completados, progresoPromedio);
+
+            // Renderizar tabla
+            tbody.innerHTML = estudiantesData.map(estudiante => {
+                const iniciales = (estudiante.nombre || 'E').charAt(0).toUpperCase();
+                const progreso = parseFloat(estudiante.progreso_porcentaje) || 0;
+                const leccionesCompletadas = estudiante.lecciones_completadas || 0;
+                const totalLecciones = estudiante.total_lecciones || 0;
+
+                // Determinar estado
+                let estadoBadge = 'activo';
+                let estadoTexto = 'Activo';
+                
+                if (progreso >= 100) {
+                    estadoBadge = 'completado';
+                    estadoTexto = 'Completado';
+                } else if (progreso > 0) {
+                    estadoBadge = 'en-progreso';
+                    estadoTexto = 'En Progreso';
+                }
+
+                const fechaInscripcion = estudiante.fecha_inscripcion ? 
+                    new Date(estudiante.fecha_inscripcion).toLocaleDateString('es-MX', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    }) : 'N/A';
+
+                return `
+                    <tr>
+                        <td>
+                            <div class="student-info">
+                                <div class="student-avatar">${iniciales}</div>
+                                <div class="student-details">
+                                    <div class="student-name">${estudiante.nombre || ''} ${estudiante.apellido || ''}</div>
+                                    <div class="student-email">${estudiante.email || ''}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="progress-cell">
+                            <div class="progress-bar-wrapper">
+                                <div class="progress-bar-fill" style="width: ${progreso}%;"></div>
+                            </div>
+                            <div class="progress-text">${progreso}% completado</div>
+                        </td>
+                        <td>${leccionesCompletadas} / ${totalLecciones}</td>
+                        <td>
+                            <span class="status-badge status-${estadoBadge}">${estadoTexto}</span>
+                        </td>
+                        <td>${fechaInscripcion}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Actualizar estadísticas
+        function actualizarEstadisticas(total, activos, completados, promedio) {
+            document.getElementById('totalEstudiantes').textContent = total;
+            document.getElementById('estudiantesActivos').textContent = activos;
+            document.getElementById('estudiantesCompletados').textContent = completados;
+            document.getElementById('progresoPromedio').textContent = promedio + '%';
+        }
+
+        // Mostrar estado vacío
+        function mostrarEstadoVacio() {
+            document.getElementById('studentsTableBody').innerHTML = `
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">👥</div>
+                            <p>No hay estudiantes inscritos en este curso</p>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Filtrar estudiantes por búsqueda
+        function filtrarEstudiantes() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (!searchTerm) {
+                estudiantesData = [...estudiantesOriginales];
+            } else {
+                estudiantesData = estudiantesOriginales.filter(est => {
+                    const nombreCompleto = `${est.nombre} ${est.apellido}`.toLowerCase();
+                    const email = (est.email || '').toLowerCase();
+                    return nombreCompleto.includes(searchTerm) || email.includes(searchTerm);
+                });
+            }
+            
+            mostrarEstudiantes();
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Verificar autenticación
+            if (!checkAuth() || !isMentor()) {
+                alert('Acceso denegado. Solo instructores pueden acceder a esta página.');
+                window.location.href = ROUTES.login;
+                return;
+            }
+
+            // Obtener ID del curso
+            cursoId = getCursoId();
+            if (!cursoId) {
+                alert('No se especificó un curso válido');
+                window.location.href = './cursos.html';
+                return;
+            }
+
+            cargarDatosUsuario();
+            await cargarCurso();
+            await cargarEstudiantes();
+        });
+    </script>
+    <script src="../../assets/js/navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initDynamicNavbar();
+        });
+    </script>
+</body>
+
+</html>

@@ -444,135 +444,14 @@
 
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
+        <script src="../../assets/js/instructor-estudiantes.js"></script>
     <script>
-        // Verificar autenticación y rol
-        if (!checkAuth() || !isMentor()) {
-            alert('Acceso denegado. Solo instructores pueden acceder a esta página.');
-            window.location.href = ROUTES.login;
-        }
-
         // Función logout
         function logout() {
             localStorage.removeItem(AUTH_TOKEN_KEY);
             localStorage.removeItem(AUTH_USER_KEY);
             window.location.href = ROUTES.login;
         }
-
-        // Cargar datos de usuario
-        function cargarDatosUsuario() {
-            const user = getAuthUser();
-            if (user) {
-                document.getElementById('userName').textContent = user.nombre || 'Mentor';
-                const avatar = document.querySelector('.mentor-avatar-glow');
-                if (avatar && user.nombre) {
-                    avatar.textContent = user.nombre.charAt(0).toUpperCase();
-                }
-            }
-        }
-
-        // Cargar estadísticas
-        function cargarEstadisticas() {
-            // Datos de ejemplo
-            document.getElementById('totalStudents').textContent = '8';
-            document.getElementById('activeStudents').textContent = '6';
-            document.getElementById('sessionsCount').textContent = '24';
-            document.getElementById('avgProgress').textContent = '75%';
-        }
-
-        // Datos de ejemplo de estudiantes
-        const estudiantesEjemplo = [
-            { id: 1, nombre: 'Juan Pérez', email: 'juan.perez@example.com', sesiones: 5, ultimaSesion: '20 Nov 2025', progreso: 80, estado: 'activo' },
-            { id: 2, nombre: 'María García', email: 'maria.garcia@example.com', sesiones: 3, ultimaSesion: '18 Nov 2025', progreso: 65, estado: 'activo' },
-            { id: 3, nombre: 'Carlos López', email: 'carlos.lopez@example.com', sesiones: 7, ultimaSesion: '22 Nov 2025', progreso: 90, estado: 'activo' },
-            { id: 4, nombre: 'Ana Martínez', email: 'ana.martinez@example.com', sesiones: 2, ultimaSesion: '15 Nov 2025', progreso: 45, estado: 'activo' },
-            { id: 5, nombre: 'Roberto Sánchez', email: 'roberto.sanchez@example.com', sesiones: 4, ultimaSesion: '10 Nov 2025', progreso: 30, estado: 'inactivo' },
-            { id: 6, nombre: 'Laura Fernández', email: 'laura.fernandez@example.com', sesiones: 6, ultimaSesion: '21 Nov 2025', progreso: 85, estado: 'activo' }
-        ];
-
-        // Cargar tabla de estudiantes
-        function cargarEstudiantes() {
-            const tbody = document.getElementById('studentsTableBody');
-
-            if (estudiantesEjemplo.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <div class="empty-icon">👥</div>
-                                <div class="empty-title">No hay estudiantes asignados</div>
-                                <div class="empty-text">Los estudiantes aparecerán aquí cuando te sean asignados</div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = estudiantesEjemplo.map(est => `
-                <tr>
-                    <td>
-                        <div class="student-cell">
-                            <div class="student-avatar">${est.nombre.charAt(0)}</div>
-                            <div class="student-info">
-                                <span class="student-name">${est.nombre}</span>
-                                <span class="student-email">${est.email}</span>
-                            </div>
-                        </div>
-                    </td>
-                    <td>${est.sesiones}</td>
-                    <td>${est.ultimaSesion}</td>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 0.5rem;">
-                            <div style="flex: 1; background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden;">
-                                <div style="width: ${est.progreso}%; height: 100%; background: var(--gradient-primary); border-radius: 3px;"></div>
-                            </div>
-                            <span style="font-size: 0.85rem; color: var(--text-muted);">${est.progreso}%</span>
-                        </div>
-                    </td>
-                    <td><span class="badge badge-${est.estado}">${est.estado === 'activo' ? '✓ Activo' : '○ Inactivo'}</span></td>
-                    <td>
-                        <button class="btn-action btn-view" onclick="verEstudiante(${est.id})">👁️ Ver Perfil</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function verEstudiante(id) {
-            const estudiante = estudiantesEjemplo.find(e => e.id === id);
-            if (estudiante) {
-                alert(`Perfil de ${estudiante.nombre}\n\nEmail: ${estudiante.email}\nSesiones: ${estudiante.sesiones}\nProgreso: ${estudiante.progreso}%\n\nFuncionalidad completa en desarrollo.`);
-            }
-        }
-
-        function filterStudents() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const rows = document.querySelectorAll('#studentsTableBody tr');
-
-            rows.forEach(row => {
-                const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(searchTerm) ? '' : 'none';
-            });
-        }
-
-        // Highlight active link
-        function highlightActiveLink() {
-            const currentPage = window.location.pathname.split('/').pop();
-            document.querySelectorAll('.nav-menu .nav-link').forEach(link => {
-                link.classList.remove('active');
-                const href = link.getAttribute('href');
-                if (href === './' + currentPage) {
-                    link.classList.add('active');
-                }
-            });
-        }
-
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', function () {
-            cargarDatosUsuario();
-            cargarEstadisticas();
-            cargarEstudiantes();
-            highlightActiveLink();
-        });
     </script>
     <script src="../../assets/js/navigation.js"></script>
     <script>
