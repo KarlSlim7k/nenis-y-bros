@@ -396,144 +396,15 @@
 
         <!-- Courses Grid -->
         <div class="courses-grid">
-
-            <!-- Course 1 -->
-            <div class="course-card">
-                <div class="course-image gradient-1">
-                    <span>📚</span>
-                    <span class="course-tag tag-activo">✓ Activo</span>
-                </div>
-                <div class="course-body">
-                    <h3 class="course-title">Fundamentos de Emprendimiento</h3>
-                    <p class="course-description">Bases para iniciar y hacer crecer tu negocio con estrategias
-                        comprobadas.</p>
-                    <div class="course-meta">
-                        <span class="course-meta-item">👥 24 estudiantes</span>
-                        <span class="course-meta-item">📖 12 lecciones</span>
-                    </div>
-                    <div class="course-progress">
-                        <div class="progress-header">
-                            <span class="progress-label">Progreso promedio</span>
-                            <span class="progress-value">80%</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill" style="width: 80%;"></div>
-                        </div>
-                    </div>
-                    <div class="course-actions">
-                        <button class="btn-course btn-course-primary" onclick="verCurso(1)">👁️ Ver Curso</button>
-                        <button class="btn-course btn-course-outline" onclick="verEstudiantes(1)">👥
-                            Estudiantes</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Course 2 -->
-            <div class="course-card">
-                <div class="course-image gradient-2">
-                    <span>💼</span>
-                    <span class="course-tag tag-activo">✓ Activo</span>
-                </div>
-                <div class="course-body">
-                    <h3 class="course-title">Marketing Digital</h3>
-                    <p class="course-description">Domina las estrategias de marketing online para hacer crecer tu
-                        negocio.</p>
-                    <div class="course-meta">
-                        <span class="course-meta-item">👥 18 estudiantes</span>
-                        <span class="course-meta-item">📖 15 lecciones</span>
-                    </div>
-                    <div class="course-progress">
-                        <div class="progress-header">
-                            <span class="progress-label">Progreso promedio</span>
-                            <span class="progress-value">65%</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill" style="width: 65%;"></div>
-                        </div>
-                    </div>
-                    <div class="course-actions">
-                        <button class="btn-course btn-course-primary" onclick="verCurso(2)">👁️ Ver Curso</button>
-                        <button class="btn-course btn-course-outline" onclick="verEstudiantes(2)">👥
-                            Estudiantes</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Course 3 -->
-            <div class="course-card">
-                <div class="course-image gradient-3">
-                    <span>📊</span>
-                    <span class="course-tag tag-activo">✓ Activo</span>
-                </div>
-                <div class="course-body">
-                    <h3 class="course-title">Finanzas para Emprendedores</h3>
-                    <p class="course-description">Aprende a gestionar las finanzas de tu emprendimiento de forma
-                        efectiva.</p>
-                    <div class="course-meta">
-                        <span class="course-meta-item">👥 15 estudiantes</span>
-                        <span class="course-meta-item">📖 10 lecciones</span>
-                    </div>
-                    <div class="course-progress">
-                        <div class="progress-header">
-                            <span class="progress-label">Progreso promedio</span>
-                            <span class="progress-value">45%</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill" style="width: 45%;"></div>
-                        </div>
-                    </div>
-                    <div class="course-actions">
-                        <button class="btn-course btn-course-primary" onclick="verCurso(3)">👁️ Ver Curso</button>
-                        <button class="btn-course btn-course-outline" onclick="verEstudiantes(3)">👥
-                            Estudiantes</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Course 4 -->
-            <div class="course-card">
-                <div class="course-image gradient-4">
-                    <span>🎯</span>
-                    <span class="course-tag tag-borrador">📝 Borrador</span>
-                </div>
-                <div class="course-body">
-                    <h3 class="course-title">Liderazgo y Equipos</h3>
-                    <p class="course-description">Desarrolla habilidades de liderazgo para dirigir equipos de alto
-                        rendimiento.</p>
-                    <div class="course-meta">
-                        <span class="course-meta-item">👥 10 estudiantes</span>
-                        <span class="course-meta-item">📖 8 lecciones</span>
-                    </div>
-                    <div class="course-progress">
-                        <div class="progress-header">
-                            <span class="progress-label">Progreso promedio</span>
-                            <span class="progress-value">20%</span>
-                        </div>
-                        <div class="progress-track">
-                            <div class="progress-fill" style="width: 20%;"></div>
-                        </div>
-                    </div>
-                    <div class="course-actions">
-                        <button class="btn-course btn-course-primary" onclick="verCurso(4)">👁️ Ver Curso</button>
-                        <button class="btn-course btn-course-outline" onclick="verEstudiantes(4)">👥
-                            Estudiantes</button>
-                    </div>
-                </div>
-            </div>
-
+            <!-- Los cursos se cargarán dinámicamente con JavaScript -->
         </div>
 
     </main>
 
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/instructor-cursos.js"></script>
     <script>
-        // Verificar autenticación y rol
-        if (!checkAuth() || !isMentor()) {
-            alert('Acceso denegado. Solo instructores pueden acceder a esta página.');
-            window.location.href = ROUTES.login;
-        }
-
         // Función logout
         function logout() {
             localStorage.removeItem(AUTH_TOKEN_KEY);
@@ -553,14 +424,6 @@
             }
         }
 
-        function verCurso(id) {
-            alert(`Ver Curso #${id}\n\nAquí podrás ver el contenido del curso, lecciones y materiales.\n\nFuncionalidad en desarrollo.`);
-        }
-
-        function verEstudiantes(id) {
-            alert(`Estudiantes del Curso #${id}\n\nAquí verás la lista de estudiantes inscritos y su progreso individual.\n\nFuncionalidad en desarrollo.`);
-        }
-
         // Highlight active link
         function highlightActiveLink() {
             const currentPage = window.location.pathname.split('/').pop();
@@ -573,7 +436,7 @@
             });
         }
 
-        // Inicializar
+        // Inicializar datos de usuario y navegación
         document.addEventListener('DOMContentLoaded', function () {
             cargarDatosUsuario();
             highlightActiveLink();

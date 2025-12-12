@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Curso - Mentor</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
+    <style>
+        .mentor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .breadcrumb {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .breadcrumb a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .course-header {
+            background: var(--bg-panel);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .course-status-badge {
+            display: inline-block;
+            padding: 0.35rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .badge-publicado {
+            background: rgba(34, 197, 94, 0.2);
+            color: #6ee7b7;
+        }
+
+        .badge-borrador {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+
+        .course-title-main {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .course-meta-main {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .course-meta-item-main {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .content-section {
+            background: var(--bg-panel);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modulo-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .modulo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .modulo-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .modulo-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .leccion-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .leccion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .leccion-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .leccion-icon {
+            font-size: 1.25rem;
+        }
+
+        .leccion-info {
+            flex: 1;
+        }
+
+        .leccion-nombre {
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .leccion-duracion {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(6, 182, 212, 0.2);
+            border-top-color: #06b6d4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">👨‍🏫</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./estudiantes.html" class="nav-link">Estudiantes</a></li>
+            <li><a href="./sesiones.html" class="nav-link">Sesiones</a></li>
+            <li><a href="./disponibilidad-instructor.html" class="nav-link">Disponibilidad</a></li>
+            <li><a href="./cursos.html" class="nav-link active">Cursos</a></li>
+            <li><a href="./mentoria-ai.html" class="nav-link">MentorIA</a></li>
+            <li><a href="./mis-conversaciones.html" class="nav-link">Mensajes</a></li>
+        </ul>
+
+        <div class="admin-user">
+            <div class="mentor-avatar-glow user-avatar">M</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Mentor</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Instructor</div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                <span style="margin-right: 0.25rem;">🚪</span> Salir
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <a href="./cursos.html">Mis Cursos</a>
+            <span>›</span>
+            <span id="breadcrumbCourse">Cargando...</span>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state">
+            <div class="spinner"></div>
+            <p>Cargando curso...</p>
+        </div>
+
+        <!-- Course Content -->
+        <div id="courseContent" style="display: none;">
+            <!-- Course Header -->
+            <div class="course-header">
+                <div class="course-status-badge" id="courseStatus">Estado</div>
+                <h1 class="course-title-main" id="courseTitle">Título del Curso</h1>
+                <p id="courseDescription" style="color: var(--text-muted); line-height: 1.6;">Descripción</p>
+                <div class="course-meta-main">
+                    <span class="course-meta-item-main">
+                        <span>👥</span>
+                        <span><strong id="totalEstudiantes">0</strong> estudiantes</span>
+                    </span>
+                    <span class="course-meta-item-main">
+                        <span>📚</span>
+                        <span><strong id="totalModulos">0</strong> módulos</span>
+                    </span>
+                    <span class="course-meta-item-main">
+                        <span>📖</span>
+                        <span><strong id="totalLecciones">0</strong> lecciones</span>
+                    </span>
+                    <span class="course-meta-item-main">
+                        <span>⏱️</span>
+                        <span><strong id="duracionEstimada">0</strong> horas</span>
+                    </span>
+                    <span class="course-meta-item-main" id="calificacionContainer" style="display: none;">
+                        <span>⭐</span>
+                        <span><strong id="promedioCalificacion">0</strong> calificación</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Módulos y Lecciones -->
+            <div class="content-section">
+                <h2 class="section-title">
+                    <span>📚</span>
+                    <span>Contenido del Curso</span>
+                </h2>
+                <div id="modulosContainer">
+                    <!-- Los módulos se cargarán aquí -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        let cursoId = null;
+
+        // Función logout
+        function logout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            window.location.href = ROUTES.login;
+        }
+
+        // Cargar datos de usuario
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Mentor';
+                const avatar = document.querySelector('.mentor-avatar-glow');
+                if (avatar && user.nombre) {
+                    avatar.textContent = user.nombre.charAt(0).toUpperCase();
+                }
+            }
+        }
+
+        // Obtener ID del curso desde URL
+        function getCursoId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('id');
+        }
+
+        // Cargar detalles del curso
+        async function cargarCurso() {
+            try {
+                const token = localStorage.getItem(AUTH_TOKEN_KEY);
+                const response = await fetch(`${API_BASE_URL}/courses/${cursoId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar curso');
+                }
+
+                const result = await response.json();
+
+                if (result.success && result.data) {
+                    mostrarCurso(result.data);
+                } else {
+                    throw new Error('No se pudo cargar el curso');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al cargar el curso');
+                window.location.href = './cursos.html';
+            }
+        }
+
+        // Mostrar datos del curso
+        function mostrarCurso(curso) {
+            // Actualizar breadcrumb
+            document.getElementById('breadcrumbCourse').textContent = curso.titulo;
+
+            // Estado
+            const statusBadge = document.getElementById('courseStatus');
+            if (curso.estado === 'publicado') {
+                statusBadge.className = 'course-status-badge badge-publicado';
+                statusBadge.innerHTML = '✓ Publicado';
+            } else {
+                statusBadge.className = 'course-status-badge badge-borrador';
+                statusBadge.innerHTML = '📝 Borrador';
+            }
+
+            // Información básica
+            document.getElementById('courseTitle').textContent = curso.titulo;
+            document.getElementById('courseDescription').textContent = curso.descripcion || 'Sin descripción';
+            document.getElementById('totalEstudiantes').textContent = curso.total_inscripciones || 0;
+            document.getElementById('totalModulos').textContent = curso.total_modulos || 0;
+            document.getElementById('totalLecciones').textContent = curso.total_lecciones || 0;
+            document.getElementById('duracionEstimada').textContent = curso.duracion_estimada || 0;
+
+            // Calificación (si existe)
+            if (curso.promedio_calificacion && curso.promedio_calificacion > 0) {
+                document.getElementById('calificacionContainer').style.display = 'flex';
+                document.getElementById('promedioCalificacion').textContent = parseFloat(curso.promedio_calificacion).toFixed(1);
+            }
+
+            // Módulos y lecciones
+            renderizarModulos(curso.modulos || []);
+
+            // Ocultar loading y mostrar contenido
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('courseContent').style.display = 'block';
+        }
+
+        // Renderizar módulos
+        function renderizarModulos(modulos) {
+            const container = document.getElementById('modulosContainer');
+
+            if (!modulos || modulos.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">📚</div>
+                        <p>Este curso aún no tiene módulos ni lecciones.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = modulos.map(modulo => {
+                const lecciones = modulo.lecciones || [];
+                const totalLecciones = lecciones.length;
+                const duracionTotal = lecciones.reduce((sum, l) => sum + (parseInt(l.duracion_minutos) || 0), 0);
+
+                return `
+                    <div class="modulo-item">
+                        <div class="modulo-header">
+                            <h3 class="modulo-title">${modulo.orden}. ${modulo.titulo}</h3>
+                            <div class="modulo-stats">
+                                <span>📖 ${totalLecciones} lecciones</span>
+                                <span>⏱️ ${duracionTotal} min</span>
+                            </div>
+                        </div>
+                        ${modulo.descripcion ? `<p style="color: var(--text-muted); margin-bottom: 1rem;">${modulo.descripcion}</p>` : ''}
+                        <div class="leccion-list">
+                            ${lecciones.length > 0 ? lecciones.map(leccion => {
+                                const iconoTipo = {
+                                    'video': '🎥',
+                                    'lectura': '📄',
+                                    'quiz': '❓',
+                                    'actividad': '✏️'
+                                }[leccion.tipo] || '📖';
+
+                                return `
+                                    <div class="leccion-item">
+                                        <span class="leccion-icon">${iconoTipo}</span>
+                                        <div class="leccion-info">
+                                            <div class="leccion-nombre">${leccion.titulo}</div>
+                                            ${leccion.duracion_minutos ? `<div class="leccion-duracion">${leccion.duracion_minutos} minutos</div>` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('') : '<p style="color: var(--text-muted); padding: 1rem;">No hay lecciones en este módulo</p>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function () {
+            // Verificar autenticación
+            if (!checkAuth() || !isMentor()) {
+                alert('Acceso denegado. Solo instructores pueden acceder a esta página.');
+                window.location.href = ROUTES.login;
+                return;
+            }
+
+            // Obtener ID del curso
+            cursoId = getCursoId();
+            if (!cursoId) {
+                alert('No se especificó un curso válido');
+                window.location.href = './cursos.html';
+                return;
+            }
+
+            cargarDatosUsuario();
+            cargarCurso();
+        });
+    </script>
+    <script src="../../assets/js/navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initDynamicNavbar();
+        });
+    </script>
+</body>
+
+</html>
