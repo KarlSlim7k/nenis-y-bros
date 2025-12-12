@@ -121,20 +121,45 @@ function registerRoutes(Router $router) {
     // RUTAS DE CURSOS (Fase 2A)
     // =========================================================================
     
+    $categoriaController = new CategoriaController();
     $cursoController = new CursoController();
     $moduloController = new ModuloController();
     $leccionController = new LeccionController();
     $progresoController = new ProgresoController();
     
-    // Obtener categorías de cursos
-    $router->get('/courses/categories', function() {
-        try {
-            $db = Database::getInstance();
-            $categorias = $db->fetchAll("SELECT * FROM categorias_cursos WHERE activo = 1 ORDER BY orden, nombre");
-            Response::success('Categorías obtenidas', $categorias);
-        } catch (Exception $e) {
-            Response::serverError('Error al obtener categorías');
-        }
+    // =========================================================================
+    // RUTAS DE CATEGORÍAS (Fase 2A - Gestión de Categorías)
+    // =========================================================================
+    
+    // Obtener todas las categorías (público)
+    $router->get('/categories', function() use ($categoriaController) {
+        $categoriaController->getAll();
+    });
+    
+    $router->get('/categories/{id}', function($id) use ($categoriaController) {
+        $categoriaController->getById($id);
+    });
+    
+    // CRUD de categorías (solo administradores)
+    $router->post('/categories', function() use ($categoriaController) {
+        $categoriaController->create();
+    });
+    
+    $router->put('/categories/{id}', function($id) use ($categoriaController) {
+        $categoriaController->update($id);
+    });
+    
+    $router->delete('/categories/{id}', function($id) use ($categoriaController) {
+        $categoriaController->delete($id);
+    });
+    
+    $router->put('/categories/reorder', function() use ($categoriaController) {
+        $categoriaController->reorder();
+    });
+    
+    // Alias para mantener compatibilidad
+    $router->get('/courses/categories', function() use ($categoriaController) {
+        $categoriaController->getAll();
     });
     
     // Listado y detalle de cursos (público/privado según estado)
