@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="../../assets/css/style.css">
     <link rel="stylesheet" href="../../assets/css/theme.css">
     <style>
-        .emprendedor-avatar-glow {
+        .emprendedor-avatar-glow,
+        .mentor-avatar-glow {
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -156,6 +157,17 @@
             font-weight: 600;
         }
 
+        .unread-badge {
+            background: #10b981;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            min-width: 20px;
+            text-align: center;
+        }
+
         .chat-panel {
             background: var(--bg-panel);
             border-radius: 16px;
@@ -206,6 +218,37 @@
             max-width: 70%;
             padding: 0.85rem 1.15rem;
             border-radius: 16px;
+        }
+
+        .chat-message {
+            max-width: 70%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-message.sent {
+            align-self: flex-end;
+        }
+
+        .chat-message.received {
+            align-self: flex-start;
+        }
+
+        .message-bubble {
+            padding: 0.85rem 1.15rem;
+            border-radius: 16px;
+            word-wrap: break-word;
+        }
+
+        .chat-message.sent .message-bubble {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-message.received .message-bubble {
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom-left-radius: 4px;
         }
 
         .message-received {
@@ -286,11 +329,11 @@
             <!-- Menú dinámico generado por navigation.js -->
         </ul>
         <div class="admin-user">
-            <div class="emprendedor-avatar-glow user-avatar">E</div>
+            <div class="mentor-avatar-glow user-avatar">M</div>
             <div>
-                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Emprendedor
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Instructor
                 </div>
-                <div style="font-size: 0.75rem; color: var(--text-muted);">Emprendedor</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Mentor</div>
             </div>
             <button class="btn-outline" onclick="logout()"
                 style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">🚪 Salir</button>
@@ -300,70 +343,36 @@
     <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
         <div style="margin-bottom: 1.5rem;">
             <h1 class="page-title"><span class="text-gradient">Chat</span> 💬</h1>
-            <p class="page-subtitle">Comunícate con otros emprendedores de la comunidad</p>
+            <p class="page-subtitle">Comunícate con tus estudiantes</p>
         </div>
 
         <div class="chat-container">
             <div class="conversations-panel">
                 <div class="conversations-header">
                     <h3>Conversaciones</h3>
-                    <input type="text" class="search-conversations" placeholder="🔍 Buscar...">
+                    <input type="text" id="search-conversations" class="search-conversations" placeholder="🔍 Buscar...">
                 </div>
-                <div class="conversations-list">
-                    <div class="conversation-item active">
-                        <div class="conversation-avatar">M</div>
-                        <div class="conversation-info">
-                            <div class="conversation-name">María García</div>
-                            <div class="conversation-preview">¡Hola! Me interesa tu producto...</div>
-                        </div>
-                        <div>
-                            <div class="conversation-time">10:30</div><span class="conversation-badge">2</span>
-                        </div>
-                    </div>
-                    <div class="conversation-item">
-                        <div class="conversation-avatar">C</div>
-                        <div class="conversation-info">
-                            <div class="conversation-name">Carlos Ruiz</div>
-                            <div class="conversation-preview">Gracias por la información</div>
-                        </div>
-                        <div class="conversation-time">Ayer</div>
-                    </div>
-                    <div class="conversation-item">
-                        <div class="conversation-avatar">A</div>
-                        <div class="conversation-info">
-                            <div class="conversation-name">Ana Martínez</div>
-                            <div class="conversation-preview">¿Tienes disponibilidad?</div>
-                        </div>
-                        <div class="conversation-time">Lunes</div>
-                    </div>
+                <div id="conversations-loading" style="padding: 1rem; display:none; color: var(--text-muted);">Cargando conversaciones...</div>
+                <div id="conversations-empty" style="padding: 1.25rem; display:none; color: var(--text-muted);">No hay conversaciones.</div>
+                <div id="conversations-list" class="conversations-list"></div>
                 </div>
             </div>
-            <div class="chat-panel">
+            <div id="chat-panel" class="chat-panel" style="display: none;">
                 <div class="chat-header">
-                    <div class="chat-user-avatar">M</div>
+                    <div id="chat-user-avatar" class="chat-user-avatar">?</div>
                     <div>
-                        <div class="chat-user-name">María García</div>
-                        <div class="chat-user-status">● En línea</div>
+                        <div id="chat-user-name" class="chat-user-name">Selecciona una conversación</div>
+                        <div id="chat-user-status" class="chat-user-status" style="color: var(--text-muted);">● Esperando</div>
+                    </div>
+                    <div style="margin-left:auto;">
+                        <button id="btn-archive" class="btn-outline" style="padding:0.55rem 1rem; font-size:0.85rem;" disabled>Archivar</button>
                     </div>
                 </div>
-                <div class="chat-messages">
-                    <div class="message message-received">
-                        <div>¡Hola! Me interesa tu producto de cupcakes. ¿Tienes disponibilidad para este fin de semana?
-                        </div>
-                        <div class="message-time">10:28</div>
-                    </div>
-                    <div class="message message-sent">
-                        <div>¡Hola María! Claro que sí, tengo disponibilidad. ¿Cuántos necesitas?</div>
-                        <div class="message-time">10:30</div>
-                    </div>
-                    <div class="message message-received">
-                        <div>Serían 24 cupcakes para una fiesta de cumpleaños 🎂</div>
-                        <div class="message-time">10:32</div>
-                    </div>
-                </div>
+                <div id="chat-messages" class="chat-messages"></div>
+                <div id="chat-empty" style="padding:1.5rem; text-align:center; color: var(--text-muted); display:none;">Selecciona una conversación para comenzar</div>
                 <div class="chat-input-area">
-                    <input type="text" class="chat-input" placeholder="Escribe un mensaje...">
-                    <button class="btn-send">Enviar</button>
+                    <input type="text" id="chat-input" class="chat-input" placeholder="Escribe un mensaje...">
+                    <button id="btn-send" class="btn-send">Enviar</button>
                 </div>
             </div>
         </div>
@@ -372,23 +381,12 @@
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/auth.js"></script>
-    <script>
-        if (!checkAuth() || !isMentor()) window.location.href = ROUTES.login;
-        function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
-        function cargarDatosUsuario() {
-            const user = getAuthUser();
-            if (user) {
-                document.getElementById('userName').textContent = user.nombre || 'Mentor';
-                const avatar = document.querySelector('.emprendedor-avatar-glow');
-                if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
-            }
-        }
-        document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
-    </script>
     <script src="../../assets/js/navigation.js"></script>
+    <script src="../../assets/js/instructor-chat.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             initDynamicNavbar();
+            highlightActiveLink();
         });
     </script>
 </body>
