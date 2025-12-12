@@ -33,7 +33,7 @@ function getMenuItems(tipoUsuario) {
                     { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/instructor/dashboard.html` },
                     { icon: '📚', text: 'Mis Cursos', url: `${bp}/frontend/pages/instructor/cursos.html` },
                     { icon: '👥', text: 'Mis Alumnos', url: `${bp}/frontend/pages/instructor/alumnos.html` },
-                    { icon: '💬', text: 'Mensajes', url: `${bp}/frontend/pages/user/mis-conversaciones.html` }
+                    { icon: '💬', text: 'Mensajes', url: `${bp}/frontend/pages/instructor/mis-conversaciones.html` }
                 ]
             },
             {

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Conversaciones - Mentor</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
+    <style>
+        /* Mentor Avatar */
+        .mentor-avatar-glow {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Fix Navigation Active State */
+        .nav-link.active {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white !important;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            -webkit-text-fill-color: white;
+        }
+
+        .nav-link.active::after {
+            display: none;
+        }
+
+        /* Page Header */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Filters Section */
+        .filters-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .bg-tabs {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0.25rem;
+            border-radius: 12px;
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab-btn.active {
+            background: var(--gradient-secondary);
+            color: white;
+            box-shadow: 0 2px 10px rgba(6, 182, 212, 0.2);
+        }
+
+        /* Grid */
+        .conversations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .conversation-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .conversation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        }
+
+        .conversation-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .conversation-card:hover .conversation-avatar {
+            transform: scale(1.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .conversation-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--gradient-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .conversation-info {
+            flex: 1;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 1.05rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .conversation-role {
+            font-size: 0.8rem;
+            color: #6ee7b7;
+            /* Greenish/Mint for student/entrepreneur role visibility */
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .conversation-preview {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.5rem;
+        }
+
+        .conversation-time {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .unread-badge {
+            background: var(--gradient-accent);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(244, 63, 94, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Empty State */
+        .empty-state-container {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">👨‍🏫</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
+            <li><a href="./estudiantes.html" class="nav-link">Estudiantes</a></li>
+            <li><a href="./sesiones.html" class="nav-link">Sesiones</a></li>
+            <li><a href="./disponibilidad-instructor.html" class="nav-link">Disponibilidad</a></li>
+            <li><a href="./cursos.html" class="nav-link">Cursos</a></li>
+            <li><a href="./mis-conversaciones.html" class="nav-link active">Mensajes</a></li>
+        </ul>
+
+        <div class="admin-user">
+            <div class="mentor-avatar-glow user-avatar">M</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Mentor</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Instructor</div>
+            </div>
+            <button class="btn-outline" onclick="logout()"
+                style="margin-left: 1rem; padding: 0.5rem 1rem; font-size: 0.85rem;">
+                <span style="margin-right: 0.25rem;">🚪</span> Salir
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main style="padding: 2rem; max-width: 1400px; margin: 0 auto;">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Mesas de <span class="text-gradient">Conversación</span> 💬</h1>
+                <p class="page-subtitle">Gestiona tus comunicaciones con estudiantes y administración</p>
+            </div>
+        </div>
+
+        <!-- Main Panel -->
+        <div class="glass-panel" style="padding: 2rem;">
+
+            <!-- Filters -->
+            <div class="filters-section">
+
+                <div class="bg-tabs">
+                    <button class="tab-btn active" onclick="filtrarConversaciones('todas', this)">Todas</button>
+                    <button class="tab-btn" onclick="filtrarConversaciones('no_leidas', this)">No leídas</button>
+                    <button class="tab-btn" onclick="filtrarConversaciones('estudiantes', this)">Estudiantes</button>
+                </div>
+
+                <div style="margin-left: auto; position: relative; min-width: 250px;">
+                    <span
+                        style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted);">🔍</span>
+                    <input type="text" placeholder="Buscar conversación..."
+                        style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.5rem 1rem 0.5rem 2.5rem; color: white;"
+                        onkeyup="buscarConversacion(this.value)">
+                </div>
+
+            </div>
+
+            <!-- Conversations Grid -->
+            <div class="conversations-grid" id="conversations-grid">
+                <!-- Se cargará dinámicamente -->
+            </div>
+
+            <!-- Empty State (Hidden) -->
+            <div id="empty-state" class="empty-state-container" style="display: none;">
+                <div style="font-size: 4rem; opacity: 0.5; margin-bottom: 1rem;">💬</div>
+                <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem;">Sin conversaciones</h3>
+                <p style="color: var(--text-muted);">No hay conversaciones que coincidan con tu búsqueda.</p>
+            </div>
+
+        </div>
+
+    </main>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        // Verificar autenticación y rol
+        if (!checkAuth() || !isMentor()) {
+            alert('Acceso denegado. Solo instructores pueden acceder a esta página.');
+            window.location.href = ROUTES.login;
+        }
+
+        // Datos de ejemplo
+        const conversacionesData = [
+            {
+                id: 1,
+                nombre: "Ana Martínez",
+                rol: "Estudiante",
+                avatar: "A",
+                ultimoMensaje: "Hola, tengo una pregunta sobre la sesión de mañana. ¿Podríamos revisarla?",
+                fecha: new Date(Date.now() - 1000 * 60 * 30), // Hace 30 min
+                noLeidos: 2,
+                tipo: "estudiante"
+            },
+            {
+                id: 2,
+                nombre: "Juan Pérez",
+                rol: "Estudiante",
+                avatar: "J",
+                ultimoMensaje: "¡Gracias por el recurso! Me ayudó mucho con mi plan de negocios.",
+                fecha: new Date(Date.now() - 1000 * 60 * 60 * 2), // Hace 2 horas
+                noLeidos: 0,
+                tipo: "estudiante"
+            },
+            {
+                id: 3,
+                nombre: "Soporte Técnico",
+                rol: "Sistema",
+                avatar: "S",
+                ultimoMensaje: "Hemos actualizado tu disponibilidad según lo solicitado.",
+                fecha: new Date(Date.now() - 1000 * 60 * 60 * 24), // Ayer
+                noLeidos: 0,
+                tipo: "sistema"
+            },
+            {
+                id: 4,
+                nombre: "Carlos Ruiz",
+                rol: "Estudiante",
+                avatar: "C",
+                ultimoMensaje: "¿Cuándo estará disponible la grabación de la clase?",
+                fecha: new Date(Date.now() - 1000 * 60 * 60 * 5), // Hace 5 horas
+                noLeidos: 1,
+                tipo: "estudiante"
+            },
+            {
+                id: 5,
+                nombre: "María García",
+                rol: "Emprendedor",
+                avatar: "M",
+                ultimoMensaje: "Confirmada la sesión para el jueves.",
+                fecha: new Date(Date.now() - 1000 * 60 * 60 * 48), // Hace 2 dias
+                noLeidos: 0,
+                tipo: "estudiante"
+            }
+        ];
+
+        let filtroActual = 'todas';
+        let busquedaActual = '';
+
+        function logout() {
+            localStorage.removeItem(AUTH_TOKEN_KEY);
+            localStorage.removeItem(AUTH_USER_KEY);
+            window.location.href = ROUTES.login;
+        }
+
+        function cargarDatosUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Mentor';
+                const avatar = document.querySelector('.mentor-avatar-glow');
+                if (avatar && user.nombre) {
+                    avatar.textContent = user.nombre.charAt(0).toUpperCase();
+                }
+            }
+        }
+
+        function filtrarConversaciones(filtro, elementoBtn) {
+            filtroActual = filtro;
+
+            // Actualizar botones
+            if (elementoBtn) {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                elementoBtn.classList.add('active');
+            }
+
+            renderizarConversaciones();
+        }
+
+        function buscarConversacion(texto) {
+            busquedaActual = texto.toLowerCase();
+            renderizarConversaciones();
+        }
+
+        function renderizarConversaciones() {
+            const contenedor = document.getElementById('conversations-grid');
+            const emptyState = document.getElementById('empty-state');
+
+            let filtradas = conversacionesData.filter(c => {
+                // Filtro por Tab
+                if (filtroActual === 'no_leidas' && c.noLeidos === 0) return false;
+                if (filtroActual === 'estudiantes' && c.tipo !== 'estudiante') return false;
+
+                // Filtro por Búsqueda
+                if (busquedaActual &&
+                    !c.nombre.toLowerCase().includes(busquedaActual) &&
+                    !c.ultimoMensaje.toLowerCase().includes(busquedaActual)) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            if (filtradas.length === 0) {
+                contenedor.style.display = 'none';
+                emptyState.style.display = 'flex';
+                return;
+            }
+
+            contenedor.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            contenedor.innerHTML = filtradas.map(conv => `
+                <div class="conversation-card" onclick="irAlChat(${conv.id})">
+                    <div class="card-header">
+                        <div class="conversation-avatar" style="${conv.tipo === 'sistema' ? 'background: var(--gradient-accent);' : ''}">
+                            ${conv.avatar}
+                        </div>
+                        <div class="conversation-info">
+                            <div class="conversation-name">${conv.nombre}</div>
+                            <div class="conversation-role">
+                                ${conv.tipo === 'estudiante' ? '👤' : '🛠️'} ${conv.rol}
+                            </div>
+                        </div>
+                        ${conv.noLeidos > 0 ? `
+                            <div class="unread-badge">${conv.noLeidos}</div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="conversation-preview">
+                        ${conv.ultimoMensaje}
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="conversation-time">
+                            🕒 ${formatearFecha(conv.fecha)}
+                        </div>
+                        <div style="color: var(--primary); font-size: 0.8rem; font-weight: 500;">
+                            Ver chat →
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatearFecha(date) {
+            const ahora = new Date();
+            const diff = ahora - date;
+            const minutos = Math.floor(diff / 60000);
+            const horas = Math.floor(minutos / 60);
+            const dias = Math.floor(horas / 24);
+
+            if (minutos < 60) return `Hace ${minutos} min`;
+            if (horas < 24) return `Hace ${horas} h`;
+            if (dias === 1) return 'Ayer';
+            return date.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+        }
+
+        function irAlChat(id) {
+            // Aquí redirigiríamos al chat específico
+            // window.location.href = './chat.html?id=' + id;
+            alert('Navegando al chat ' + id);
+        }
+
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDatosUsuario();
+            renderizarConversaciones();
+        });
+
+    </script>
+</body>
+
+</html>
