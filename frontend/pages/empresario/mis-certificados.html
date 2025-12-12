@@ -1,260 +1,160 @@
 ﻿<!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Certificados | Nenis y Bros</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/theme.css">
+
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
-            color: #2d3748;
-        }
-
-        /* Admin Container Layout */
-        .admin-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .admin-sidebar {
-            width: 260px;
-            background: #2c3e50;
-            color: white;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .admin-logo {
-            padding: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            text-decoration: none;
-            color: white;
-            display: block;
-        }
-
-        .admin-menu {
-            list-style: none;
-            padding: 20px 0;
-        }
-
-        .admin-menu li {
-            margin: 5px 0;
-        }
-
-        .admin-menu a {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .admin-menu a:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
-        .admin-menu a.active {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border-left: 4px solid #667eea;
-        }
-
-        .admin-menu a span:first-child {
-            margin-right: 10px;
-            font-size: 18px;
-        }
-
-        .admin-main {
-            margin-left: 260px;
-            flex: 1;
-            padding: 30px;
-            width: calc(100% - 260px);
-        }
-
-        .page-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 40px 30px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .page-header h1 {
-            font-size: 32px;
-            margin: 0 0 10px 0;
-        }
-
-        .page-header p {
-            font-size: 16px;
-            opacity: 0.9;
-        }
-
         .certificados-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
         }
 
-        .certificado-card {
-            background: white;
-            border-radius: 12px;
+        .certificado-card-modern {
+            background: var(--bg-panel);
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
         }
 
-        .certificado-card:hover {
+        .certificado-card-modern:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border-color: rgba(99, 102, 241, 0.3);
         }
 
-        .certificado-header {
-            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
-            padding: 30px;
+        .certificado-header-modern {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            padding: 2rem;
             text-align: center;
-            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .certificado-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
+        .certificado-icon-modern {
+            font-size: 3rem;
+            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
         }
 
-        .certificado-body {
-            padding: 25px;
+        .certificado-body-modern {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .certificado-titulo {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 10px;
-        }
-
-        .certificado-info {
-            color: #718096;
-            margin-bottom: 15px;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 1rem;
+            line-height: 1.4;
         }
 
         .certificado-info-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 14px;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
         }
 
         .certificado-actions {
             display: flex;
-            gap: 10px;
-            padding-top: 15px;
-            border-top: 1px solid #e2e8f0;
+            gap: 1rem;
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            flex: 1;
-            justify-content: center;
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #764ba2;
-        }
-
-        .btn-secondary {
-            background: #e2e8f0;
-            color: #4a5568;
-        }
-
-        .btn-secondary:hover {
-            background: #cbd5e0;
-        }
-
-        .empty-state {
+        .empty-state-modern {
+            grid-column: 1 / -1;
             text-align: center;
-            padding: 80px 20px;
-            background: white;
-            border-radius: 12px;
+            padding: 4rem 2rem;
+            background: var(--bg-panel);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .empty-state-icon {
-            font-size: 80px;
-            margin-bottom: 20px;
-        }
-
-        .empty-state h3 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .empty-state p {
-            color: #718096;
-            margin-bottom: 30px;
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+            opacity: 0.5;
         }
     </style>
 </head>
-<body>
-    <div class="admin-container">
-        <!-- Sidebar -->
-        <aside class="admin-sidebar">
-            <a href="./dashboard.html" class="admin-logo">🚀 Nenis y Bros</a>
-            <ul class="admin-menu">
-                <!-- Menú dinámico generado por navigation.js -->
-            </ul>
-        </aside>
 
-        <!-- Main Content -->
-        <main class="admin-main">
-            <div class="page-header">
-                <h1>🎓 Mis Certificados</h1>
-                <p>Certificados de cursos completados y logros alcanzados</p>
+<body>
+    <!-- Top Navigation -->
+    <nav class="modern-nav">
+        <div class="nav-logo">
+            <span style="font-size: 1.8rem;">🚀</span>
+            <span class="text-gradient">Nenis y Bros</span>
+        </div>
+
+        <ul class="nav-menu">
+            <!-- Menú dinámico generado por navigation.js -->
+        </ul>
+
+        <div class="admin-user">
+            <div class="user-avatar-glow user-avatar"
+                style="background: var(--primary); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                E</div>
+            <div>
+                <div class="user-name" id="userName" style="font-weight: 600; color: var(--text-main);">Usuario</div>
+                <div class="user-type" style="font-size: 0.75rem; color: var(--text-muted);">Empresario</div>
+            </div>
+            <button class="btn-outline" onclick="logout()" style="margin-left: 1rem; padding: 0.5rem 1rem;">
+                <span style="margin-right: 0.25rem;">🚪</span> Salir
+            </button>
+        </div>
+    </nav>
+
+    <main class="dashboard-grid">
+        <div class="col-span-12">
+            <div class="page-header"
+                style="margin-bottom: 2rem; padding: 2rem 0; background: transparent; text-align: left;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎓 Mis Certificados</h1>
+                <p style="color: var(--text-muted); font-size: 1.1rem;">Certificados de cursos completados y logros
+                    alcanzados</p>
             </div>
 
             <div class="certificados-grid" id="certificados-grid">
-                <!-- Se cargará dinámicamente -->
+                <!-- Loading -->
+                <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
+                    Cargando tus certificados...
+                </div>
             </div>
-
-            <div class="empty-state" id="empty-state" style="display: none;">
-                <div class="empty-state-icon">🎓</div>
-                <h3>Aún no tienes certificados</h3>
-                <p>Completa cursos para obtener certificados que validen tus conocimientos</p>
-                <a href="../cursos/catalogo.html" class="btn btn-primary">Explorar Cursos</a>
-            </div>
-        </main>
-    </div>
+        </div>
+    </main>
 
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/navigation.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            initDynamicNavbar();
+        });
+    </script>
+
     <script>
         // Verificar autenticación
         if (!checkAuth() || !(isEmprendedor() || isEmpresario())) {
@@ -262,22 +162,13 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            highlightActiveLink();
+            const user = getUserData();
+            if (user) {
+                document.getElementById('userName').textContent = user.nombre || 'Usuario';
+                document.querySelector('.user-type').textContent = user.rol || 'Empresario';
+            }
             cargarCertificados();
         });
-
-        function highlightActiveLink() {
-            const currentPath = window.location.pathname;
-            const links = document.querySelectorAll('.admin-menu a');
-            links.forEach(link => {
-                const linkPath = new URL(link.href).pathname;
-                if (currentPath.includes(linkPath.split('/').pop())) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        }
 
         async function cargarCertificados() {
             try {
@@ -285,38 +176,52 @@
                 if (response.success && response.data.length > 0) {
                     renderizarCertificados(response.data);
                 } else {
-                    document.getElementById('empty-state').style.display = 'block';
+                    renderEmptyState();
                 }
             } catch (error) {
                 console.error('Error al cargar certificados:', error);
-                document.getElementById('empty-state').style.display = 'block';
+                renderEmptyState();
             }
+        }
+
+        function renderEmptyState() {
+            const grid = document.getElementById('certificados-grid');
+            grid.innerHTML = `
+                <div class="empty-state-modern">
+                    <div class="empty-state-icon">🎓</div>
+                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Aún no tienes certificados</h3>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">Completa cursos para obtener certificados que validen tus conocimientos</p>
+                    <a href="../cursos/catalogo.html" class="btn-modern">
+                        Explorar Cursos
+                    </a>
+                </div>
+            `;
         }
 
         function renderizarCertificados(certificados) {
             const grid = document.getElementById('certificados-grid');
             grid.innerHTML = certificados.map(cert => `
-                <div class="certificado-card">
-                    <div class="certificado-header">
-                        <div class="certificado-icon">🎓</div>
+                <div class="certificado-card-modern">
+                    <div class="certificado-header-modern">
+                        <div class="certificado-icon-modern">🎓</div>
                     </div>
-                    <div class="certificado-body">
+                    <div class="certificado-body-modern">
                         <h3 class="certificado-titulo">${cert.curso_nombre}</h3>
-                        <div class="certificado-info">
+                        <div style="margin-bottom: 1rem;">
                             <div class="certificado-info-item">
-                                📅 Emitido: ${new Date(cert.fecha_emision).toLocaleDateString('es-MX')}
+                                <span style="opacity: 0.7;">📅</span> Emitido: ${new Date(cert.fecha_emision).toLocaleDateString('es-MX')}
                             </div>
                             <div class="certificado-info-item">
-                                🔑 Código: ${cert.codigo_verificacion}
+                                <span style="opacity: 0.7;">🔑</span> Código: ${cert.codigo_verificacion}
                             </div>
                         </div>
                         <div class="certificado-actions">
                             <a href="${API_BASE_URL}/certificados/${cert.id}/download" 
-                               class="btn btn-primary" target="_blank">
+                               class="btn-modern" style="flex: 1; justify-content: center;" target="_blank">
                                 📥 Descargar
                             </a>
                             <a href="./verificar-certificado.html?codigo=${cert.codigo_verificacion}" 
-                               class="btn btn-secondary">
+                               class="btn-outline" style="flex: 1; justify-content: center; text-align: center;">
                                 ✓ Verificar
                             </a>
                         </div>
@@ -325,11 +230,6 @@
             `).join('');
         }
     </script>
-    <script src="../../assets/js/navigation.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            initDynamicNavbar();
-        });
-    </script>
 </body>
+
 </html>
