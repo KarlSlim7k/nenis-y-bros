@@ -269,6 +269,80 @@ class AdminController {
         }
     }
     /**
+     * Crea un nuevo usuario
+     * 
+     * POST /api/admin/users
+     * Headers: Authorization: Bearer {token}
+     * Body: nombre, email, tipo_usuario, password
+     * Requiere: rol administrador
+     */
+    public function createUser() {
+        $user = AuthMiddleware::verifyRole(['administrador']);
+        
+        if (!$user) {
+            return;
+        }
+        
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        // Validar datos
+        $validator = new Validator($data, [
+            'nombre' => 'required|min:2|max:100',
+            'email' => 'required|email',
+            'tipo_usuario' => 'required|in:emprendedor,mentor,empresario,administrador',
+            'password' => 'required|min:6'
+        ]);
+        
+        if (!$validator->validate()) {
+            Response::validationError($validator->getErrors());
+        }
+        
+        try {
+            // Verificar si el email ya existe
+            $existingUser = $this->usuarioModel->findByEmail($data['email']);
+            if ($existingUser) {
+                Response::error('El correo electrónico ya está registrado', 400);
+            }
+            
+            // Preparar datos del usuario
+            $userData = [
+                'nombre' => $data['nombre'],
+                'apellido' => '',  // Puede ser vacío
+                'email' => $data['email'],
+                'tipo_usuario' => $data['tipo_usuario'],
+                'password_hash' => password_hash($data['password'], PASSWORD_BCRYPT),
+                'estado' => 'activo' // Por defecto activo cuando admin crea
+            ];
+            
+            // Crear usuario
+            $userId = $this->usuarioModel->create($userData);
+            
+            if (!$userId) {
+                Response::error('No se pudo crear el usuario', 400);
+            }
+            
+            Logger::activity($user['id_usuario'], 'Usuario creado por admin', [
+                'new_user_id' => $userId,
+                'user_data' => [
+                    'nombre' => $userData['nombre'],
+                    'email' => $userData['email'],
+                    'tipo_usuario' => $userData['tipo_usuario']
+                ]
+            ]);
+            
+            // Obtener usuario creado
+            $newUser = $this->usuarioModel->findById($userId);
+            unset($newUser['password_hash']);
+            
+            Response::success(['user' => $newUser], 'Usuario creado exitosamente', 201);
+            
+        } catch (Exception $e) {
+            Logger::error('Error al crear usuario: ' . $e->getMessage());
+            Response::serverError('Error al crear usuario');
+        }
+    }
+    
+    /**
      * Actualiza un usuario completo
      * 
      * PUT /api/admin/users/{id}
@@ -310,7 +384,8 @@ class AdminController {
                 Response::error('El correo electrónico ya está en uso', 400);
             }
             
-            $updated = $this->usuarioModel->update($id, $data);
+            // Usar adminUpdate en lugar de update para permitir cambios en email, tipo y estado
+            $updated = $this->usuarioModel->adminUpdate($id, $data);
             
             if (!$updated) {
                 Response::error('No se pudo actualizar el usuario', 400);

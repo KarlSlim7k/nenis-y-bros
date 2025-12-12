@@ -138,6 +138,43 @@ class Usuario {
     }
     
     /**
+     * Actualiza usuario desde el panel de administración
+     * Permite actualizar campos adicionales como email, tipo_usuario y estado
+     * 
+     * @param int $id ID del usuario
+     * @param array $data Datos a actualizar
+     * @return bool
+     */
+    public function adminUpdate($id, $data) {
+        $fields = [];
+        $params = [];
+        
+        $allowedFields = ['nombre', 'apellido', 'email', 'telefono', 'tipo_usuario', 'estado', 'foto_perfil', 'biografia', 'ciudad', 'pais'];
+        
+        foreach ($allowedFields as $field) {
+            if (isset($data[$field])) {
+                $fields[] = "{$field} = ?";
+                $params[] = $data[$field];
+            }
+        }
+        
+        if (empty($fields)) {
+            return false;
+        }
+        
+        $params[] = $id;
+        
+        $query = "UPDATE usuarios SET " . implode(', ', $fields) . " WHERE id_usuario = ?";
+        $affected = $this->db->execute($query, $params);
+        
+        if ($affected > 0) {
+            Logger::activity($id, 'Usuario actualizado por administrador');
+        }
+        
+        return $affected > 0;
+    }
+    
+    /**
      * Cambia el estado de un usuario
      * 
      * @param int $id ID del usuario

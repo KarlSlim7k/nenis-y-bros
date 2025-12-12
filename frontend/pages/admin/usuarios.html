@@ -1082,6 +1082,7 @@
                                             <div class="actions-cell">
                                                 <button class="btn-action btn-view" onclick='viewUser(${JSON.stringify(user).replace(/'/g, "&#39;")})'>Ver</button>
                                                 <button class="btn-action btn-edit" onclick='openEditModal(${JSON.stringify(user).replace(/'/g, "&#39;")})'>Editar</button>
+                                                <button class="btn-action btn-delete" onclick='deleteUser(${user.id_usuario}, "${user.nombre}")'>Eliminar</button>
                                             </div>
                                         </td>
                                     </tr>
@@ -1272,6 +1273,26 @@
             } finally {
                 btn.textContent = originalText;
                 btn.disabled = false;
+            }
+        }
+
+        // Delete user
+        async function deleteUser(userId, userName) {
+            if (!confirm(`¿Estás seguro de que deseas eliminar al usuario "${userName}"?\n\nEsta acción no se puede deshacer.`)) {
+                return;
+            }
+
+            try {
+                const response = await apiDelete(`/admin/users/${userId}`);
+                if (response.success) {
+                    showNotification('✅ Usuario eliminado exitosamente', 'success');
+                    cargarUsuarios();
+                    cargarEstadisticas();
+                } else {
+                    showNotification('❌ ' + (response.message || 'Error al eliminar'), 'error');
+                }
+            } catch (error) {
+                showNotification('❌ ' + error.message, 'error');
             }
         }
 
