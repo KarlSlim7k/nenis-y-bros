@@ -950,21 +950,39 @@
             const selects = [document.getElementById('id_categoria'), document.getElementById('editCategoria')];
             try {
                 const response = await apiGet('/courses/categories');
-                const categorias = response.message?.data || response.data || [];
+                // Intentar extraer categorias de diferentes estructuras de respuesta
+                let categorias = [];
+                if (response.data && response.data.categorias) {
+                    categorias = response.data.categorias;
+                } else if (response.data && Array.isArray(response.data)) {
+                    categorias = response.data;
+                } else if (Array.isArray(response.message)) {
+                    categorias = response.message;
+                }
+
+                console.log('Categorías cargadas:', categorias);
 
                 selects.forEach(select => {
                     if (select) {
+                        const currentValue = select.value; // Guardar valor actual
                         select.innerHTML = '<option value="">Seleccionar categoría</option>';
 
-                        if (Array.isArray(categorias)) {
+                        if (Array.isArray(categorias) && categorias.length > 0) {
                             categorias.forEach(cat => {
                                 select.innerHTML += `<option value="${cat.id_categoria}">${cat.nombre}</option>`;
                             });
                         }
+                        
+                        // Restaurar selección si era válida
+                        if (currentValue) {
+                            select.value = currentValue;
+                        }
                     }
                 });
+                
+                return categorias;
             } catch (error) {
-                console.log('Using default categories');
+                console.error('Error al cargar categorías:', error);
                 selects.forEach(select => {
                     if (select) {
                         select.innerHTML = `
@@ -976,6 +994,7 @@
                         `;
                     }
                 });
+                return [];
             }
         }
 
@@ -1091,6 +1110,34 @@
         // --- Actions ---
         async function handleCreateCourse(e) {
             e.preventDefault();
+            
+            // Validar campos requeridos antes de enviar
+            const form = e.target;
+            const titulo = form.querySelector('[name="titulo"]').value.trim();
+            const idCategoria = form.querySelector('[name="id_categoria"]').value;
+            const descripcion = form.querySelector('[name="descripcion"]').value.trim();
+            
+            if (!titulo || titulo.length < 5) {
+                showNotification('⚠️ El título debe tener al menos 5 caracteres', 'warning');
+                switchToTab('create-basic');
+                form.querySelector('[name="titulo"]').focus();
+                return;
+            }
+            
+            if (!idCategoria || idCategoria === '') {
+                showNotification('⚠️ Debes seleccionar una categoría', 'warning');
+                switchToTab('create-basic');
+                form.querySelector('[name="id_categoria"]').focus();
+                return;
+            }
+            
+            if (!descripcion) {
+                showNotification('⚠️ La descripción corta es requerida', 'warning');
+                switchToTab('create-basic');
+                form.querySelector('[name="descripcion"]').focus();
+                return;
+            }
+            
             const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.textContent;
             btn.innerHTML = '<span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span> Creando...';
@@ -1231,7 +1278,7 @@
             }
         }
 
-        // Switch tabs en el formulario
+        // Switch tabs en el formulario (desde evento de botón)
         function switchTab(event, tabId) {
             event.preventDefault();
             event.stopPropagation();
@@ -1249,6 +1296,28 @@
             if (targetContent) {
                 targetContent.classList.add('active');
             }
+        }
+        
+        // Switch to tab programáticamente (para validaciones)
+        function switchToTab(tabId) {
+            const targetContent = document.getElementById(tabId);
+            if (!targetContent) return;
+            
+            const form = targetContent.closest('form');
+            const allTabs = form.querySelectorAll('.form-tab');
+            const allContents = form.querySelectorAll('.form-tab-content');
+            
+            allTabs.forEach(tab => tab.classList.remove('active'));
+            allContents.forEach(content => content.classList.remove('active'));
+            
+            // Encontrar y activar el botón del tab correspondiente
+            const tabButtons = Array.from(allTabs);
+            const tabIndex = Array.from(allContents).indexOf(targetContent);
+            if (tabButtons[tabIndex]) {
+                tabButtons[tabIndex].classList.add('active');
+            }
+            
+            targetContent.classList.add('active');
         }
 
         // Agregar objetivo a la lista
@@ -1369,22 +1438,41 @@
 
                 const response = await apiPost('/categories', data);
                 
+                console.log('Respuesta de crear categoría:', response);
+                
                 if (response.success) {
+                    // Extraer el ID de la categoría de la respuesta
+                    let nuevaCategoriaId = null;
+                    if (response.data && response.data.categoria) {
+                        nuevaCategoriaId = response.data.categoria.id_categoria;
+                    } else if (response.data && response.data.id_categoria) {
+                        nuevaCategoriaId = response.data.id_categoria;
+                    }
+                    
+                    console.log('ID de nueva categoría:', nuevaCategoriaId);
+                    
                     showNotification('✅ Categoría creada exitosamente', 'success');
                     
                     // Recargar el dropdown de categorías
                     await cargarCategorias();
                     
-                    // Seleccionar la nueva categoría en ambos dropdowns (crear y editar)
-                    const selectCategoriaCreate = document.getElementById('id_categoria');
-                    const selectCategoriaEdit = document.getElementById('editCategoria');
-                    
-                    if (selectCategoriaCreate && response.data.id_categoria) {
-                        selectCategoriaCreate.value = response.data.id_categoria;
-                    }
-                    if (selectCategoriaEdit && response.data.id_categoria) {
-                        selectCategoriaEdit.value = response.data.id_categoria;
-                    }
+                    // Dar un pequeño delay para asegurar que el DOM se actualizó
+                    setTimeout(() => {
+                        // Seleccionar la nueva categoría en ambos dropdowns
+                        const selectCategoriaCreate = document.getElementById('id_categoria');
+                        const selectCategoriaEdit = document.getElementById('editCategoria');
+                        
+                        if (nuevaCategoriaId) {
+                            if (selectCategoriaCreate) {
+                                selectCategoriaCreate.value = nuevaCategoriaId;
+                                console.log('Categoría seleccionada en crear:', selectCategoriaCreate.value);
+                            }
+                            if (selectCategoriaEdit) {
+                                selectCategoriaEdit.value = nuevaCategoriaId;
+                                console.log('Categoría seleccionada en editar:', selectCategoriaEdit.value);
+                            }
+                        }
+                    }, 100);
                     
                     closeQuickCategoryModal();
                 } else {
@@ -1401,6 +1489,34 @@
 
         async function handleEditCourse(e) {
             e.preventDefault();
+            
+            // Validar campos requeridos antes de enviar
+            const form = e.target;
+            const titulo = form.querySelector('[name="titulo"]').value.trim();
+            const idCategoria = form.querySelector('[name="id_categoria"]').value;
+            const descripcion = form.querySelector('[name="descripcion"]').value.trim();
+            
+            if (!titulo || titulo.length < 5) {
+                showNotification('⚠️ El título debe tener al menos 5 caracteres', 'warning');
+                switchToTab('edit-basic');
+                form.querySelector('[name="titulo"]').focus();
+                return;
+            }
+            
+            if (!idCategoria || idCategoria === '') {
+                showNotification('⚠️ Debes seleccionar una categoría', 'warning');
+                switchToTab('edit-basic');
+                form.querySelector('[name="id_categoria"]').focus();
+                return;
+            }
+            
+            if (!descripcion) {
+                showNotification('⚠️ La descripción corta es requerida', 'warning');
+                switchToTab('edit-basic');
+                form.querySelector('[name="descripcion"]').focus();
+                return;
+            }
+            
             const btn = e.target.querySelector('button[type="submit"]');
             const originalText = btn.textContent;
             btn.innerHTML = '<span class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></span> Guardando...';
