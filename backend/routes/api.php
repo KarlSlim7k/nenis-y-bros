@@ -308,6 +308,10 @@ function registerRoutes(Router $router) {
         $adminController->getUsers();
     });
     
+    $router->post('/admin/users', function() use ($adminController) {
+        $adminController->createUser();
+    });
+    
     $router->get('/admin/users/{id}', function($id) use ($adminController) {
         $adminController->getUserDetails($id);
     });
