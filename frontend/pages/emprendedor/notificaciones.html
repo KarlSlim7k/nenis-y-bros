@@ -233,16 +233,7 @@
         <div class="nav-logo"><span style="font-size: 1.8rem;">🚀</span><span class="text-gradient">Nenis y Bros</span>
         </div>
         <ul class="nav-menu">
-            <li><a href="./dashboard.html" class="nav-link">Dashboard</a></li>
-            <li><a href="./diagnosticos.html" class="nav-link">Diagnósticos</a></li>
-            <li><a href="./mi-progreso.html" class="nav-link">Progreso</a></li>
-            <li><a href="./perfil-empresarial.html" class="nav-link">Mi Empresa</a></li>
-            <li><a href="./mis-logros.html" class="nav-link">Logros</a></li>
-            <li><a href="./ranking.html" class="nav-link">Ranking</a></li>
-            <li><a href="./vitrina-productos.html" class="nav-link">Vitrina</a></li>
-            <li><a href="./mis-productos.html" class="nav-link">Productos</a></li>
-            <li><a href="./chat.html" class="nav-link">Chat</a></li>
-            <li><a href="./notificaciones.html" class="nav-link active">🔔</a></li>
+            <!-- Menú dinámico generado por navigation.js -->
         </ul>
         <div class="admin-user">
             <div class="emprendedor-avatar-glow user-avatar">E</div>
@@ -344,8 +335,9 @@
     </main>
 
     <script src="../../assets/js/config.js"></script>
-    <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/navigation.js"></script>
+    <script src="../../assets/js/api.js"></script>
     <script>
         if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
         function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
@@ -358,7 +350,10 @@
                 if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
             }
         }
-        document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
+        document.addEventListener('DOMContentLoaded', () => {
+            initDynamicNavbar();
+            cargarDatosUsuario();
+        });
     </script>
 </body>
 

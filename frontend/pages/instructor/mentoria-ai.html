@@ -399,7 +399,7 @@
     <script src="../../assets/js/api.js"></script>
     <script>
         // Verificar autenticación
-        if (!checkAuth() || !(isEmprendedor() || isEmpresario())) {
+        if (!checkAuth() || !isMentor()) {
             window.location.href = ROUTES.login;
         }
 

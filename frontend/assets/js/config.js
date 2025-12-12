@@ -39,24 +39,27 @@ const ROUTES = {
     login: `${BASE_PATH}/frontend/pages/auth/login.html`,
     register: `${BASE_PATH}/frontend/pages/auth/register.html`,
 
-    // Usuario/Emprendedor - Páginas que existen
+    // Dashboards por rol
     emprendedorDashboard: `${BASE_PATH}/frontend/pages/emprendedor/dashboard.html`,
     empresarioDashboard: `${BASE_PATH}/frontend/pages/empresario/dashboard.html`,
-    diagnosticos: `${BASE_PATH}/frontend/pages/user/diagnosticos.html`,
-    perfilEmpresarial: `${BASE_PATH}/frontend/pages/user/perfil-empresarial.html`,
-    diagnosticoWizard: `${BASE_PATH}/frontend/pages/user/diagnostico-wizard.html`,
-    diagnosticoResultados: `${BASE_PATH}/frontend/pages/user/diagnostico-resultados.html`,
-    miProgreso: `${BASE_PATH}/frontend/pages/user/mi-progreso.html`,
-    misLogros: `${BASE_PATH}/frontend/pages/user/mis-logros.html`,
-    misCertificados: `${BASE_PATH}/frontend/pages/user/mis-certificados.html`,
-    ranking: `${BASE_PATH}/frontend/pages/user/ranking.html`,
-    notificaciones: `${BASE_PATH}/frontend/pages/user/notificaciones.html`,
-    vitrinaProductos: `${BASE_PATH}/frontend/pages/user/vitrina-productos.html`,
-    misProductos: `${BASE_PATH}/frontend/pages/user/mis-productos.html`,
-    chat: `${BASE_PATH}/frontend/pages/user/chat.html`,
-    evaluacion: `${BASE_PATH}/frontend/pages/user/evaluacion.html`,
-    evaluacionResultados: `${BASE_PATH}/frontend/pages/user/evaluacion-resultados.html`,
-    verificarCertificado: `${BASE_PATH}/frontend/pages/user/verificar-certificado.html`,
+    
+    // DEPRECATED: Rutas genéricas - Usar navigation.js para rutas específicas por rol
+    // Las siguientes rutas apuntan a emprendedor por defecto para mantener compatibilidad
+    diagnosticos: `${BASE_PATH}/frontend/pages/emprendedor/diagnosticos.html`,
+    perfilEmpresarial: `${BASE_PATH}/frontend/pages/empresario/perfil-empresarial.html`,
+    diagnosticoWizard: `${BASE_PATH}/frontend/pages/emprendedor/diagnostico-wizard.html`,
+    diagnosticoResultados: `${BASE_PATH}/frontend/pages/emprendedor/diagnostico-resultados.html`,
+    miProgreso: `${BASE_PATH}/frontend/pages/emprendedor/mi-progreso.html`,
+    misLogros: `${BASE_PATH}/frontend/pages/emprendedor/mis-logros.html`,
+    misCertificados: `${BASE_PATH}/frontend/pages/emprendedor/mis-certificados.html`,
+    ranking: `${BASE_PATH}/frontend/pages/emprendedor/ranking.html`,
+    notificaciones: `${BASE_PATH}/frontend/pages/emprendedor/notificaciones.html`,
+    vitrinaProductos: `${BASE_PATH}/frontend/pages/emprendedor/vitrina-productos.html`,
+    misProductos: `${BASE_PATH}/frontend/pages/empresario/mis-productos.html`,
+    chat: `${BASE_PATH}/frontend/pages/emprendedor/chat.html`,
+    evaluacion: `${BASE_PATH}/frontend/pages/emprendedor/evaluacion.html`,
+    evaluacionResultados: `${BASE_PATH}/frontend/pages/emprendedor/evaluacion-resultados.html`,
+    verificarCertificado: `${BASE_PATH}/frontend/pages/emprendedor/verificar-certificado.html`,
 
     // Admin
     adminDashboard: `${BASE_PATH}/frontend/pages/admin/dashboard.html`,

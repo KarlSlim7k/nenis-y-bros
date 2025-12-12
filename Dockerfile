@@ -10,6 +10,12 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd zip pdo pdo_mysql
 
+# Configurar MPM - Forzar solo mpm_prefork (requerido para mod_php)
+RUN rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf \
+    /etc/apache2/mods-enabled/mpm_worker.load /etc/apache2/mods-enabled/mpm_worker.conf \
+    && ln -sf /etc/apache2/mods-available/mpm_prefork.load /etc/apache2/mods-enabled/mpm_prefork.load \
+    && ln -sf /etc/apache2/mods-available/mpm_prefork.conf /etc/apache2/mods-enabled/mpm_prefork.conf 2>/dev/null || true
+
 # Habilitar mod_rewrite para Apache
 RUN a2enmod rewrite
 
@@ -27,6 +33,10 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 # Copiar archivos del proyecto
 COPY . /var/www/html/
 
+# Copiar y dar permisos al script de entrypoint
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Cambiar permisos
 RUN chown -R www-data:www-data /var/www/html/ \
     && chmod -R 755 /var/www/html/
@@ -34,5 +44,5 @@ RUN chown -R www-data:www-data /var/www/html/ \
 # Exponer puerto 80
 EXPOSE 80
 
-# Comando por defecto
-CMD ["apache2-foreground"]
+# Usar el script de entrypoint para configurar MPM antes de iniciar Apache
+ENTRYPOINT ["docker-entrypoint.sh"]

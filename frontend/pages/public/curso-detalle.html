@@ -234,8 +234,19 @@
         function updateNav() {
             const navLinks = document.getElementById('navLinks');
             if (checkAuth()) {
+                const user = getAuthUser();
+                let dashboardUrl = '../emprendedor/dashboard.html';
+                
+                if (user.tipo_usuario === 'administrador') {
+                    dashboardUrl = '../admin/dashboard.html';
+                } else if (user.tipo_usuario === 'mentor') {
+                    dashboardUrl = '../instructor/dashboard.html';
+                } else if (user.tipo_usuario === 'empresario') {
+                    dashboardUrl = '../empresario/dashboard.html';
+                }
+                
                 navLinks.innerHTML = `
-                    <a href="../user/dashboard.html" class="btn btn-text">Mi Dashboard</a>
+                    <a href="${dashboardUrl}" class="btn btn-text">Mi Dashboard</a>
                     <button onclick="logout()" class="btn btn-outline">Cerrar Sesión</button>
                 `;
             }
@@ -357,7 +368,16 @@
 
         function renderEnrollButton(course) {
             if (course.inscrito) {
-                return `<a href="../user/leccion.html?courseId=${course.id_curso}" class="btn btn-primary" style="width: 100%;">Continuar Aprendiendo</a>`;
+                const user = getAuthUser();
+                let leccionUrl = '../emprendedor/leccion.html';
+                
+                if (user.tipo_usuario === 'empresario') {
+                    leccionUrl = '../empresario/leccion.html';
+                } else if (user.tipo_usuario === 'mentor' || user.tipo_usuario === 'administrador') {
+                    leccionUrl = '../instructor/leccion.html';
+                }
+                
+                return `<a href="${leccionUrl}?courseId=${course.id_curso}" class="btn btn-primary" style="width: 100%;">Continuar Aprendiendo</a>`;
             }
             
             if (!checkAuth()) {

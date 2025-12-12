@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -370,8 +370,9 @@
     </main>
 
     <script src="../../assets/js/config.js"></script>
-    <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/navigation.js"></script>
+    <script src="../../assets/js/api.js"></script>
     <script>
         if (!checkAuth() || (!isEmprendedor() && !isEmpresario())) window.location.href = ROUTES.login;
         function logout() { localStorage.removeItem(AUTH_TOKEN_KEY); localStorage.removeItem(AUTH_USER_KEY); window.location.href = ROUTES.login; }
@@ -383,12 +384,9 @@
                 if (avatar && user.nombre) avatar.textContent = user.nombre.charAt(0).toUpperCase();
             }
         }
-        document.addEventListener('DOMContentLoaded', cargarDatosUsuario);
-    </script>
-    <script src="../../assets/js/navigation.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             initDynamicNavbar();
+            cargarDatosUsuario();
         });
     </script>
 </body>

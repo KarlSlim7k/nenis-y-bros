@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -233,16 +233,7 @@
         <aside class="admin-sidebar">
             <a href="./dashboard.html" class="admin-logo">🚀 Nenis y Bros</a>
             <ul class="admin-menu">
-                <li><a href="./dashboard.html"><span>📊</span> Dashboard</a></li>
-                <li><a href="./diagnosticos.html"><span>📋</span> Diagnósticos</a></li>
-                <li><a href="./mi-progreso.html"><span>📈</span> Mi Progreso</a></li>
-                <li><a href="./perfil-empresarial.html"><span>🏢</span> Mi Empresa</a></li>
-                <li><a href="./mis-logros.html"><span>🏆</span> Mis Logros</a></li>
-                <li><a href="./ranking.html"><span>🥇</span> Ranking</a></li>
-                <li><a href="./vitrina-productos.html"><span>🛍️</span> Vitrina de Productos</a></li>
-                <li><a href="./mis-productos.html"><span>📦</span> Mis Productos</a></li>
-                <li><a href="./chat.html"><span>💬</span> Chat</a></li>
-                <li><a href="./notificaciones.html"><span>🔔</span> Notificaciones</a></li>
+                <!-- Menú dinámico generado por navigation.js -->
             </ul>
         </aside>
 
@@ -274,6 +265,12 @@
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            initDynamicNavbar();
+        });
+    </script>
     <script>
         // Verificar autenticación
         if (!checkAuth() || !(isEmprendedor() || isEmpresario())) {

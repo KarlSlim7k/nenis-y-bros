@@ -32,14 +32,16 @@ function getMenuItems(tipoUsuario) {
                 section: 'Principal', items: [
                     { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/instructor/dashboard.html` },
                     { icon: '📚', text: 'Mis Cursos', url: `${bp}/frontend/pages/instructor/cursos.html` },
-                    { icon: '👥', text: 'Mis Alumnos', url: `${bp}/frontend/pages/instructor/alumnos.html` },
-                    { icon: '💬', text: 'Mensajes', url: `${bp}/frontend/pages/instructor/mis-conversaciones.html` }
+                    { icon: '👥', text: 'Mis Alumnos', url: `${bp}/frontend/pages/instructor/estudiantes.html` },
+                    { icon: '💬', text: 'Mensajes', url: `${bp}/frontend/pages/instructor/mis-conversaciones.html` },
+                    { icon: '💬', text: 'Chat', url: `${bp}/frontend/pages/instructor/chat.html` }
                 ]
             },
             {
                 section: 'Mentoría', items: [
-                    { icon: '🤖', text: 'Mentoría AI', url: `${bp}/frontend/pages/user/mentoria-ai.html` },
-                    { icon: '📅', text: 'Disponibilidad', url: `${bp}/frontend/pages/instructor/disponibilidad.html` }
+                    { icon: '📆', text: 'Sesiones', url: `${bp}/frontend/pages/instructor/sesiones.html` },
+                    { icon: '🤖', text: 'Mentoría AI', url: `${bp}/frontend/pages/instructor/mentoria-ai.html` },
+                    { icon: '📅', text: 'Disponibilidad', url: `${bp}/frontend/pages/instructor/disponibilidad-instructor.html` }
                 ]
             }
         ],
@@ -54,7 +56,7 @@ function getMenuItems(tipoUsuario) {
             {
                 section: 'Formación', items: [
                     { icon: '📚', text: 'Cursos', url: `${bp}/frontend/pages/empresario/mis-cursos.html` },
-                    { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/recursos/biblioteca.html` },
+                    { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/recursos/catalogo.html` },
                     { icon: '🎓', text: 'Certificados', url: `${bp}/frontend/pages/empresario/mis-certificados.html` }
                 ]
             },
@@ -76,33 +78,76 @@ function getMenuItems(tipoUsuario) {
             {
                 section: 'Principal', items: [
                     { icon: '📊', text: 'Dashboard', url: `${bp}/frontend/pages/emprendedor/dashboard.html` },
-                    { icon: '📈', text: 'Mi Progreso', url: `${bp}/frontend/pages/user/mi-progreso.html` }
+                    { icon: '📈', text: 'Mi Progreso', url: `${bp}/frontend/pages/emprendedor/mi-progreso.html` }
                 ]
             },
             {
                 section: 'Formación', items: [
-                    { icon: '📚', text: 'Cursos', url: `${bp}/frontend/pages/cursos/catalogo.html` },
-                    { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/recursos/biblioteca.html` },
-                    { icon: '🤖', text: 'Mentoría AI', url: `${bp}/frontend/pages/user/mentoria-ai.html` },
-                    { icon: '🎓', text: 'Certificados', url: `${bp}/frontend/pages/user/mis-certificados.html` }
+                    { icon: '📚', text: 'Cursos', url: `${bp}/frontend/pages/emprendedor/mis-cursos.html` },
+                    { icon: '📖', text: 'Recursos', url: `${bp}/frontend/pages/recursos/catalogo.html` },
+                    { icon: '🤖', text: 'Mentoría AI', url: `${bp}/frontend/pages/emprendedor/mentoria-ai.html` },
+                    { icon: '🎓', text: 'Certificados', url: `${bp}/frontend/pages/emprendedor/mis-certificados.html` }
                 ]
             },
             {
                 section: 'Productos', items: [
-                    { icon: '🛍️', text: 'Vitrina', url: `${bp}/frontend/pages/user/vitrina-productos.html` }
+                    { icon: '🛍️', text: 'Vitrina', url: `${bp}/frontend/pages/emprendedor/vitrina-productos.html` }
                 ]
             },
             {
                 section: 'Gamificación', items: [
-                    { icon: '🏆', text: 'Mis Logros', url: `${bp}/frontend/pages/user/mis-logros.html` },
-                    { icon: '🥇', text: 'Ranking', url: `${bp}/frontend/pages/user/ranking.html` },
-                    { icon: '🔔', text: 'Notificaciones', url: `${bp}/frontend/pages/user/notificaciones.html` }
+                    { icon: '🏆', text: 'Mis Logros', url: `${bp}/frontend/pages/emprendedor/mis-logros.html` },
+                    { icon: '🥇', text: 'Ranking', url: `${bp}/frontend/pages/emprendedor/ranking.html` },
+                    { icon: '🔔', text: 'Notificaciones', url: `${bp}/frontend/pages/emprendedor/notificaciones.html` }
                 ]
             }
         ]
     };
 
     return baseMenu[tipoUsuario] || baseMenu.emprendedor;
+}
+
+/**
+ * Genera el HTML de los items para el menú lateral (admin-menu)
+ * Usado en páginas con layout de sidebar como mentoria-ai, diagnostico-resultados, etc.
+ */
+function generateAdminMenuItems() {
+    const user = getAuthUser();
+    if (!user) return '';
+
+    const menuSections = getMenuItems(user.tipo_usuario);
+    const currentFileName = window.location.pathname.split('/').pop();
+    let html = '';
+
+    // Aplanar las secciones para el menú lateral
+    menuSections.forEach(section => {
+        section.items.forEach(item => {
+            const itemFileName = item.url.split('/').pop();
+            const isActive = currentFileName === itemFileName;
+            const activeClass = isActive ? ' active' : '';
+
+            html += `<li><a href="${item.url}" class="${activeClass.trim()}"><span>${item.icon}</span> ${item.text}</a></li>`;
+        });
+    });
+
+    return html;
+}
+
+/**
+ * Inyecta el menú lateral en páginas con layout de sidebar
+ */
+function injectAdminMenu(containerClass = 'admin-menu') {
+    const container = document.querySelector(`.${containerClass}`);
+    if (!container) {
+        console.warn('Admin menu container not found:', containerClass);
+        return;
+    }
+
+    const menuHtml = generateAdminMenuItems();
+    container.innerHTML = menuHtml;
+    
+    // Actualizar información del usuario
+    updateUserHeaderInfo();
 }
 
 /**
@@ -266,14 +311,14 @@ function generateTopNavItems(currentPage = '') {
     menuSections.forEach(section => {
         section.items.forEach(item => {
             // Determinar si es la página actual
-            // item.url es ruta absoluta (e.g. /nenis_y_bros/frontend/pages/user/diagnosticos.html)
+            // item.url es ruta absoluta (e.g. /nenis_y_bros/frontend/pages/emprendedor/diagnosticos.html)
 
             let itemUrl = item.url;
 
-            // Si estamos desarrollando localmente y las rutas no coinciden exactamente con lo que devuelve getMenuItems
-            // tratamos de normalizar.
-
-            const isActive = currentPage && (itemUrl.endsWith(currentPage) || window.location.href.includes(itemUrl));
+            // Verificar si es la página actual
+            const currentFileName = currentPage || window.location.pathname.split('/').pop();
+            const itemFileName = itemUrl.split('/').pop();
+            const isActive = currentFileName === itemFileName;
             const activeClass = isActive ? ' active' : '';
 
             // Usamos la ruta tal cual viene definida en getMenuItems
@@ -282,6 +327,33 @@ function generateTopNavItems(currentPage = '') {
     });
 
     return html;
+}
+
+/**
+ * Genera e inyecta el navbar completo dinámicamente
+ * Esta función debe llamarse en el DOMContentLoaded de cada página
+ * Detecta automáticamente si la página usa nav-menu (horizontal) o admin-menu (sidebar)
+ */
+function initDynamicNavbar() {
+    const user = getAuthUser();
+    if (!user) return;
+
+    // Detectar qué tipo de menú tiene la página
+    const navMenu = document.querySelector('.nav-menu');
+    const adminMenu = document.querySelector('.admin-menu');
+
+    if (navMenu) {
+        // Menú horizontal superior
+        injectUserTopNav('nav-menu');
+    }
+    
+    if (adminMenu) {
+        // Menú lateral (sidebar)
+        injectAdminMenu('admin-menu');
+    }
+
+    // Actualizar información del usuario
+    updateUserHeaderInfo();
 }
 
 /**
