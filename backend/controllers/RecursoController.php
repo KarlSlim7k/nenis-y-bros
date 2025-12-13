@@ -68,7 +68,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para crear categorías', 403);
             }
             
@@ -108,7 +108,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para actualizar categorías', 403);
             }
             
@@ -137,7 +137,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para eliminar categorías', 403);
             }
             
@@ -280,7 +280,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if (!in_array($usuario['rol'], ['administrador', 'instructor'])) {
+            if (!in_array($usuario['tipo_usuario'], ['administrador', 'instructor'])) {
                 Response::error('No tienes permisos para crear recursos', 403);
             }
             
@@ -343,7 +343,7 @@ class RecursoController {
             }
             
             // Solo admin o el autor pueden actualizar
-            if ($usuario['rol'] !== 'administrador' && $recurso['id_autor'] != $usuario['id_usuario']) {
+            if ($usuario['tipo_usuario'] !== 'administrador' && $recurso['id_autor'] != $usuario['id_usuario']) {
                 Response::error('No tienes permisos para actualizar este recurso', 403);
             }
             
@@ -383,7 +383,7 @@ class RecursoController {
             }
             
             // Solo admin o el autor pueden eliminar
-            if ($usuario['rol'] !== 'administrador' && $recurso['id_autor'] != $usuario['id_usuario']) {
+            if ($usuario['tipo_usuario'] !== 'administrador' && $recurso['id_autor'] != $usuario['id_usuario']) {
                 Response::error('No tienes permisos para eliminar este recurso', 403);
             }
             
@@ -425,7 +425,7 @@ class RecursoController {
             }
             
             // Verificar acceso (premium, suscripción, etc.)
-            if ($recurso['tipo_acceso'] === 'premium' && $usuario['rol'] === 'estudiante') {
+            if ($recurso['tipo_acceso'] === 'premium' && $usuario['tipo_usuario'] === 'estudiante') {
                 // Aquí podrías verificar si el usuario tiene acceso premium
                 // Por ahora permitimos todas las descargas
             }
@@ -591,7 +591,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver estadísticas', 403);
             }
             
@@ -673,7 +673,7 @@ class RecursoController {
             }
             
             // Solo admin o el autor pueden restaurar
-            if ($usuario['rol'] !== 'administrador' && $recurso['id_autor'] != $usuario['id_usuario']) {
+            if ($usuario['tipo_usuario'] !== 'administrador' && $recurso['id_autor'] != $usuario['id_usuario']) {
                 Response::error('No tienes permisos para restaurar versiones', 403);
             }
             
@@ -736,7 +736,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver estadísticas', 403);
             }
             
@@ -760,7 +760,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver el timeline', 403);
             }
             
@@ -790,7 +790,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver analytics', 403);
             }
             
@@ -822,7 +822,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver analytics', 403);
             }
             
@@ -847,7 +847,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver analytics', 403);
             }
             
@@ -872,7 +872,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver analytics', 403);
             }
             
@@ -896,7 +896,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver analytics', 403);
             }
             
@@ -920,7 +920,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver analytics', 403);
             }
             
@@ -944,7 +944,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver analytics', 403);
             }
             
@@ -968,7 +968,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver analytics', 403);
             }
             
@@ -992,7 +992,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver analytics', 403);
             }
             
@@ -1017,7 +1017,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if ($usuario['rol'] !== 'administrador') {
+            if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver analytics', 403);
             }
             
@@ -1170,7 +1170,7 @@ class RecursoController {
         try {
             $usuario = AuthMiddleware::authenticate();
             
-            if (!in_array($usuario['rol'], ['administrador', 'instructor'])) {
+            if (!in_array($usuario['tipo_usuario'], ['administrador', 'instructor'])) {
                 Response::error('No tienes permisos para subir recursos', 403);
             }
             
@@ -1257,3 +1257,4 @@ class RecursoController {
         }
     }
 }
+
