@@ -444,9 +444,9 @@
                 <p class="empty-state-description">
                     Para realizar diagnósticos necesitas primero crear tu perfil empresarial.
                 </p>
-                <a href="perfil-empresarial.html" class="btn-diagnostico btn-diagnostico-primary">
+                <button onclick="irAPerfilEmpresarial()" class="btn-diagnostico btn-diagnostico-primary">
                     Crear Perfil Empresarial
-                </a>
+                </button>
             </div>
         </div>
 
@@ -548,6 +548,12 @@
             // Mostrar contenedor de diagnósticos (la lógica real está en diagnosticos.js)
             document.getElementById('diagnosticosContainer').style.display = 'block';
         });
+
+        // Función para ir a crear perfil empresarial
+        function irAPerfilEmpresarial() {
+            // Redirigir a la página de perfil empresarial
+            window.location.href = '../empresario/perfil-empresarial.html';
+        }
     </script>
 </body>
 
