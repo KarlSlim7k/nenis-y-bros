@@ -18,7 +18,9 @@ class AuditoriaController {
      */
     public function listarLogs() {
         try {
+            error_log("DEBUG AuditoriaController: listarLogs() iniciado");
             $usuario = AuthMiddleware::authenticate();
+            error_log("DEBUG AuditoriaController: usuario autenticado - " . json_encode($usuario['id_usuario'] ?? 'null'));
             
             if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver logs de auditoría', 403);
@@ -95,8 +97,10 @@ class AuditoriaController {
             $params[] = $offset;
             
             $stmt = $this->db->prepare($query);
+            error_log("DEBUG AuditoriaController: Query preparado, ejecutando con params: " . count($params));
             $stmt->execute($params);
             $logs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            error_log("DEBUG AuditoriaController: Logs obtenidos: " . count($logs));
             
             // Contar total
             $countQuery = "SELECT COUNT(*) as total FROM auditoria_logs a {$whereClause}";
@@ -114,6 +118,7 @@ class AuditoriaController {
             ]);
             
         } catch (Exception $e) {
+            error_log("DEBUG AuditoriaController ERROR: " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine());
             Logger::error('Error al listar logs: ' . $e->getMessage());
             Response::error('Error al obtener logs', 500);
         }
