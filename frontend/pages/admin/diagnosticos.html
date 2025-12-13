@@ -238,6 +238,84 @@
             color: var(--text-main);
         }
 
+        /* --- Utility Classes --- */
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-icon {
+            padding: 0.4rem;
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        .btn-w-full {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .badge-warning { background: var(--warning); color: white; }
+        .badge-success { background: var(--success); color: white; }
+        .badge-error { background: var(--danger); color: white; }
+        .badge-neutral { background: var(--bg-tertiary); color: var(--text-muted); }
+
+        .opcion-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .opcion-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        /* Fallbacks / Components */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card-modern {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .stat-icon-box {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .form-row {
@@ -775,7 +853,7 @@
 
             grid.innerHTML = tiposData.map(tipo => `
                 <div class="glass-panel" style="padding: 1.5rem; position: relative;">
-                    ${!tipo.activo ? '<div style="position: absolute; top: 1rem; right: 1rem; background: var(--warning); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Inactivo</div>' : ''}
+                    ${!tipo.activo ? '<div class="badge badge-warning" style="position: absolute; top: 1rem; right: 1rem;">Inactivo</div>' : ''}
                     
                     <div style="font-size: 2.5rem; margin-bottom: 1rem;">${tipo.icono || '📊'}</div>
                     <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-main);">${tipo.nombre}</h4>
@@ -789,15 +867,15 @@
                     </div>
                     
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <button class="btn-outline" onclick="editTipo(${tipo.id_tipo_diagnostico})" style="flex: 1; font-size: 0.85rem;">
+                        <button class="btn-outline btn-sm" onclick="editTipo(${tipo.id_tipo_diagnostico})" style="flex: 1;">
                             ✏️ Editar
                         </button>
-                        <button class="btn-outline" onclick="toggleActivoTipo(${tipo.id_tipo_diagnostico}, ${!tipo.activo})" 
-                                style="flex: 1; font-size: 0.85rem; ${tipo.activo ? 'color: var(--warning);' : 'color: var(--success);'}">
+                        <button class="btn-outline btn-sm" onclick="toggleActivoTipo(${tipo.id_tipo_diagnostico}, ${!tipo.activo})" 
+                                style="flex: 1; ${tipo.activo ? 'color: var(--warning);' : 'color: var(--success);'}">
                             ${tipo.activo ? '⏸️ Desactivar' : '▶️ Activar'}
                         </button>
                     </div>
-                    <button class="btn-primary" onclick="gestionarAreas(${tipo.id_tipo_diagnostico})" style="width: 100%; font-size: 0.85rem;">
+                    <button class="btn-primary btn-sm btn-w-full" onclick="gestionarAreas(${tipo.id_tipo_diagnostico})">
                         📝 Gestionar Áreas y Preguntas
                     </button>
                 </div>
@@ -963,9 +1041,9 @@
 
             tbody.innerHTML = diagnosticosRealizados.map(diag => {
                 const estadoBadge = {
-                    'en_progreso': '<span style="background: var(--warning); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">En Progreso</span>',
-                    'completado': '<span style="background: var(--success); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Completado</span>',
-                    'abandonado': '<span style="background: var(--error); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Abandonado</span>'
+                    'en_progreso': '<span class="badge badge-warning">En Progreso</span>',
+                    'completado': '<span class="badge badge-success">Completado</span>',
+                    'abandonado': '<span class="badge badge-error">Abandonado</span>'
                 };
 
                 const progreso = diag.progreso || {};
@@ -990,8 +1068,7 @@
                             ${diag.puntuacion_total || '-'}
                         </td>
                         <td>
-                            <button class="btn-outline" onclick="verDetalleDiagnostico(${diag.id_diagnostico_realizado})" 
-                                    style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+                            <button class="btn-outline btn-sm" onclick="verDetalleDiagnostico(${diag.id_diagnostico_realizado})">
                                 👁️ Ver
                             </button>
                         </td>
@@ -1212,16 +1289,13 @@
                             </div>
                         </div>
                         <div style="display: flex; gap: 0.5rem;">
-                            <button class="btn-outline" onclick="editArea(${area.id_area})" 
-                                    style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                            <button class="btn-outline btn-sm" onclick="editArea(${area.id_area})">
                                 ✏️ Editar
                             </button>
-                            <button class="btn-primary" onclick="gestionarPreguntas(${area.id_area})" 
-                                    style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                            <button class="btn-primary btn-sm" onclick="gestionarPreguntas(${area.id_area})">
                                 📝 Preguntas
                             </button>
-                            <button class="btn-outline" onclick="deleteArea(${area.id_area})" 
-                                    style="font-size: 0.8rem; padding: 0.4rem 0.8rem; color: var(--error);">
+                            <button class="btn-outline btn-sm" onclick="deleteArea(${area.id_area})" style="color: var(--error);">
                                 🗑️
                             </button>
                         </div>
@@ -1419,7 +1493,7 @@
                             <div style="flex: 1;">
                                 <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                                     <span style="font-size: 1.2rem;">${tipoIcons[pregunta.tipo_pregunta] || '❓'}</span>
-                                    <span style="font-size: 0.75rem; padding: 0.15rem 0.5rem; background: var(--bg-tertiary); border-radius: 12px; color: var(--text-muted);">
+                                    <span class="badge badge-neutral">
                                         ${pregunta.tipo_pregunta.replace('_', ' ')}
                                     </span>
                                     ${pregunta.es_obligatoria ? '<span style="color: var(--error); font-size: 0.9rem;">*</span>' : ''}
@@ -1441,12 +1515,10 @@
                                 </div>
                             </div>
                             <div style="display: flex; gap: 0.5rem;">
-                                <button class="btn-outline" onclick="editPregunta(${pregunta.id_pregunta})" 
-                                        style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                                <button class="btn-outline btn-sm" onclick="editPregunta(${pregunta.id_pregunta})">
                                     ✏️
                                 </button>
-                                <button class="btn-outline" onclick="deletePregunta(${pregunta.id_pregunta})" 
-                                        style="font-size: 0.8rem; padding: 0.4rem 0.8rem; color: var(--error);">
+                                <button class="btn-outline btn-sm" onclick="deletePregunta(${pregunta.id_pregunta})" style="color: var(--error);">
                                     🗑️
                                 </button>
                             </div>
@@ -1467,7 +1539,7 @@
             
             // Reset opciones múltiples
             document.getElementById('opcionesLista').innerHTML = `
-                <input type="text" class="opcion-input" placeholder="Opción 1" style="padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary);">
+                <input type="text" class="opcion-input" placeholder="Opción 1">
             `;
             
             handleTipoPreguntaChange();
@@ -1497,7 +1569,6 @@
             input.type = 'text';
             input.className = 'opcion-input';
             input.placeholder = `Opción ${numOpciones}`;
-            input.style.cssText = 'padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary);';
             
             container.appendChild(input);
         }
@@ -1533,7 +1604,6 @@
                     input.className = 'opcion-input';
                     input.value = opcion;
                     input.placeholder = `Opción ${index + 1}`;
-                    input.style.cssText = 'padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary);';
                     container.appendChild(input);
                 });
             }
