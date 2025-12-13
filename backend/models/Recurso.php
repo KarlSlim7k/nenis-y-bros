@@ -127,10 +127,10 @@ class Recurso {
         if (!empty($filters['orden'])) {
             switch ($filters['orden']) {
                 case 'mas_descargados':
-                    $orderBy = 'ORDER BY r.total_descargas DESC';
+                    $orderBy = 'ORDER BY r.descargas DESC';
                     break;
                 case 'mejor_calificados':
-                    $orderBy = 'ORDER BY r.calificacion_promedio DESC, r.total_calificaciones DESC';
+                    $orderBy = 'ORDER BY r.calificacion_promedio DESC';
                     break;
                 case 'recientes':
                     $orderBy = 'ORDER BY r.fecha_publicacion DESC';
@@ -859,22 +859,31 @@ class Recurso {
      * Estadísticas globales de recursos
      */
     public function getEstadisticas() {
+        // Estadísticas de recursos
         $query = "
             SELECT 
                 COUNT(*) as total_recursos,
                 COUNT(CASE WHEN activo = 1 THEN 1 END) as publicados,
                 COUNT(CASE WHEN activo = 0 THEN 1 END) as borradores,
-                SUM(descargas) as total_descargas,
-                SUM(vistas) as total_vistas,
-                AVG(calificacion_promedio) as calificacion_promedio_global,
-                COUNT(DISTINCT JSON_EXTRACT(categorias, '$[0]')) as total_categorias
+                COALESCE(SUM(descargas), 0) as total_descargas,
+                COALESCE(SUM(vistas), 0) as total_vistas,
+                COALESCE(AVG(calificacion_promedio), 0) as calificacion_promedio_global
             FROM recursos_aprendizaje
         ";
         
         $stmt = $this->db->prepare($query);
         $stmt->execute();
+        $stats = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        // Contar categorías desde tabla categorias_recursos
+        $queryCat = "SELECT COUNT(*) as total FROM categorias_recursos WHERE activa = 1";
+        $stmtCat = $this->db->prepare($queryCat);
+        $stmtCat->execute();
+        $catResult = $stmtCat->fetch(PDO::FETCH_ASSOC);
+        
+        $stats['total_categorias'] = $catResult['total'] ?? 0;
+        
+        return $stats;
     }
     
     /**
