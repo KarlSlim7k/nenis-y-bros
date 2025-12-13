@@ -1203,17 +1203,4 @@ class Recurso {
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
-    /**
-     * Generar slug único
-     */
-    private function generateSlug($text) {
-        // Normalizar texto
-        $slug = strtolower(trim($text));
-        $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);
-        $slug = preg_replace('/-+/', '-', $slug);
-        $slug = trim($slug, '-');
-        
-        return $slug;
-    }
 }
