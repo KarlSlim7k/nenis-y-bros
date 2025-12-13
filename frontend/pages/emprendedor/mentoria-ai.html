@@ -452,7 +452,7 @@
     <script src="../../assets/js/api.js"></script>
     <script>
         // Verificar autenticación
-        if (!verificarAutenticacion()) {
+        if (!isAuthenticated()) {
             window.location.href = '../../index.html';
         }
 
@@ -463,14 +463,36 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             initDynamicNavbar();
-            highlightActiveLink();
         });
+
+        function obtenerHistorial() {
+            // Extraer los últimos mensajes para contexto (máximo 10 mensajes)
+            const mensajes = [];
+            const mensajesElements = messagesContainer.querySelectorAll('.message');
+            const maxMensajes = Math.min(mensajesElements.length, 10);
+            const inicio = Math.max(0, mensajesElements.length - maxMensajes);
+            
+            for (let i = inicio; i < mensajesElements.length; i++) {
+                const mensaje = mensajesElements[i];
+                const esUsuario = mensaje.classList.contains('user');
+                const contenido = mensaje.querySelector('.message-bubble')?.textContent?.trim() || '';
+                
+                if (contenido) {
+                    mensajes.push({
+                        role: esUsuario ? 'user' : 'assistant',
+                        content: contenido
+                    });
+                }
+            }
+            
+            return mensajes;
+        }
 
         function agregarMensaje(contenido, esUsuario = false) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${esUsuario ? 'user' : 'ai'}`;
             
-            const user = obtenerUsuario();
+            const user = getAuthUser();
             const avatar = esUsuario ? (user?.nombre?.charAt(0).toUpperCase() || 'E') : '🤖';
             
             messageDiv.innerHTML = `
@@ -506,13 +528,16 @@
             typingIndicator.classList.add('show');
 
             try {
-                const response = await fetch(`${API_BASE_URL}/mentoria/chat`, {
+                const response = await fetch(`${API_BASE_URL}/mentoria/preguntar`, {
                     method: 'POST',
                     headers: {
-                        'Authorization': `Bearer ${obtenerToken()}`,
+                        'Authorization': `Bearer ${getAuthToken()}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ mensaje: contenido })
+                    body: JSON.stringify({ 
+                        pregunta: contenido,
+                        historial: obtenerHistorial()
+                    })
                 });
 
                 const data = await response.json();
@@ -523,7 +548,7 @@
                 if (data.success && data.data) {
                     agregarMensaje(data.data.respuesta || 'Respuesta recibida', false);
                 } else {
-                    agregarMensaje('Lo siento, ocurrió un error. Por favor intenta de nuevo.', false);
+                    agregarMensaje('Lo siento, ocurrió un error. ' + (data.message || 'Por favor intenta de nuevo.'), false);
                 }
             } catch (error) {
                 console.error('Error:', error);
