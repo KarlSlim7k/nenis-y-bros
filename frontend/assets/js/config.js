@@ -11,9 +11,14 @@ const IS_PRODUCTION = window.location.hostname !== 'localhost' && window.locatio
 const BASE_PATH = IS_PRODUCTION ? '' : '/nenis_y_bros';
 
 // URL base de la API - Configuración dinámica para desarrollo y producción
+// Nota: En desarrollo local con XAMPP/Apache, el .htaccess redirige automáticamente a index.php
+// Si el .htaccess no funciona, cambiar a: '/nenis_y_bros/backend/index.php/api/v1'
 const API_BASE_URL = IS_PRODUCTION
     ? 'https://nenis-y-bros-production.up.railway.app/api/v1'
-    : '/nenis_y_bros/backend/index.php/api/v1';
+    : 'http://localhost/nenis_y_bros/backend/api/v1';
+
+// Alias para compatibilidad (usado en algunos módulos admin)
+const API_URL = API_BASE_URL;
 
 // Configuración de autenticación
 const AUTH_TOKEN_KEY = 'nyd_auth_token';
