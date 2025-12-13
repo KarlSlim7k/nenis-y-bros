@@ -125,7 +125,8 @@
 
         /* Modal más ancho para formularios extendidos */
         .modal-content-wide {
-            max-width: 700px;
+            max-width: 900px;
+            width: 90%;
         }
 
         /* Lista de objetivos */
@@ -163,7 +164,7 @@
         }
 
         .form-tab {
-            padding: 0.75rem 1.5rem;
+            padding: 0.875rem 1.75rem;
             background: transparent;
             border: none;
             color: var(--text-muted);
@@ -171,11 +172,16 @@
             border-bottom: 2px solid transparent;
             transition: all 0.2s;
             font-weight: 500;
+            font-size: 0.95rem;
         }
 
         .form-tab.active {
             color: var(--primary);
             border-bottom-color: var(--primary);
+        }
+        
+        .form-tab:hover:not(.active) {
+            color: rgba(255, 255, 255, 0.7);
         }
 
         .form-tab-content {
@@ -295,7 +301,7 @@
             border-radius: 20px;
             padding: 0;
             width: 100%;
-            max-width: 600px;
+            max-width: 700px;
             /* Wider for course form */
             position: relative;
             transform: scale(0.9);
@@ -330,14 +336,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 2rem;
+            padding: 1.5rem 2.5rem;
             background: rgba(99, 102, 241, 0.1);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             flex-shrink: 0;
         }
 
         .modal-title {
-            font-size: 1.25rem;
+            font-size: 1.35rem;
             font-weight: 600;
             color: var(--text-main);
             display: flex;
@@ -346,7 +352,7 @@
         }
 
         .modal-body {
-            padding: 2rem;
+            padding: 1.5rem 2.5rem 2rem;
             overflow-y: auto;
         }
 
@@ -354,7 +360,7 @@
             display: flex;
             justify-content: flex-end;
             gap: 0.75rem;
-            padding: 1.5rem 2rem;
+            padding: 1.25rem 2.5rem;
             background: rgba(0, 0, 0, 0.2);
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             flex-shrink: 0;
