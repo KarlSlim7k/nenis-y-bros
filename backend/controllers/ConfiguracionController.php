@@ -18,15 +18,19 @@ class ConfiguracionController {
      */
     public function listar() {
         try {
+            error_log("DEBUG ConfiguracionController: listar() iniciado");
             $usuario = AuthMiddleware::authenticate();
+            error_log("DEBUG ConfiguracionController: usuario autenticado - id: " . ($usuario['id_usuario'] ?? 'null'));
             
             if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver la configuración', 403);
             }
             
+            error_log("DEBUG ConfiguracionController: ejecutando query");
             // Obtener todas las configuraciones
             $stmt = $this->db->query("SELECT * FROM configuracion_sistema ORDER BY categoria, clave");
             $configs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            error_log("DEBUG ConfiguracionController: configs obtenidas - " . count($configs));
             
             // Convertir a formato estructurado por categoría
             $resultado = [];
@@ -65,6 +69,7 @@ class ConfiguracionController {
             ]);
             
         } catch (Exception $e) {
+            error_log("DEBUG ConfiguracionController ERROR: " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine());
             Logger::error('Error al listar configuración: ' . $e->getMessage());
             Response::error('Error al obtener configuración', 500);
         }
