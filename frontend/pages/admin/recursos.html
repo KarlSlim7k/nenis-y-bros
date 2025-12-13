@@ -671,7 +671,8 @@
                 const response = await fetchAPI(url);
                 
                 if (response.success && response.data) {
-                    recursos = response.data;
+                    // El backend devuelve { recursos: [...], total: ..., pagina_actual: ... }
+                    recursos = response.data.recursos || response.data;
                     renderRecursos();
                 } else {
                     mostrarError('No se pudieron cargar los recursos');
