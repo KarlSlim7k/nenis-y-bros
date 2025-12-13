@@ -77,28 +77,28 @@
                     <div class="stat-icon-box" style="color: var(--accent);">👥</div>
                     <div>
                         <div style="color: var(--text-muted); font-size: 0.9rem;">Estudiantes Activos</div>
-                        <div style="font-size: 1.8rem; font-weight: 700;">24</div>
+                        <div id="stat-estudiantes" style="font-size: 1.8rem; font-weight: 700;">0</div>
                     </div>
                 </div>
                 <div class="stat-card-modern">
                     <div class="stat-icon-box" style="color: var(--success);">📅</div>
                     <div>
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">Sesiones Este Mes</div>
-                        <div style="font-size: 1.8rem; font-weight: 700;">18</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Conversaciones Activas</div>
+                        <div id="stat-conversaciones" style="font-size: 1.8rem; font-weight: 700;">0</div>
                     </div>
                 </div>
                 <div class="stat-card-modern">
-                    <div class="stat-icon-box" style="color: var(--warning);">⭐</div>
+                    <div class="stat-icon-box" style="color: var(--warning);">💬</div>
                     <div>
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">Valoración Promedio</div>
-                        <div style="font-size: 1.8rem; font-weight: 700;">4.8</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Mensajes Pendientes</div>
+                        <div id="stat-pendientes" style="font-size: 1.8rem; font-weight: 700;">0</div>
                     </div>
                 </div>
                 <div class="stat-card-modern">
-                    <div class="stat-icon-box" style="color: var(--secondary);">🕐</div>
+                    <div class="stat-icon-box" style="color: var(--secondary);">📨</div>
                     <div>
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">Horas Totales</div>
-                        <div style="font-size: 1.8rem; font-weight: 700;">156</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Mensajes Este Mes</div>
+                        <div id="stat-mensajes-mes" style="font-size: 1.8rem; font-weight: 700;">0</div>
                     </div>
                 </div>
             </div>
@@ -256,30 +256,13 @@
                 if (response.success && response.data) {
                     const stats = response.data;
                     
-                    // Actualizar tarjetas de estadísticas
-                    const statsCards = document.querySelectorAll('.stat-card-modern');
+                    // Actualizar tarjetas de estadísticas usando IDs
+                    document.getElementById('stat-estudiantes').textContent = stats.alumnos_unicos || 0;
+                    document.getElementById('stat-conversaciones').textContent = stats.conversaciones_activas || 0;
+                    document.getElementById('stat-pendientes').textContent = stats.mensajes_pendientes || 0;
+                    document.getElementById('stat-mensajes-mes').textContent = stats.total_mensajes_mes || 0;
                     
-                    // Estudiantes activos (alumnos únicos)
-                    if (statsCards[0]) {
-                        statsCards[0].querySelector('div:last-child > div:last-child').textContent = stats.alumnos_unicos || 0;
-                    }
-                    
-                    // Sesiones/Conversaciones activas
-                    if (statsCards[1]) {
-                        statsCards[1].querySelector('div:last-child > div:last-child').textContent = stats.conversaciones_activas || 0;
-                    }
-                    
-                    // Mensajes pendientes
-                    if (statsCards[2]) {
-                        const valoracion = stats.valoracion_promedio || '4.8';
-                        statsCards[2].querySelector('div:last-child > div:last-child').textContent = valoracion;
-                    }
-                    
-                    // Total mensajes del mes como "horas"
-                    if (statsCards[3]) {
-                        const mensajes = stats.total_mensajes_mes || 0;
-                        statsCards[3].querySelector('div:last-child > div:last-child').textContent = mensajes;
-                    }
+                    console.log('Estadísticas cargadas:', stats);
                 }
             } catch (error) {
                 console.error('Error cargando estadísticas:', error);
