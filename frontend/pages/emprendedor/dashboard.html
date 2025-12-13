@@ -134,8 +134,8 @@
             <div class="glass-panel" style="padding: 2rem; margin-bottom: 2rem;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                     <h3 style="font-size: 1.25rem; font-weight: 600;">Continúa Aprendiendo</h3>
-                    <a href="../cursos/catalogo.html" class="btn-outline"
-                        style="font-size: 0.85rem; padding: 0.5rem 1rem;">Ver Catálogo</a>
+                    <button onclick="irACatalogo()" class="btn-outline"
+                        style="font-size: 0.85rem; padding: 0.5rem 1rem;">Ver Catálogo</button>
                 </div>
 
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;">
@@ -163,7 +163,7 @@
                             <div class="progress-track">
                                 <div class="progress-fill-glow" style="width: 65%;"></div>
                             </div>
-                            <button class="btn-modern"
+                            <button class="btn-modern" onclick="continuarCurso(1, 'Marketing Digital 101')"
                                 style="width: 100%; margin-top: 1.5rem; justify-content: center;">
                                 ▶ Continuar Lección
                             </button>
@@ -193,7 +193,7 @@
                             <div class="progress-track">
                                 <div class="progress-fill-glow" style="width: 15%;"></div>
                             </div>
-                            <button class="btn-modern"
+                            <button class="btn-modern" onclick="continuarCurso(2, 'Finanzas Básicas')"
                                 style="width: 100%; margin-top: 1.5rem; justify-content: center;">
                                 ▶ Continuar Lección
                             </button>
@@ -231,7 +231,7 @@
                                     style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; border: 1px solid rgba(16, 185, 129, 0.3);">Completado</span>
                             </td>
                             <td style="font-weight: 700;">85/100</td>
-                            <td><button class="btn-outline"
+                            <td><button class="btn-outline" onclick="verDiagnostico(1)"
                                     style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">Ver</button></td>
                         </tr>
                         <tr>
@@ -244,7 +244,7 @@
                                     style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; border: 1px solid rgba(16, 185, 129, 0.3);">Completado</span>
                             </td>
                             <td style="font-weight: 700;">72/100</td>
-                            <td><button class="btn-outline"
+                            <td><button class="btn-outline" onclick="verDiagnostico(2)"
                                     style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">Ver</button></td>
                         </tr>
                     </tbody>
@@ -264,7 +264,7 @@
                     <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem;">MentorIA</h3>
                     <p style="color: var(--text-muted); font-size: 0.9rem;">Tu asistente de negocios 24/7</p>
                 </div>
-                <button class="btn-modern" style="width: 100%; justify-content: center;">
+                <button class="btn-modern" onclick="iniciarMentoria()" style="width: 100%; justify-content: center;">
                     Iniciar Conversación
                 </button>
             </div>
@@ -330,8 +330,20 @@
             // Inyectar navegación dinámica basada en el rol
             initDynamicNavbar();
 
+            // Cargar nombre de usuario
+            cargarNombreUsuario();
+
             // Cargar estadísticas
             cargarEstadisticas();
+
+            // Cargar cursos en progreso
+            cargarCursosEnProgreso();
+
+            // Cargar diagnósticos recientes
+            cargarDiagnosticosRecientes();
+
+            // Cargar actividad reciente
+            cargarActividadReciente();
 
             // Ajustar UI según el rol
             ajustarInterfazPorRol();
@@ -348,30 +360,54 @@
                     statCards[3].style.display = 'none';
                     // Re-ajustar el grid si es necesario, aunque auto-fit debería manejarlo
                 }
+            }
+        }
 
-                // Cambiar el saludo si es necesario (ya lo hace el header info, pero el H1 hero-welcome tal vez no)
-                const heroName = document.querySelector('.hero-welcome .user-name');
-                const user = getAuthUser();
-                if (heroName && user) {
-                    heroName.textContent = user.nombre || 'Emprendedor';
+        // Cargar nombre de usuario
+        function cargarNombreUsuario() {
+            const user = getAuthUser();
+            if (user) {
+                const userNameElements = document.querySelectorAll('.user-name');
+                userNameElements.forEach(el => {
+                    el.textContent = user.nombre || 'Emprendedor';
+                });
+
+                // Actualizar inicial del avatar
+                const userAvatar = document.querySelector('.user-avatar');
+                if (userAvatar && user.nombre) {
+                    userAvatar.textContent = user.nombre.charAt(0).toUpperCase();
                 }
             }
         }
 
-        // Cargar estadísticas (Simuladas por ahora)
+        // Cargar estadísticas desde el backend
         async function cargarEstadisticas() {
             try {
-                // Animación de números
-                animateValue('statCursos', 0, 5, 1000);
-                animateValue('statDiagnosticos', 0, 3, 1200);
-                animateValue('statLogros', 0, 12, 1500);
+                const response = await apiRequest('/dashboard/stats', 'GET');
+                
+                if (response.success && response.data) {
+                    const stats = response.data;
+                    
+                    // Animar los valores
+                    animateValue('statCursos', 0, stats.cursos_activos || 0, 1000);
+                    animateValue('statDiagnosticos', 0, stats.diagnosticos_completados || 0, 1200);
+                    animateValue('statLogros', 0, stats.logros_desbloqueados || 0, 1500);
 
-                // Solo animar productos si es empresario
-                if (isEmpresario()) {
-                    animateValue('statProductos', 0, 2, 800);
+                    // Solo animar productos si es empresario y existe el dato
+                    if (isEmpresario() && stats.productos !== undefined) {
+                        animateValue('statProductos', 0, stats.productos || 0, 800);
+                    }
                 }
             } catch (error) {
                 console.error('Error cargando estadísticas:', error);
+                // Mostrar valores predeterminados en caso de error
+                document.getElementById('statCursos').textContent = '-';
+                document.getElementById('statDiagnosticos').textContent = '-';
+                document.getElementById('statLogros').textContent = '-';
+                if (isEmpresario()) {
+                    const prodStat = document.getElementById('statProductos');
+                    if (prodStat) prodStat.textContent = '-';
+                }
             }
         }
 
@@ -389,6 +425,239 @@
                 }
             };
             window.requestAnimationFrame(step);
+        }
+
+        // Función para ir al catálogo de cursos
+        function irACatalogo() {
+            window.location.href = '../cursos/catalogo.html';
+        }
+
+        // Función para continuar un curso
+        function continuarCurso(cursoId, nombreCurso) {
+            console.log(`Continuando curso ${cursoId}: ${nombreCurso}`);
+            // Redirigir a la página de lecciones con el ID del curso
+            window.location.href = `./mis-cursos.html?curso=${cursoId}`;
+        }
+
+        // Función para ver los resultados de un diagnóstico
+        function verDiagnostico(diagnosticoId) {
+            console.log(`Viendo diagnóstico ${diagnosticoId}`);
+            // Redirigir a la página de resultados del diagnóstico
+            window.location.href = `./diagnostico-resultados.html?id=${diagnosticoId}`;
+        }
+
+        // Función para iniciar conversación con MentorIA
+        function iniciarMentoria() {
+            console.log('Iniciando conversación con MentorIA');
+            // Redirigir a la página de mentoría AI
+            window.location.href = './mentoria-ai.html';
+        }
+
+        // Cargar cursos en progreso desde el backend
+        async function cargarCursosEnProgreso() {
+            try {
+                const response = await apiRequest('/dashboard/cursos-progreso', 'GET');
+                
+                if (response.success && response.data && response.data.length > 0) {
+                    const cursosContainer = document.querySelector('.glass-panel [style*="grid-template-columns"]');
+                    if (!cursosContainer) return;
+                    
+                    cursosContainer.innerHTML = ''; // Limpiar cursos simulados
+                    
+                    // Mostrar solo los primeros 2 cursos
+                    const cursosAMostrar = response.data.slice(0, 2);
+                    
+                    cursosAMostrar.forEach(curso => {
+                        const cursoCard = crearCursoCard(curso);
+                        cursosContainer.appendChild(cursoCard);
+                    });
+                }
+            } catch (error) {
+                console.error('Error cargando cursos en progreso:', error);
+            }
+        }
+
+        // Crear tarjeta de curso
+        function crearCursoCard(curso) {
+            const div = document.createElement('div');
+            div.className = 'course-card-modern';
+            
+            const gradientes = [
+                'linear-gradient(45deg, #2563eb, #9333ea)',
+                'linear-gradient(45deg, #ec4899, #f43f5e)',
+                'linear-gradient(45deg, #10b981, #059669)',
+                'linear-gradient(45deg, #f59e0b, #ef4444)'
+            ];
+            const gradiente = gradientes[Math.floor(Math.random() * gradientes.length)];
+            
+            const estado = curso.progreso > 0 ? 'En Progreso' : 'Nuevo';
+            const tiempoRestante = formatearTiempo(curso.tiempo_restante || 0);
+            
+            div.innerHTML = `
+                <div class="course-image-wrapper">
+                    <div class="course-tag">${estado}</div>
+                    <div class="course-image-bg" style="background: ${gradiente};"></div>
+                    <div class="course-overlay">
+                        <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">${curso.titulo}</h4>
+                        <div style="display: flex; gap: 1rem; font-size: 0.8rem; color: rgba(255,255,255,0.8);">
+                            <span>⏱ ${tiempoRestante} restantes</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-content">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--text-muted);">
+                        <span>Tu progreso</span>
+                        <span>${Math.round(curso.progreso)}%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill-glow" style="width: ${Math.round(curso.progreso)}%;"></div>
+                    </div>
+                    <button class="btn-modern" onclick="continuarCurso(${curso.id_curso}, '${curso.titulo}')"
+                        style="width: 100%; margin-top: 1.5rem; justify-content: center;">
+                        ▶ Continuar Lección
+                    </button>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // Formatear tiempo en minutos/horas
+        function formatearTiempo(minutos) {
+            if (minutos < 60) {
+                return `${Math.round(minutos)} min`;
+            } else {
+                const horas = Math.floor(minutos / 60);
+                const mins = minutos % 60;
+                return mins > 0 ? `${horas}h ${mins}min` : `${horas}h`;
+            }
+        }
+
+        // Cargar diagnósticos recientes desde el backend
+        async function cargarDiagnosticosRecientes() {
+            try {
+                const response = await apiRequest('/dashboard/diagnosticos-recientes', 'GET');
+                
+                if (response.success && response.data && response.data.length > 0) {
+                    const tbody = document.querySelector('.table-modern tbody');
+                    if (!tbody) return;
+                    
+                    tbody.innerHTML = ''; // Limpiar datos simulados
+                    
+                    // Mostrar solo los primeros 2
+                    const diagnosticosAMostrar = response.data.slice(0, 2);
+                    
+                    diagnosticosAMostrar.forEach(diag => {
+                        const tr = crearFilaDiagnostico(diag);
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (error) {
+                console.error('Error cargando diagnósticos recientes:', error);
+            }
+        }
+
+        // Crear fila de diagnóstico
+        function crearFilaDiagnostico(diag) {
+            const tr = document.createElement('tr');
+            
+            const fecha = new Date(diag.fecha_completado);
+            const fechaFormateada = fecha.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+            
+            tr.innerHTML = `
+                <td>
+                    <div style="font-weight: 600;">${diag.nombre_diagnostico}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">${diag.descripcion || 'Evaluación'}</div>
+                </td>
+                <td style="color: var(--text-muted);">${fechaFormateada}</td>
+                <td>
+                    <span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; border: 1px solid rgba(16, 185, 129, 0.3);">
+                        Completado
+                    </span>
+                </td>
+                <td style="font-weight: 700;">${Math.round(diag.puntaje_total)}/100</td>
+                <td>
+                    <button class="btn-outline" onclick="verDiagnostico(${diag.id_diagnostico_realizado})"
+                        style="padding: 0.25rem 0.75rem; font-size: 0.8rem;">Ver</button>
+                </td>
+            `;
+            
+            return tr;
+        }
+
+        // Cargar actividad reciente desde el backend
+        async function cargarActividadReciente() {
+            try {
+                const response = await apiRequest('/dashboard/actividad-reciente', 'GET');
+                
+                if (response.success && response.data && response.data.length > 0) {
+                    const actividadContainer = document.querySelector('.glass-panel:last-child');
+                    if (!actividadContainer) return;
+                    
+                    // Buscar el contenedor de actividades (después del h3)
+                    const h3 = actividadContainer.querySelector('h3');
+                    if (!h3) return;
+                    
+                    // Limpiar actividades existentes
+                    while (h3.nextSibling) {
+                        h3.nextSibling.remove();
+                    }
+                    
+                    // Mostrar solo las primeras 3 actividades
+                    const actividadesAMostrar = response.data.slice(0, 3);
+                    
+                    actividadesAMostrar.forEach(actividad => {
+                        const actividadDiv = crearActividadItem(actividad);
+                        actividadContainer.appendChild(actividadDiv);
+                    });
+                }
+            } catch (error) {
+                console.error('Error cargando actividad reciente:', error);
+            }
+        }
+
+        // Crear item de actividad
+        function crearActividadItem(actividad) {
+            const div = document.createElement('div');
+            div.style.cssText = 'display: flex; gap: 1rem; margin-bottom: 1.5rem;';
+            
+            // Determinar color según tipo
+            let color = 'var(--primary)';
+            if (actividad.tipo === 'logro') color = 'var(--warning)';
+            if (actividad.tipo === 'diagnostico') color = 'var(--success)';
+            if (actividad.tipo === 'inscripcion') color = 'var(--accent)';
+            
+            // Calcular tiempo relativo
+            const tiempoRelativo = calcularTiempoRelativo(actividad.fecha);
+            
+            div.innerHTML = `
+                <div style="width: 2px; background: var(--border-light); position: relative;">
+                    <div style="width: 10px; height: 10px; background: ${color}; border-radius: 50%; position: absolute; left: -4px; top: 5px; box-shadow: 0 0 10px ${color};"></div>
+                </div>
+                <div>
+                    <div style="font-size: 0.9rem; font-weight: 500;">${actividad.descripcion}</div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">${tiempoRelativo}</div>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        // Calcular tiempo relativo
+        function calcularTiempoRelativo(fecha) {
+            const ahora = new Date();
+            const fechaActividad = new Date(fecha);
+            const diferencia = ahora - fechaActividad;
+            
+            const minutos = Math.floor(diferencia / 60000);
+            const horas = Math.floor(diferencia / 3600000);
+            const dias = Math.floor(diferencia / 86400000);
+            
+            if (minutos < 60) return `Hace ${minutos} min`;
+            if (horas < 24) return `Hace ${horas}h`;
+            if (dias === 1) return 'Ayer';
+            if (dias < 7) return `Hace ${dias} días`;
+            return fechaActividad.toLocaleDateString('es-ES');
         }
     </script>
 </body>
