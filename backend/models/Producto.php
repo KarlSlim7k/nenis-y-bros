@@ -928,6 +928,19 @@ class Producto {
      * @return bool
      */
     public function registrarInteraccion($idProducto, $tipo, $idUsuario = null, $metadata = []) {
+        // En producción, simplemente incrementar contadores directamente
+        if ($this->esEsquemaProduccion) {
+            if ($tipo === 'vista') {
+                $query = "UPDATE {$this->tabla} SET vistas = vistas + 1 WHERE id_producto = ?";
+                return $this->db->query($query, [$idProducto]);
+            } elseif ($tipo === 'contacto') {
+                $query = "UPDATE {$this->tabla} SET contactos_recibidos = contactos_recibidos + 1 WHERE id_producto = ?";
+                return $this->db->query($query, [$idProducto]);
+            }
+            return true;
+        }
+        
+        // Esquema de desarrollo: usar tabla de interacciones
         $query = "
             INSERT INTO interacciones_productos 
                 (id_producto, id_usuario, tipo_interaccion, metadata, ip_address, user_agent)

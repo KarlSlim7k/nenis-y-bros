@@ -76,14 +76,33 @@ class AuthMiddleware {
      * @return string|null Token JWT
      */
     private static function getTokenFromRequest() {
-        $headers = getallheaders();
+        // Intentar obtener headers de múltiples fuentes
+        $authHeader = null;
         
-        if (isset($headers['Authorization'])) {
-            $authHeader = $headers['Authorization'];
-            
-            if (preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
-                return $matches[1];
+        // Método 1: getallheaders() - case-insensitive search
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            // Buscar en case-insensitive
+            foreach ($headers as $key => $value) {
+                if (strtolower($key) === 'authorization') {
+                    $authHeader = $value;
+                    break;
+                }
             }
+        }
+        
+        // Método 2: $_SERVER (Apache/Nginx)
+        if (!$authHeader) {
+            if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+                $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+            } elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+                $authHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+            }
+        }
+        
+        // Extraer el token del header Bearer
+        if ($authHeader && preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
+            return $matches[1];
         }
         
         // También verificar en parámetros GET (menos seguro, solo para desarrollo)
