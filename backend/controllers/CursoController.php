@@ -145,9 +145,6 @@ class CursoController {
                 return;
             }
             
-            // Generar slug único
-            $data['slug'] = $this->cursoModel->generateUniqueSlug($data['titulo']);
-            
             // Asignar instructor actual si no se especifica
             if (!isset($data['id_instructor'])) {
                 $data['id_instructor'] = $user['id_usuario'];
@@ -205,11 +202,6 @@ class CursoController {
                 if (!$validator->validate()) {
                     Response::validationError($validator->getErrors());
                     return;
-                }
-                
-                // Regenerar slug si cambió el título
-                if ($data['titulo'] !== $curso['titulo']) {
-                    $data['slug'] = $this->cursoModel->generateUniqueSlug($data['titulo'], $id);
                 }
             }
             
