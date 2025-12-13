@@ -595,10 +595,8 @@ class RecursoController {
                 Response::error('No tienes permisos para ver estadísticas', 403);
             }
             
-            // Cachear estadísticas por 5 minutos (se actualizan con menos frecuencia)
-            $stats = Cache::getInstance()->remember('recursos:stats:global', function() {
-                return $this->recursoModel->getEstadisticas();
-            }, 300);
+            // Obtener estadísticas directamente (sin caché para evitar problemas con closures)
+            $stats = $this->recursoModel->getEstadisticas();
             
             Response::success($stats);
         } catch (Exception $e) {
