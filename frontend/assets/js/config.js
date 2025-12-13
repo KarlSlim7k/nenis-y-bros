@@ -5,7 +5,17 @@
  */
 
 // Detectar si estamos en producción o desarrollo
-const IS_PRODUCTION = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
+const DEVELOPMENT_HOSTNAMES = ['localhost', '127.0.0.1', '::1', 'localhost.localdomain'];
+const IS_PRODUCTION = !DEVELOPMENT_HOSTNAMES.includes(window.location.hostname) && 
+                      !window.location.hostname.match(/^192\.168\.\d{1,3}\.\d{1,3}$/) &&
+                      !window.location.hostname.match(/^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/);
+
+// Debug: Log de detección de entorno
+console.log('🔧 Config Debug:', {
+    hostname: window.location.hostname,
+    href: window.location.href,
+    IS_PRODUCTION: IS_PRODUCTION
+});
 
 // Base path para rutas del frontend
 const BASE_PATH = IS_PRODUCTION ? '' : '/nenis_y_bros';
@@ -15,10 +25,17 @@ const BASE_PATH = IS_PRODUCTION ? '' : '/nenis_y_bros';
 // Si el .htaccess no funciona, cambiar a: '/nenis_y_bros/backend/index.php/api/v1'
 const API_BASE_URL = IS_PRODUCTION
     ? 'https://nenis-y-bros-production.up.railway.app/api/v1'
-    : 'http://localhost/nenis_y_bros/backend/api/v1';
+    : `http://${window.location.hostname}/nenis_y_bros/backend/api/v1`;
 
 // Alias para compatibilidad (usado en algunos módulos admin)
 const API_URL = API_BASE_URL;
+
+// Debug: Log de URLs configuradas
+console.log('🌐 API Config:', {
+    API_BASE_URL: API_BASE_URL,
+    API_URL: API_URL,
+    BASE_PATH: BASE_PATH
+});
 
 // Configuración de autenticación
 const AUTH_TOKEN_KEY = 'nyd_auth_token';
