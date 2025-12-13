@@ -186,6 +186,46 @@
     <main class="dashboard-grid">
         <div class="col-span-12">
 
+            <!-- Stats Cards -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <div class="glass-panel" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="font-size: 2rem;">📦</div>
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Total Productos</div>
+                            <div id="statTotal" style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-panel" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="font-size: 2rem;">✅</div>
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Publicados</div>
+                            <div id="statPublicados" style="font-size: 1.5rem; font-weight: 700; color: #34d399;">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-panel" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="font-size: 2rem;">⏳</div>
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Pendientes</div>
+                            <div id="statPendientes" style="font-size: 1.5rem; font-weight: 700; color: #fbbf24;">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-panel" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="font-size: 2rem;">🚫</div>
+                        <div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Rechazados</div>
+                            <div id="statRechazados" style="font-size: 1.5rem; font-weight: 700; color: #f87171;">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Filters -->
             <div class="filters-bar">
                 <div class="search-input-wrapper">
@@ -233,6 +273,24 @@
         </div>
     </main>
 
+    <!-- Modal Detalle Producto -->
+    <div id="modalDetalleProducto" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); z-index: 9999; overflow-y: auto; padding: 2rem;">
+        <div style="max-width: 800px; margin: 0 auto; background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95)); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+            <div style="padding: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">Detalle del Producto</h2>
+                    <button onclick="cerrarModalDetalle()" style="background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; padding: 0.5rem;">✕</button>
+                </div>
+            </div>
+            <div id="modalDetalleContenido" style="padding: 2rem;">
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <div class="spinner"></div>
+                    <p>Cargando producto...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script src="../../assets/js/api.js"></script>
@@ -257,7 +315,26 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', cargarProductos);
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarProductos();
+            cargarEstadisticas();
+        });
+
+        async function cargarEstadisticas() {
+            try {
+                // Cargar todos los productos sin filtros para estadísticas
+                const response = await apiGet('/productos?limit=1000');
+                if (response.success && response.data.productos) {
+                    const productos = response.data.productos;
+                    document.getElementById('statTotal').textContent = productos.length;
+                    document.getElementById('statPublicados').textContent = productos.filter(p => p.estado === 'publicado').length;
+                    document.getElementById('statPendientes').textContent = productos.filter(p => p.estado === 'pendiente').length;
+                    document.getElementById('statRechazados').textContent = productos.filter(p => p.estado === 'rechazado').length;
+                }
+            } catch (error) {
+                console.error('Error al cargar estadísticas:', error);
+            }
+        }
 
         async function cargarProductos() {
             const container = document.getElementById('productosContent');
@@ -282,6 +359,15 @@
                 const response = await apiGet(url);
 
                 if (response.success && response.data.productos && response.data.productos.length > 0) {
+                    // Actualizar estadísticas cuando no hay filtros
+                    if (!search && !estado) {
+                        const productos = response.data.productos;
+                        document.getElementById('statTotal').textContent = productos.length;
+                        document.getElementById('statPublicados').textContent = productos.filter(p => p.estado === 'publicado').length;
+                        document.getElementById('statPendientes').textContent = productos.filter(p => p.estado === 'pendiente').length;
+                        document.getElementById('statRechazados').textContent = productos.filter(p => p.estado === 'rechazado').length;
+                    }
+                    
                     container.innerHTML = response.data.productos.map(p => `
                         <tr>
                             <td>#${p.id_producto}</td>
@@ -293,11 +379,15 @@
                             <td style="font-family: monospace; font-size: 1rem;">$${parseFloat(p.precio || 0).toFixed(2)}</td>
                             <td><span class="badge ${getBadgeClass(p.estado)}">${capitalize(p.estado)}</span></td>
                             <td>
-                                <button class="btn-action" onclick="verProducto(${p.id_producto})">👁️ Ver</button>
-                                <button class="btn-action ${p.estado === 'publicado' ? 'warning' : 'primary'}" 
-                                    onclick="cambiarEstado(${p.id_producto}, '${p.estado}')">
-                                    ${p.estado === 'publicado' ? '🚫 Ocultar' : '✅ Aprobar'}
-                                </button>
+                                <button class="btn-action" onclick="verDetalleProducto(${p.id_producto})" title="Ver detalles">👁️</button>
+                                ${p.estado !== 'publicado' ? `
+                                    <button class="btn-action primary" onclick="cambiarEstado(${p.id_producto}, '${p.estado}', 'publicado')" title="Aprobar">✅</button>
+                                ` : `
+                                    <button class="btn-action" onclick="cambiarEstado(${p.id_producto}, '${p.estado}', 'pendiente')" title="Ocultar">🚫</button>
+                                `}
+                                ${p.estado !== 'rechazado' ? `
+                                    <button class="btn-action" onclick="cambiarEstado(${p.id_producto}, '${p.estado}', 'rechazado')" title="Rechazar" style="color: #f87171;">❌</button>
+                                ` : ''}
                             </td>
                         </tr>
                     `).join('');
@@ -343,18 +433,169 @@
             window.open(`../user/producto-detalle.html?id=${id}`, '_blank');
         }
 
-        async function cambiarEstado(id, estadoActual) {
-            const nuevoEstado = estadoActual === 'publicado' ? 'pendiente' : 'publicado';
-            if (!confirm(`¿Cambiar estado a "${nuevoEstado}"?`)) return;
+        async function verDetalleProducto(id) {
+            const modal = document.getElementById('modalDetalleProducto');
+            const contenido = document.getElementById('modalDetalleContenido');
+            
+            modal.style.display = 'block';
+            contenido.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                    <div class="spinner"></div>
+                    <p>Cargando producto...</p>
+                </div>`;
 
             try {
-                const response = await apiPut(`/productos/${id}/estado`, { estado: nuevoEstado });
+                const response = await apiGet(`/productos/${id}`);
+                if (response.success && response.data) {
+                    const p = response.data;
+                    contenido.innerHTML = `
+                        <div style="display: grid; gap: 1.5rem;">
+                            ${p.imagen_principal ? `
+                                <img src="${p.imagen_principal}" alt="${p.nombre}" 
+                                     style="width: 100%; max-height: 300px; object-fit: cover; border-radius: 12px;">
+                            ` : `
+                                <div style="width: 100%; height: 200px; background: rgba(255,255,255,0.05); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 3rem;">
+                                    📦
+                                </div>
+                            `}
+                            
+                            <div>
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                                    <div>
+                                        <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">${p.nombre}</h3>
+                                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                            <span class="badge ${getBadgeClass(p.estado)}">${capitalize(p.estado)}</span>
+                                            ${p.categoria ? `<span class="badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3);">${p.categoria}</span>` : ''}
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Precio</div>
+                                        <div style="font-size: 1.75rem; font-weight: 700; color: var(--primary);">$${parseFloat(p.precio || 0).toFixed(2)}</div>
+                                    </div>
+                                </div>
+                                
+                                <div style="padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 1rem;">
+                                    <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem;">Descripción</div>
+                                    <div style="color: var(--text-muted); line-height: 1.6;">${p.descripcion || 'Sin descripción'}</div>
+                                </div>
+
+                                ${p.especificaciones ? `
+                                    <div style="padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; margin-bottom: 1rem;">
+                                        <div style="font-size: 0.875rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem;">Especificaciones</div>
+                                        <div style="color: var(--text-muted); line-height: 1.6;">${p.especificaciones}</div>
+                                    </div>
+                                ` : ''}
+
+                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                                    ${p.nombre_empresa ? `
+                                        <div>
+                                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Empresa</div>
+                                            <div style="font-weight: 600; color: var(--text-main);">${p.nombre_empresa}</div>
+                                        </div>
+                                    ` : ''}
+                                    ${p.nombre_usuario ? `
+                                        <div>
+                                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Vendedor</div>
+                                            <div style="font-weight: 600; color: var(--text-main);">${p.nombre_usuario}</div>
+                                        </div>
+                                    ` : ''}
+                                    ${p.email_usuario ? `
+                                        <div>
+                                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Email</div>
+                                            <div style="font-weight: 600; color: var(--text-main);">${p.email_usuario}</div>
+                                        </div>
+                                    ` : ''}
+                                    ${p.telefono_usuario ? `
+                                        <div>
+                                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Teléfono</div>
+                                            <div style="font-weight: 600; color: var(--text-main);">${p.telefono_usuario}</div>
+                                        </div>
+                                    ` : ''}
+                                    <div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Fecha Creación</div>
+                                        <div style="font-weight: 600; color: var(--text-main);">${new Date(p.fecha_creacion).toLocaleDateString()}</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Vistas</div>
+                                        <div style="font-weight: 600; color: var(--text-main);">${p.vistas || 0}</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Favoritos</div>
+                                        <div style="font-weight: 600; color: var(--text-main);">${p.num_favoritos || 0}</div>
+                                    </div>
+                                    <div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Contactos</div>
+                                        <div style="font-weight: 600; color: var(--text-main);">${p.num_contactos || 0}</div>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                                    ${p.estado !== 'publicado' ? `
+                                        <button onclick="cambiarEstado(${p.id_producto}, '${p.estado}', 'publicado'); cerrarModalDetalle();" 
+                                                class="btn-primary" style="flex: 1;">
+                                            ✅ Aprobar Producto
+                                        </button>
+                                    ` : `
+                                        <button onclick="cambiarEstado(${p.id_producto}, '${p.estado}', 'pendiente'); cerrarModalDetalle();" 
+                                                class="btn-outline" style="flex: 1;">
+                                            🚫 Ocultar Producto
+                                        </button>
+                                    `}
+                                    ${p.estado !== 'rechazado' ? `
+                                        <button onclick="cambiarEstado(${p.id_producto}, '${p.estado}', 'rechazado'); cerrarModalDetalle();" 
+                                                class="btn-danger" style="flex: 1;">
+                                            ❌ Rechazar
+                                        </button>
+                                    ` : ''}
+                                    <button onclick="verProducto(${p.id_producto})" class="btn-outline" style="flex: 1;">
+                                        🔗 Ver en Sitio
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error al cargar producto:', error);
+                contenido.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--danger);">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+                        <h3>Error al cargar</h3>
+                        <p>No se pudo cargar el producto.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function cerrarModalDetalle() {
+            document.getElementById('modalDetalleProducto').style.display = 'none';
+        }
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('modalDetalleProducto')?.addEventListener('click', (e) => {
+            if (e.target.id === 'modalDetalleProducto') {
+                cerrarModalDetalle();
+            }
+        });
+
+        async function cambiarEstado(id, estadoActual, nuevoEstado) {
+            const mensajes = {
+                'publicado': '¿Publicar este producto?',
+                'pendiente': '¿Ocultar este producto?',
+                'rechazado': '¿Rechazar este producto?'
+            };
+            
+            if (!confirm(mensajes[nuevoEstado] || '¿Cambiar estado del producto?')) return;
+
+            try {
+                // Backend usa POST para cambiar estado
+                const response = await apiPost(`/productos/${id}/estado`, { estado: nuevoEstado });
                 if (response.success) {
-                    // Show toast notification
-                    showNotification('Estado actualizado correctamente', 'success');
+                    showNotification(`Producto ${nuevoEstado === 'publicado' ? 'publicado' : nuevoEstado === 'rechazado' ? 'rechazado' : 'ocultado'} correctamente`, 'success');
                     cargarProductos();
                 }
             } catch (error) {
+                console.error('Error al cambiar estado:', error);
                 showNotification('Error al actualizar estado', 'error');
             }
         }
