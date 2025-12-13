@@ -19,7 +19,7 @@ class AuditoriaController {
     public function listarLogs() {
         try {
             error_log("DEBUG AuditoriaController: listarLogs() iniciado");
-            $usuario = AuthMiddleware::authenticate();
+            $usuario = AuthMiddleware::verify();
             error_log("DEBUG AuditoriaController: usuario autenticado - " . json_encode($usuario['id_usuario'] ?? 'null'));
             
             if ($usuario['tipo_usuario'] !== 'administrador') {
@@ -130,7 +130,7 @@ class AuditoriaController {
      */
     public function estadisticas() {
         try {
-            $usuario = AuthMiddleware::authenticate();
+            $usuario = AuthMiddleware::verify();
             
             if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver estadísticas', 403);
@@ -202,7 +202,7 @@ class AuditoriaController {
      */
     public function obtenerLog($id) {
         try {
-            $usuario = AuthMiddleware::authenticate();
+            $usuario = AuthMiddleware::verify();
             
             if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos', 403);

@@ -19,7 +19,7 @@ class ConfiguracionController {
     public function listar() {
         try {
             error_log("DEBUG ConfiguracionController: listar() iniciado");
-            $usuario = AuthMiddleware::authenticate();
+            $usuario = AuthMiddleware::verify();
             error_log("DEBUG ConfiguracionController: usuario autenticado - id: " . ($usuario['id_usuario'] ?? 'null'));
             
             if ($usuario['tipo_usuario'] !== 'administrador') {
@@ -81,7 +81,7 @@ class ConfiguracionController {
      */
     public function actualizar($clave) {
         try {
-            $usuario = AuthMiddleware::authenticate();
+            $usuario = AuthMiddleware::verify();
             
             if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para modificar la configuración', 403);
@@ -140,7 +140,7 @@ class ConfiguracionController {
      */
     public function guardarMultiples() {
         try {
-            $usuario = AuthMiddleware::authenticate();
+            $usuario = AuthMiddleware::verify();
             
             if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para modificar la configuración', 403);
@@ -219,7 +219,7 @@ class ConfiguracionController {
      */
     public function infoSistema() {
         try {
-            $usuario = AuthMiddleware::authenticate();
+            $usuario = AuthMiddleware::verify();
             
             if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver información del sistema', 403);
@@ -288,7 +288,7 @@ class ConfiguracionController {
      */
     public function obtener($clave) {
         try {
-            $usuario = AuthMiddleware::authenticate();
+            $usuario = AuthMiddleware::verify();
             
             if ($usuario['tipo_usuario'] !== 'administrador') {
                 Response::error('No tienes permisos para ver la configuración', 403);
