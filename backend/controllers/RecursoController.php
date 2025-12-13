@@ -596,9 +596,9 @@ class RecursoController {
             }
             
             // Cachear estadísticas por 5 minutos (se actualizan con menos frecuencia)
-            $stats = Cache::getInstance()->remember('recursos:stats:global', 300, function() {
+            $stats = Cache::getInstance()->remember('recursos:stats:global', function() {
                 return $this->recursoModel->getEstadisticas();
-            });
+            }, 300);
             
             Response::success($stats);
         } catch (Exception $e) {
