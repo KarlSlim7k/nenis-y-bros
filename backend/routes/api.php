@@ -1036,6 +1036,37 @@ function registerRoutes(Router $router) {
     });
     
     // =========================================================================
+    // RUTAS DE CONFIGURACIÓN DEL SISTEMA
+    // =========================================================================
+    
+    $configuracionController = new ConfiguracionController();
+    
+    // Información del sistema (versiones, estado, recursos)
+    $router->get('/configuracion/sistema', function() use ($configuracionController) {
+        $configuracionController->infoSistema();
+    });
+    
+    // Listar todas las configuraciones
+    $router->get('/configuracion', function() use ($configuracionController) {
+        $configuracionController->listar();
+    });
+    
+    // Obtener una configuración específica
+    $router->get('/configuracion/{clave}', function($clave) use ($configuracionController) {
+        $configuracionController->obtener($clave);
+    });
+    
+    // Guardar múltiples configuraciones
+    $router->post('/configuracion', function() use ($configuracionController) {
+        $configuracionController->guardarMultiples();
+    });
+    
+    // Actualizar una configuración específica
+    $router->put('/configuracion/{clave}', function($clave) use ($configuracionController) {
+        $configuracionController->actualizar($clave);
+    });
+    
+    // =========================================================================
     // RUTA NO ENCONTRADA
     // =========================================================================
     

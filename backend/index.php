@@ -85,6 +85,7 @@ require_once __DIR__ . '/controllers/ProductoController.php';
 require_once __DIR__ . '/controllers/MentoriaController.php';
 require_once __DIR__ . '/controllers/RecursoController.php';
 require_once __DIR__ . '/controllers/AuditoriaController.php';
+require_once __DIR__ . '/controllers/ConfiguracionController.php';
 require_once __DIR__ . '/controllers/OnboardingController.php';
 
 // Cargar router

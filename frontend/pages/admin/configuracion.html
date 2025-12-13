@@ -112,6 +112,11 @@
             transform: translateX(24px);
         }
 
+        .toggle-switch.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
         /* Setting Item */
         .setting-item {
             display: flex;
@@ -167,11 +172,87 @@
             color: var(--text-main);
         }
 
+        .info-value.online {
+            color: var(--success);
+        }
+
         .section-title {
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 1rem;
             color: var(--text-main);
+        }
+
+        /* Loading State */
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Save Status */
+        .save-status {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .save-status.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .save-status.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .save-status.error {
+            background: var(--danger);
+            color: white;
+        }
+
+        .save-status.saving {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Number Input */
+        .setting-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--text-main);
+            width: 100px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .setting-input:focus {
+            outline: none;
+            border-color: var(--primary);
         }
     </style>
 </head>
@@ -213,84 +294,325 @@
         <!-- General Settings -->
         <div class="glass-panel" style="padding: 2rem;">
             <h3 class="section-title">General</h3>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h4>Modo Mantenimiento</h4>
-                    <p>Deshabilitar el acceso público al sistema</p>
+            <div id="general-settings">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
                 </div>
-                <label class="toggle-switch">
-                    <input type="checkbox">
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h4>Registro Público</h4>
-                    <p>Permitir que nuevos usuarios se registren</p>
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked>
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h4>Verificación de Email</h4>
-                    <p>Requerir verificación de correo para acceder</p>
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked>
-                    <span class="toggle-slider"></span>
-                </label>
             </div>
         </div>
 
         <!-- Notification Settings -->
         <div class="glass-panel" style="padding: 2rem;">
             <h3 class="section-title">Notificaciones</h3>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h4>Email de Bienvenida</h4>
-                    <p>Enviar correo automático al registrarse</p>
+            <div id="notificaciones-settings">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
                 </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked>
-                    <span class="toggle-slider"></span>
-                </label>
             </div>
+        </div>
 
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h4>Alertas de Seguridad</h4>
-                    <p>Notificar intentos de acceso sospechosos</p>
+        <!-- Security Settings -->
+        <div class="glass-panel" style="padding: 2rem;">
+            <h3 class="section-title">Seguridad</h3>
+            <div id="seguridad-settings">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
                 </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" checked>
-                    <span class="toggle-slider"></span>
-                </label>
             </div>
+        </div>
 
-            <div class="setting-item">
-                <div class="setting-info">
-                    <h4>Reportes Semanales</h4>
-                    <p>Recibir resumen de actividad por correo</p>
+        <!-- Limits Settings -->
+        <div class="glass-panel" style="padding: 2rem;">
+            <h3 class="section-title">Límites</h3>
+            <div id="limites-settings">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
                 </div>
-                <label class="toggle-switch">
-                    <input type="checkbox">
-                    <span class="toggle-slider"></span>
-                </label>
             </div>
         </div>
 
         <!-- System Info -->
         <div class="glass-panel full-width" style="padding: 2rem;">
             <h3 class="section-title">Información del Sistema</h3>
+            <div id="system-info" class="system-info-grid">
+                <div class="loading-spinner" style="grid-column: 1 / -1;">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+        </div>
 
-            <div class="system-info-grid">
+    </main>
+
+    <!-- Save Status Toast -->
+    <div id="saveStatus" class="save-status"></div>
+
+    <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
+    <script src="../../assets/js/auth.js"></script>
+    <script>
+        // Verificar autenticación
+        if (!checkAuth() || !isAdmin()) window.location.href = ROUTES.login;
+
+        // Estado de configuraciones
+        let configuraciones = {};
+        let changesPending = {};
+
+        // Mapeo de claves a nombres legibles
+        const configLabels = {
+            // General
+            'modo_mantenimiento': { label: 'Modo Mantenimiento', desc: 'Deshabilitar el acceso público al sistema' },
+            'registro_publico': { label: 'Registro Público', desc: 'Permitir que nuevos usuarios se registren' },
+            'verificacion_email': { label: 'Verificación de Email', desc: 'Requerir verificación de correo para acceder' },
+            'nombre_sitio': { label: 'Nombre del Sitio', desc: 'Nombre mostrado en la plataforma' },
+            'descripcion_sitio': { label: 'Descripción', desc: 'Descripción corta de la plataforma' },
+            // Notificaciones
+            'email_bienvenida': { label: 'Email de Bienvenida', desc: 'Enviar correo automático al registrarse' },
+            'alertas_seguridad': { label: 'Alertas de Seguridad', desc: 'Notificar intentos de acceso sospechosos' },
+            'reportes_semanales': { label: 'Reportes Semanales', desc: 'Recibir resumen de actividad por correo' },
+            'notificaciones_push': { label: 'Notificaciones Push', desc: 'Habilitar notificaciones en el navegador' },
+            // Seguridad
+            'intentos_login_max': { label: 'Intentos de Login', desc: 'Máximo antes de bloquear la cuenta' },
+            'tiempo_bloqueo_minutos': { label: 'Tiempo de Bloqueo', desc: 'Minutos de bloqueo tras exceder intentos' },
+            'sesion_duracion_horas': { label: 'Duración de Sesión', desc: 'Horas que dura una sesión activa' },
+            'forzar_https': { label: 'Forzar HTTPS', desc: 'Requerir conexiones seguras' },
+            // Límites
+            'max_upload_mb': { label: 'Tamaño Máx. Upload', desc: 'Tamaño máximo de archivos en MB' },
+            'usuarios_por_pagina': { label: 'Usuarios por Página', desc: 'Cantidad de usuarios en listados' },
+            'logs_retencion_dias': { label: 'Retención de Logs', desc: 'Días para mantener logs de auditoría' }
+        };
+
+        // Cargar configuraciones
+        async function cargarConfiguraciones() {
+            try {
+                const response = await fetchAPI(`${API_BASE_URL}/configuracion`);
+                
+                if (response.success) {
+                    configuraciones = response.data.configuraciones || {};
+                    renderConfiguraciones();
+                } else {
+                    showStatus('Error al cargar configuraciones', 'error');
+                }
+            } catch (error) {
+                console.error('Error cargando configuraciones:', error);
+                // Mostrar configuraciones por defecto si falla
+                renderDefaultConfigs();
+            }
+        }
+
+        // Renderizar configuraciones por categoría
+        function renderConfiguraciones() {
+            renderCategoria('general', 'general-settings');
+            renderCategoria('notificaciones', 'notificaciones-settings');
+            renderCategoria('seguridad', 'seguridad-settings');
+            renderCategoria('limites', 'limites-settings');
+        }
+
+        // Renderizar una categoría específica
+        function renderCategoria(categoria, containerId) {
+            const container = document.getElementById(containerId);
+            const configs = configuraciones[categoria] || {};
+            
+            if (Object.keys(configs).length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">Sin configuraciones disponibles</p>';
+                return;
+            }
+
+            let html = '';
+            for (const [clave, config] of Object.entries(configs)) {
+                const labels = configLabels[clave] || { label: clave, desc: '' };
+                
+                if (config.tipo_dato === 'boolean') {
+                    html += `
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>${labels.label}</h4>
+                                <p>${labels.desc}</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" 
+                                    data-clave="${clave}" 
+                                    data-tipo="boolean"
+                                    ${config.valor ? 'checked' : ''}
+                                    onchange="handleConfigChange(this)">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    `;
+                } else if (config.tipo_dato === 'number') {
+                    html += `
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>${labels.label}</h4>
+                                <p>${labels.desc}</p>
+                            </div>
+                            <input type="number" 
+                                class="setting-input"
+                                data-clave="${clave}"
+                                data-tipo="number"
+                                value="${config.valor}"
+                                onchange="handleConfigChange(this)">
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>${labels.label}</h4>
+                                <p>${labels.desc}</p>
+                            </div>
+                            <input type="text" 
+                                class="setting-input"
+                                style="width: 200px;"
+                                data-clave="${clave}"
+                                data-tipo="string"
+                                value="${config.valor || ''}"
+                                onchange="handleConfigChange(this)">
+                        </div>
+                    `;
+                }
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Renderizar configuraciones por defecto (si falla la API)
+        function renderDefaultConfigs() {
+            const defaults = {
+                general: {
+                    'modo_mantenimiento': { valor: false, tipo_dato: 'boolean' },
+                    'registro_publico': { valor: true, tipo_dato: 'boolean' },
+                    'verificacion_email': { valor: true, tipo_dato: 'boolean' }
+                },
+                notificaciones: {
+                    'email_bienvenida': { valor: true, tipo_dato: 'boolean' },
+                    'alertas_seguridad': { valor: true, tipo_dato: 'boolean' },
+                    'reportes_semanales': { valor: false, tipo_dato: 'boolean' }
+                },
+                seguridad: {
+                    'intentos_login_max': { valor: 5, tipo_dato: 'number' },
+                    'tiempo_bloqueo_minutos': { valor: 30, tipo_dato: 'number' },
+                    'sesion_duracion_horas': { valor: 24, tipo_dato: 'number' }
+                },
+                limites: {
+                    'max_upload_mb': { valor: 10, tipo_dato: 'number' },
+                    'usuarios_por_pagina': { valor: 20, tipo_dato: 'number' }
+                }
+            };
+            configuraciones = defaults;
+            renderConfiguraciones();
+        }
+
+        // Manejar cambio de configuración
+        async function handleConfigChange(input) {
+            const clave = input.dataset.clave;
+            const tipo = input.dataset.tipo;
+            let valor;
+
+            if (tipo === 'boolean') {
+                valor = input.checked;
+            } else if (tipo === 'number') {
+                valor = parseInt(input.value) || 0;
+            } else {
+                valor = input.value;
+            }
+
+            // Guardar inmediatamente
+            await guardarConfiguracion(clave, valor);
+        }
+
+        // Guardar una configuración
+        async function guardarConfiguracion(clave, valor) {
+            showStatus('Guardando...', 'saving');
+
+            try {
+                const response = await fetchAPI(`${API_BASE_URL}/configuracion/${clave}`, {
+                    method: 'PUT',
+                    body: JSON.stringify({ valor })
+                });
+
+                if (response.success) {
+                    showStatus('✓ Guardado', 'success');
+                } else {
+                    showStatus('Error al guardar', 'error');
+                }
+            } catch (error) {
+                console.error('Error guardando configuración:', error);
+                showStatus('Error de conexión', 'error');
+            }
+        }
+
+        // Mostrar estado de guardado
+        function showStatus(message, type) {
+            const status = document.getElementById('saveStatus');
+            status.textContent = message;
+            status.className = `save-status ${type} show`;
+
+            if (type !== 'saving') {
+                setTimeout(() => {
+                    status.classList.remove('show');
+                }, 2000);
+            }
+        }
+
+        // Cargar información del sistema
+        async function cargarInfoSistema() {
+            try {
+                const response = await fetchAPI(`${API_BASE_URL}/configuracion/sistema`);
+                
+                if (response.success) {
+                    renderInfoSistema(response.data);
+                } else {
+                    renderInfoSistemaDefault();
+                }
+            } catch (error) {
+                console.error('Error cargando info del sistema:', error);
+                renderInfoSistemaDefault();
+            }
+        }
+
+        // Renderizar información del sistema
+        function renderInfoSistema(data) {
+            const container = document.getElementById('system-info');
+            container.innerHTML = `
+                <div class="info-card">
+                    <div class="info-label">Versión del Sistema</div>
+                    <div class="info-value">${data.version_sistema || '1.0.0'}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Base de Datos</div>
+                    <div class="info-value">MySQL ${(data.version_mysql || '').split('-')[0]}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">PHP Version</div>
+                    <div class="info-value">${data.version_php || 'N/A'}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Estado del Servidor</div>
+                    <div class="info-value ${data.estado_servidor === 'online' ? 'online' : ''}">${data.estado_servidor === 'online' ? 'Online ✓' : 'Offline'}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Usuarios Totales</div>
+                    <div class="info-value">${data.estadisticas?.total_usuarios || 0}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Usuarios Activos</div>
+                    <div class="info-value">${data.estadisticas?.usuarios_activos || 0}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Memoria en Uso</div>
+                    <div class="info-value">${data.recursos?.memoria_uso || 'N/A'}</div>
+                </div>
+                <div class="info-card">
+                    <div class="info-label">Timezone</div>
+                    <div class="info-value">${data.timezone || 'UTC'}</div>
+                </div>
+            `;
+        }
+
+        // Renderizar info por defecto
+        function renderInfoSistemaDefault() {
+            const container = document.getElementById('system-info');
+            container.innerHTML = `
                 <div class="info-card">
                     <div class="info-label">Versión del Sistema</div>
                     <div class="info-value">1.0.0</div>
@@ -301,21 +623,14 @@
                 </div>
                 <div class="info-card">
                     <div class="info-label">PHP Version</div>
-                    <div class="info-value">8.1.0</div>
+                    <div class="info-value">8.1+</div>
                 </div>
                 <div class="info-card">
                     <div class="info-label">Estado del Servidor</div>
-                    <div class="info-value" style="color: var(--success);">Online</div>
+                    <div class="info-value online">Online ✓</div>
                 </div>
-            </div>
-        </div>
-
-    </main>
-
-    <script src="../../assets/js/config.js"></script>
-    <script src="../../assets/js/auth.js"></script>
-    <script>
-        if (!checkAuth() || !isAdmin()) window.location.href = ROUTES.login;
+            `;
+        }
 
         function logout() {
             localStorage.removeItem(AUTH_TOKEN_KEY);
@@ -332,6 +647,12 @@
                 avatar.textContent = user.nombre.charAt(0).toUpperCase();
             }
         }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarConfiguraciones();
+            cargarInfoSistema();
+        });
     </script>
     <script src="../../assets/js/navigation.js"></script>
     <script>
