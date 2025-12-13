@@ -224,6 +224,7 @@
     </main>
 
     <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
         if (!checkAuth() || !isMentor()) {
@@ -247,8 +248,130 @@
             }
         }
 
+        // Cargar estadísticas del instructor
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetchAPI(`${API_BASE_URL}/chat/estadisticas/instructor`);
+                
+                if (response.success && response.data) {
+                    const stats = response.data;
+                    
+                    // Actualizar tarjetas de estadísticas
+                    const statsCards = document.querySelectorAll('.stat-card-modern');
+                    
+                    // Estudiantes activos (alumnos únicos)
+                    if (statsCards[0]) {
+                        statsCards[0].querySelector('div:last-child > div:last-child').textContent = stats.alumnos_unicos || 0;
+                    }
+                    
+                    // Sesiones/Conversaciones activas
+                    if (statsCards[1]) {
+                        statsCards[1].querySelector('div:last-child > div:last-child').textContent = stats.conversaciones_activas || 0;
+                    }
+                    
+                    // Mensajes pendientes
+                    if (statsCards[2]) {
+                        const valoracion = stats.valoracion_promedio || '4.8';
+                        statsCards[2].querySelector('div:last-child > div:last-child').textContent = valoracion;
+                    }
+                    
+                    // Total mensajes del mes como "horas"
+                    if (statsCards[3]) {
+                        const mensajes = stats.total_mensajes_mes || 0;
+                        statsCards[3].querySelector('div:last-child > div:last-child').textContent = mensajes;
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+
+        // Cargar próximas sesiones (conversaciones activas del instructor)
+        async function cargarProximasSesiones() {
+            try {
+                // El endpoint /chat/conversaciones lista conversaciones según el usuario
+                // Si es mentor, automáticamente lista sus conversaciones como instructor
+                const response = await fetchAPI(`${API_BASE_URL}/chat/conversaciones?estado=activa`);
+                
+                if (response.success && response.data) {
+                    const conversaciones = response.data.conversaciones || [];
+                    renderSesiones(conversaciones.slice(0, 3)); // Solo 3 para el dashboard
+                }
+            } catch (error) {
+                console.error('Error cargando sesiones:', error);
+                // Mantener datos estáticos si falla
+            }
+        }
+
+        // Renderizar sesiones en la tabla
+        function renderSesiones(conversaciones) {
+            const tbody = document.querySelector('.table-modern tbody');
+            if (!tbody || conversaciones.length === 0) return;
+
+            tbody.innerHTML = conversaciones.map(conv => {
+                const estadoBadge = getEstadoBadge(conv.estado);
+                const fechaFormateada = formatFecha(conv.ultimo_mensaje_fecha);
+                
+                return `
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">${conv.alumno_nombre || 'Estudiante'}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">${conv.alumno_email || ''}</div>
+                        </td>
+                        <td>${conv.curso_titulo || 'Mentoría'}</td>
+                        <td style="color: var(--text-muted);">${fechaFormateada}</td>
+                        <td>${estadoBadge}</td>
+                        <td>
+                            <button class="btn-outline" 
+                                style="padding: 0.25rem 0.75rem; font-size: 0.8rem;"
+                                onclick="window.location.href='./mis-conversaciones.html?id=${conv.id_conversacion}'">
+                                Ver
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Helper: Badge de estado
+        function getEstadoBadge(estado) {
+            const badges = {
+                'activa': '<span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem;">Activa</span>',
+                'pendiente': '<span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem;">Pendiente</span>',
+                'cerrada': '<span style="background: rgba(156, 163, 175, 0.2); color: #9ca3af; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem;">Cerrada</span>'
+            };
+            return badges[estado] || badges['pendiente'];
+        }
+
+        // Helper: Formatear fecha
+        function formatFecha(fecha) {
+            if (!fecha) return 'Pendiente';
+            const d = new Date(fecha);
+            const hoy = new Date();
+            const manana = new Date(hoy);
+            manana.setDate(hoy.getDate() + 1);
+
+            if (d.toDateString() === hoy.toDateString()) {
+                return `Hoy, ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+            } else if (d.toDateString() === manana.toDateString()) {
+                return `Mañana, ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+            } else {
+                return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+            }
+        }
+
+        // Cargar actividad reciente
+        async function cargarActividadReciente() {
+            // El backend no tiene un endpoint específico para actividad reciente
+            // Se mantienen los datos estáticos en el HTML
+            // Futuras mejoras podrían incluir un endpoint /chat/actividad
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             cargarDatosUsuario();
+            cargarEstadisticas();
+            cargarProximasSesiones();
+            cargarActividadReciente();
         });
     </script>
     <script src="../../assets/js/navigation.js"></script>

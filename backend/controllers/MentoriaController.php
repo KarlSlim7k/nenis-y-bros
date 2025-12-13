@@ -126,7 +126,7 @@ class MentoriaController {
         
         $estado = $_GET['estado'] ?? 'activa';
         $tipoUsuario = $usuario['tipo_usuario'] ?? $usuario['rol'] ?? '';
-        $rol = ($tipoUsuario === 'mentor') ? 'instructor' : 'alumno';
+        $rol = ($tipoUsuario === 'mentor' || $tipoUsuario === 'administrador') ? 'instructor' : 'alumno';
         
         try {
             $conversaciones = $this->conversacionModel->listarPorUsuario(
@@ -533,9 +533,9 @@ class MentoriaController {
     public function getEstadisticasInstructor() {
         $usuario = AuthMiddleware::requireAuth();
         
-        // Solo instructores
+        // Solo instructores y administradores
         $tipoUsuario = $usuario['tipo_usuario'] ?? $usuario['rol'] ?? '';
-        if ($tipoUsuario !== 'mentor') {
+        if ($tipoUsuario !== 'mentor' && $tipoUsuario !== 'administrador') {
             Response::error('Solo los instructores pueden ver estas estadísticas', 403);
         }
         
