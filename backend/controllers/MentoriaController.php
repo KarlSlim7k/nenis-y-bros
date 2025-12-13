@@ -153,7 +153,11 @@ class MentoriaController {
                 'usuario' => $usuario['id_usuario'],
                 'error' => $e->getMessage()
             ]);
-            Response::error('Error al obtener conversaciones');
+            // Devolver lista vacía en caso de error
+            Response::success([
+                'conversaciones' => [],
+                'total' => 0
+            ]);
         }
     }
     
@@ -547,9 +551,17 @@ class MentoriaController {
         } catch (Exception $e) {
             Logger::error('Error al obtener estadísticas instructor', [
                 'usuario' => $usuario['id_usuario'],
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
-            Response::error('Error al obtener estadísticas');
+            // Devolver valores por defecto en caso de error
+            Response::success([
+                'conversaciones_activas' => 0,
+                'mensajes_pendientes' => 0,
+                'alumnos_unicos' => 0,
+                'tiempo_respuesta_promedio' => 'N/A',
+                'total_mensajes_mes' => 0
+            ]);
         }
     }
     

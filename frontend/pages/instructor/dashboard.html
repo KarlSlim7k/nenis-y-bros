@@ -77,28 +77,28 @@
                     <div class="stat-icon-box" style="color: var(--accent);">👥</div>
                     <div>
                         <div style="color: var(--text-muted); font-size: 0.9rem;">Estudiantes Activos</div>
-                        <div style="font-size: 1.8rem; font-weight: 700;">24</div>
+                        <div id="stat-estudiantes" style="font-size: 1.8rem; font-weight: 700;">0</div>
                     </div>
                 </div>
                 <div class="stat-card-modern">
                     <div class="stat-icon-box" style="color: var(--success);">📅</div>
                     <div>
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">Sesiones Este Mes</div>
-                        <div style="font-size: 1.8rem; font-weight: 700;">18</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Conversaciones Activas</div>
+                        <div id="stat-conversaciones" style="font-size: 1.8rem; font-weight: 700;">0</div>
                     </div>
                 </div>
                 <div class="stat-card-modern">
-                    <div class="stat-icon-box" style="color: var(--warning);">⭐</div>
+                    <div class="stat-icon-box" style="color: var(--warning);">💬</div>
                     <div>
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">Valoración Promedio</div>
-                        <div style="font-size: 1.8rem; font-weight: 700;">4.8</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Mensajes Pendientes</div>
+                        <div id="stat-pendientes" style="font-size: 1.8rem; font-weight: 700;">0</div>
                     </div>
                 </div>
                 <div class="stat-card-modern">
-                    <div class="stat-icon-box" style="color: var(--secondary);">🕐</div>
+                    <div class="stat-icon-box" style="color: var(--secondary);">📨</div>
                     <div>
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">Horas Totales</div>
-                        <div style="font-size: 1.8rem; font-weight: 700;">156</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Mensajes Este Mes</div>
+                        <div id="stat-mensajes-mes" style="font-size: 1.8rem; font-weight: 700;">0</div>
                     </div>
                 </div>
             </div>
@@ -215,15 +215,16 @@
             <div class="glass-panel" style="padding: 2rem; margin-top: 2rem;">
                 <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem;">Acciones Rápidas</h3>
                 <div style="display: flex; flex-direction: column; gap: 1rem;">
-                    <button class="btn-modern" style="width: 100%;">📅 Agendar Sesión</button>
-                    <button class="btn-outline" style="width: 100%;">📝 Crear Recurso</button>
-                    <button class="btn-outline" style="width: 100%;">👥 Ver Estudiantes</button>
+                    <button class="btn-modern" style="width: 100%;" onclick="window.location.href='./disponibilidad-instructor.html'">📅 Agendar Disponibilidad</button>
+                    <button class="btn-outline" style="width: 100%;" onclick="window.location.href='./mis-conversaciones.html'">💬 Ver Conversaciones</button>
+                    <button class="btn-outline" style="width: 100%;" onclick="window.location.href='./estudiantes.html'">👥 Ver Estudiantes</button>
                 </div>
             </div>
         </div>
     </main>
 
     <script src="../../assets/js/config.js"></script>
+    <script src="../../assets/js/api.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
         if (!checkAuth() || !isMentor()) {
@@ -247,8 +248,113 @@
             }
         }
 
+        // Cargar estadísticas del instructor
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetchAPI(`${API_BASE_URL}/chat/estadisticas/instructor`);
+                
+                if (response.success && response.data) {
+                    const stats = response.data;
+                    
+                    // Actualizar tarjetas de estadísticas usando IDs
+                    document.getElementById('stat-estudiantes').textContent = stats.alumnos_unicos || 0;
+                    document.getElementById('stat-conversaciones').textContent = stats.conversaciones_activas || 0;
+                    document.getElementById('stat-pendientes').textContent = stats.mensajes_pendientes || 0;
+                    document.getElementById('stat-mensajes-mes').textContent = stats.total_mensajes_mes || 0;
+                    
+                    console.log('Estadísticas cargadas:', stats);
+                }
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+
+        // Cargar próximas sesiones (usa /chat/conversaciones genérico)
+        async function cargarProximasSesiones() {
+            try {
+                const response = await fetchAPI(`${API_BASE_URL}/chat/conversaciones?estado=activa`);
+                
+                if (response.success && response.data) {
+                    const conversaciones = response.data.conversaciones || [];
+                    if (conversaciones.length > 0) {
+                        renderSesiones(conversaciones.slice(0, 3)); // Solo 3 para el dashboard
+                    }
+                }
+            } catch (error) {
+                console.error('Error cargando sesiones:', error);
+                // Mantener datos estáticos si falla
+            }
+        }
+
+        // Renderizar sesiones en la tabla
+        function renderSesiones(conversaciones) {
+            const tbody = document.querySelector('.table-modern tbody');
+            if (!tbody || conversaciones.length === 0) return;
+
+            tbody.innerHTML = conversaciones.map(conv => {
+                const estadoBadge = getEstadoBadge(conv.estado);
+                const fechaFormateada = formatFecha(conv.ultima_actividad);
+                
+                return `
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">${conv.alumno_nombre || 'Estudiante'}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">${conv.alumno_email || ''}</div>
+                        </td>
+                        <td>${conv.curso_nombre || 'Mentoría'}</td>
+                        <td style="color: var(--text-muted);">${fechaFormateada}</td>
+                        <td>${estadoBadge}</td>
+                        <td>
+                            <button class="btn-outline" 
+                                style="padding: 0.25rem 0.75rem; font-size: 0.8rem;"
+                                onclick="window.location.href='./mis-conversaciones.html?id=${conv.id_conversacion}'">
+                                Ver
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Helper: Badge de estado
+        function getEstadoBadge(estado) {
+            const badges = {
+                'activa': '<span style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem;">Activa</span>',
+                'pendiente': '<span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem;">Pendiente</span>',
+                'cerrada': '<span style="background: rgba(156, 163, 175, 0.2); color: #9ca3af; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem;">Cerrada</span>'
+            };
+            return badges[estado] || badges['pendiente'];
+        }
+
+        // Helper: Formatear fecha
+        function formatFecha(fecha) {
+            if (!fecha) return 'Pendiente';
+            const d = new Date(fecha);
+            const hoy = new Date();
+            const manana = new Date(hoy);
+            manana.setDate(hoy.getDate() + 1);
+
+            if (d.toDateString() === hoy.toDateString()) {
+                return `Hoy, ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+            } else if (d.toDateString() === manana.toDateString()) {
+                return `Mañana, ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
+            } else {
+                return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+            }
+        }
+
+        // Cargar actividad reciente - No hay endpoint disponible, se mantienen datos estáticos
+        async function cargarActividadReciente() {
+            // El endpoint /chat/mensajes/recientes no existe
+            // La actividad reciente se muestra con datos estáticos en el HTML
+            console.log('Actividad reciente: usando datos estáticos');
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             cargarDatosUsuario();
+            cargarEstadisticas();
+            cargarProximasSesiones();
+            cargarActividadReciente();
         });
     </script>
     <script src="../../assets/js/navigation.js"></script>

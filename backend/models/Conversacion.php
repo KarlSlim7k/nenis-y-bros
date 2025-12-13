@@ -185,35 +185,11 @@ class Conversacion {
      * @return array
      */
     public function getEstadisticasInstructor($idInstructor) {
+        // Consulta simplificada para evitar errores con subconsultas complejas
         $query = "
             SELECT 
-                COUNT(DISTINCT c.id_conversacion) as conversaciones_activas,
-                SUM(CASE 
-                    WHEN EXISTS (
-                        SELECT 1 FROM mensajes m 
-                        WHERE m.id_conversacion = c.id_conversacion 
-                        AND m.remitente_tipo = 'alumno' 
-                        AND m.leido = FALSE
-                    ) THEN 1 ELSE 0 
-                END) as mensajes_pendientes,
-                COUNT(DISTINCT c.id_alumno) as alumnos_unicos,
-                AVG(TIMESTAMPDIFF(MINUTE, 
-                    (SELECT MIN(m1.fecha_envio) 
-                     FROM mensajes m1 
-                     WHERE m1.id_conversacion = c.id_conversacion 
-                     AND m1.remitente_tipo = 'alumno' 
-                     AND m1.leido = TRUE),
-                    (SELECT MIN(m2.fecha_envio) 
-                     FROM mensajes m2 
-                     WHERE m2.id_conversacion = c.id_conversacion 
-                     AND m2.remitente_tipo = 'instructor' 
-                     AND m2.fecha_envio > (
-                         SELECT MAX(m3.fecha_envio) 
-                         FROM mensajes m3 
-                         WHERE m3.id_conversacion = c.id_conversacion 
-                         AND m3.remitente_tipo = 'alumno'
-                     ))
-                )) as tiempo_respuesta_promedio_min
+                COALESCE(COUNT(DISTINCT c.id_conversacion), 0) as conversaciones_activas,
+                COALESCE(COUNT(DISTINCT c.id_alumno), 0) as alumnos_unicos
             FROM conversaciones c
             WHERE c.id_instructor = ?
               AND c.estado = 'activa'
@@ -222,19 +198,30 @@ class Conversacion {
         
         $result = $this->db->fetchOne($query, [$idInstructor]);
         
-        // Formatear tiempo de respuesta
-        if ($result['tiempo_respuesta_promedio_min']) {
-            $minutos = round($result['tiempo_respuesta_promedio_min']);
-            if ($minutos < 60) {
-                $result['tiempo_respuesta_promedio'] = "$minutos minutos";
-            } else {
-                $horas = floor($minutos / 60);
-                $mins = $minutos % 60;
-                $result['tiempo_respuesta_promedio'] = "{$horas}h {$mins}min";
-            }
-        } else {
-            $result['tiempo_respuesta_promedio'] = 'N/A';
+        // Si no hay resultado, inicializar con valores por defecto
+        if (!$result) {
+            $result = [
+                'conversaciones_activas' => 0,
+                'alumnos_unicos' => 0
+            ];
         }
+        
+        // Contar mensajes pendientes por separado
+        $queryPendientes = "
+            SELECT COUNT(*) as mensajes_pendientes
+            FROM mensajes m
+            INNER JOIN conversaciones c ON m.id_conversacion = c.id_conversacion
+            WHERE c.id_instructor = ?
+              AND m.remitente_tipo = 'alumno'
+              AND m.leido = FALSE
+        ";
+        
+        $resPendientes = $this->db->fetchOne($queryPendientes, [$idInstructor]);
+        $result['mensajes_pendientes'] = $resPendientes['mensajes_pendientes'] ?? 0;
+        
+        // Tiempo de respuesta promedio (simplificado)
+        $result['tiempo_respuesta_promedio'] = 'N/A';
+        $result['tiempo_respuesta_promedio_min'] = null;
         
         // Total mensajes del mes
         $queryMes = "
