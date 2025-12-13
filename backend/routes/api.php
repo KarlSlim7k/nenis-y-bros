@@ -126,6 +126,7 @@ function registerRoutes(Router $router) {
     $moduloController = new ModuloController();
     $leccionController = new LeccionController();
     $progresoController = new ProgresoController();
+    $dashboardController = new DashboardController();
     
     // =========================================================================
     // RUTAS DE CATEGORÍAS (Fase 2A - Gestión de Categorías)
@@ -319,6 +320,30 @@ function registerRoutes(Router $router) {
         $progresoController->getMyStats();
     });
     
+    // =========================================================================
+    // RUTAS DE DASHBOARD (Emprendedor/Empresario)
+    // =========================================================================
+    
+    // Estadísticas generales del dashboard
+    $router->get('/dashboard/stats', function() use ($dashboardController) {
+        $dashboardController->getStats();
+    });
+    
+    // Cursos en progreso
+    $router->get('/dashboard/cursos-progreso', function() use ($dashboardController) {
+        $dashboardController->getCursosEnProgreso();
+    });
+    
+    // Diagnósticos recientes
+    $router->get('/dashboard/diagnosticos-recientes', function() use ($dashboardController) {
+        $dashboardController->getDiagnosticosRecientes();
+    });
+    
+    // Actividad reciente
+    $router->get('/dashboard/actividad-reciente', function() use ($dashboardController) {
+        $dashboardController->getActividadReciente();
+    });
+
     // =========================================================================
     // RUTAS DE ADMINISTRACIÓN (Requieren rol administrador)
     // =========================================================================
