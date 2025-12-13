@@ -608,7 +608,7 @@
         // ========== FUNCIONES DE CARGA ==========
         async function cargarEstadisticas() {
             try {
-                const response = await fetchWithAuth(`${API_BASE_URL}/recursos/estadisticas`);
+                const response = await fetchAPI(`${API_BASE_URL}/recursos/estadisticas`);
                 if (response.success && response.data) {
                     document.getElementById('totalRecursos').textContent = response.data.total_recursos || 0;
                     document.getElementById('totalDescargas').textContent = response.data.total_descargas || 0;
@@ -621,7 +621,7 @@
 
         async function cargarCategorias() {
             try {
-                const response = await fetchWithAuth(`${API_BASE_URL}/recursos/categorias`);
+                const response = await fetchAPI(`${API_BASE_URL}/recursos/categorias`);
                 if (response.success && response.data) {
                     categorias = response.data;
                     
@@ -668,7 +668,7 @@
                 
                 url += params.join('&');
 
-                const response = await fetchWithAuth(url);
+                const response = await fetchAPI(url);
                 
                 if (response.success && response.data) {
                     recursos = response.data;
@@ -756,7 +756,7 @@
         async function editarRecurso(id) {
             showLoading();
             try {
-                const response = await fetchWithAuth(`${API_BASE_URL}/recursos/${id}`);
+                const response = await fetchAPI(`${API_BASE_URL}/recursos/${id}`);
                 
                 if (response.success && response.data) {
                     const recurso = response.data;
@@ -815,13 +815,13 @@
                 let response;
                 if (currentRecursoId) {
                     // Actualizar
-                    response = await fetchWithAuth(`${API_BASE_URL}/recursos/${currentRecursoId}`, {
+                    response = await fetchAPI(`${API_BASE_URL}/recursos/${currentRecursoId}`, {
                         method: 'PUT',
                         body: JSON.stringify(data)
                     });
                 } else {
                     // Crear
-                    response = await fetchWithAuth(`${API_BASE_URL}/recursos`, {
+                    response = await fetchAPI(`${API_BASE_URL}/recursos`, {
                         method: 'POST',
                         body: JSON.stringify(data)
                     });
@@ -850,7 +850,7 @@
 
             showLoading();
             try {
-                const response = await fetchWithAuth(`${API_BASE_URL}/recursos/${id}`, {
+                const response = await fetchAPI(`${API_BASE_URL}/recursos/${id}`, {
                     method: 'DELETE'
                 });
 
