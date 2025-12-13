@@ -286,16 +286,16 @@
             }
         }
 
-        // Cargar próximas sesiones (conversaciones activas del instructor)
+        // Cargar próximas sesiones (usa /chat/conversaciones genérico)
         async function cargarProximasSesiones() {
             try {
-                // El endpoint /chat/conversaciones lista conversaciones según el usuario
-                // Si es mentor, automáticamente lista sus conversaciones como instructor
                 const response = await fetchAPI(`${API_BASE_URL}/chat/conversaciones?estado=activa`);
                 
                 if (response.success && response.data) {
                     const conversaciones = response.data.conversaciones || [];
-                    renderSesiones(conversaciones.slice(0, 3)); // Solo 3 para el dashboard
+                    if (conversaciones.length > 0) {
+                        renderSesiones(conversaciones.slice(0, 3)); // Solo 3 para el dashboard
+                    }
                 }
             } catch (error) {
                 console.error('Error cargando sesiones:', error);
@@ -310,7 +310,7 @@
 
             tbody.innerHTML = conversaciones.map(conv => {
                 const estadoBadge = getEstadoBadge(conv.estado);
-                const fechaFormateada = formatFecha(conv.ultimo_mensaje_fecha);
+                const fechaFormateada = formatFecha(conv.ultima_actividad);
                 
                 return `
                     <tr>
@@ -318,7 +318,7 @@
                             <div style="font-weight: 600;">${conv.alumno_nombre || 'Estudiante'}</div>
                             <div style="font-size: 0.8rem; color: var(--text-muted);">${conv.alumno_email || ''}</div>
                         </td>
-                        <td>${conv.curso_titulo || 'Mentoría'}</td>
+                        <td>${conv.curso_nombre || 'Mentoría'}</td>
                         <td style="color: var(--text-muted);">${fechaFormateada}</td>
                         <td>${estadoBadge}</td>
                         <td>
@@ -362,9 +362,16 @@
 
         // Cargar actividad reciente
         async function cargarActividadReciente() {
-            // El backend no tiene un endpoint específico para actividad reciente
-            // Se mantienen los datos estáticos en el HTML
-            // Futuras mejoras podrían incluir un endpoint /chat/actividad
+            try {
+                const response = await fetchAPI(`${API_BASE_URL}/chat/mensajes/recientes?limite=3`);
+                
+                if (response.success && response.data) {
+                    // Aquí podrías renderizar la actividad reciente si el endpoint existe
+                    // Por ahora mantenemos los datos estáticos
+                }
+            } catch (error) {
+                console.error('Error cargando actividad:', error);
+            }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
