@@ -248,7 +248,7 @@ class Producto {
                 u.telefono AS telefono_usuario,
                 pe.nombre_empresa
             FROM {$this->tabla} p
-            LEFT JOIN categorias_productos c ON p.id_categoria_producto = c.id_categoria
+            LEFT JOIN categorias_productos c ON p.id_categoria_producto = c.id_categoria_producto
             LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
             LEFT JOIN perfiles_empresariales pe ON p.id_perfil = pe.id_perfil
             WHERE p.id_producto = ?
@@ -462,7 +462,7 @@ class Producto {
                 u.email AS email_usuario,
                 pe.nombre_empresa
             FROM {$this->tabla} p
-            LEFT JOIN categorias_productos c ON p.id_categoria_producto = c.id_categoria
+            LEFT JOIN categorias_productos c ON p.id_categoria_producto = c.id_categoria_producto
             LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
             LEFT JOIN perfiles_empresariales pe ON p.id_perfil = pe.id_perfil
             $whereClause
