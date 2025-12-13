@@ -8,10 +8,19 @@
     "build": "echo 'No se requiere build para este proyecto estático'",
     "deploy": "vercel --prod"
   },
-  "keywords": ["formacion", "empresarial", "frontend", "static"],
+  "keywords": [
+    "formacion",
+    "empresarial",
+    "frontend",
+    "static"
+  ],
   "author": "Nenis y Bros",
   "license": "MIT",
   "engines": {
     "node": "20.x"
+  },
+  "devDependencies": {
+    "bcryptjs": "^3.0.3",
+    "mysql2": "^3.15.3"
   }
 }

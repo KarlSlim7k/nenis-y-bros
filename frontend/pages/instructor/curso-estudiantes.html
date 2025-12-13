@@ -447,7 +447,8 @@
                 const result = await response.json();
 
                 if (result.success && result.data) {
-                    estudiantesOriginales = result.data.students || result.data || [];
+                    // El backend devuelve { data: [...estudiantes], pagination: {...} }
+                    estudiantesOriginales = result.data.data || result.data.students || result.data || [];
                     estudiantesData = [...estudiantesOriginales];
                     mostrarEstudiantes();
                 } else {

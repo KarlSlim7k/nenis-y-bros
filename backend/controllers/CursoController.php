@@ -52,9 +52,12 @@ class CursoController {
                 $filters['estado'] = 'publicado';
             } elseif (isset($_GET['estado'])) {
                 $filters['estado'] = $_GET['estado'];
+            } else {
+                // Mentores y admins ven todos los estados - pasar null para no aplicar filtro
+                $filters['sin_filtro_estado'] = true;
             }
             
-            // Si es mentor, filtrar por sus cursos
+            // Si es mentor, filtrar por sus cursos (a menos que sea admin o pase all=true)
             if ($user && $user['tipo_usuario'] === 'mentor' && !isset($_GET['all'])) {
                 $filters['id_instructor'] = $user['id_usuario'];
             }

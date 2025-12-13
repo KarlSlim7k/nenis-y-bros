@@ -317,6 +317,237 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-panel);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-main);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .form-label .required {
+            color: #ef4444;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(6, 182, 212, 0.05);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-select {
+            cursor: pointer;
+        }
+
+        .form-select option {
+            background: var(--bg-panel);
+            color: var(--text-main);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-modal {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-modal-primary {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-modal-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn-modal-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-modal-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-modal-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Botón Nuevo Curso */
+        .btn-nuevo-curso {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-nuevo-curso:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.5);
+        }
+
+        .btn-editar-curso {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .btn-editar-curso:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .spinner-small {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 
@@ -360,6 +591,10 @@
                 <h1 class="page-title">Mis <span class="text-gradient">Cursos</span> 📚</h1>
                 <p class="page-subtitle">Cursos que impartes a tus estudiantes</p>
             </div>
+            <button class="btn-nuevo-curso" onclick="abrirModalCurso()">
+                <span>➕</span>
+                <span>Nuevo Curso</span>
+            </button>
         </div>
 
         <!-- Mini Stats -->
@@ -400,6 +635,83 @@
         </div>
 
     </main>
+
+    <!-- Modal Crear/Editar Curso -->
+    <div id="modalCurso" class="modal-overlay" onclick="cerrarModalSiClickFuera(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <span id="modalIcon">➕</span>
+                    <span id="modalTitulo">Nuevo Curso</span>
+                </h2>
+                <button class="modal-close" onclick="cerrarModalCurso()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="formCurso" onsubmit="guardarCurso(event)">
+                    <input type="hidden" id="cursoId" value="">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Título del Curso <span class="required">*</span></label>
+                        <input type="text" id="cursoTitulo" class="form-input" placeholder="Ej: Fundamentos de Marketing Digital" required minlength="5" maxlength="200">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Categoría <span class="required">*</span></label>
+                        <select id="cursoCategoria" class="form-select" required>
+                            <option value="">Selecciona una categoría</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Descripción</label>
+                        <textarea id="cursoDescripcion" class="form-textarea" placeholder="Describe de qué trata este curso..." maxlength="2000"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Nivel</label>
+                            <select id="cursoNivel" class="form-select">
+                                <option value="basico">Básico</option>
+                                <option value="intermedio">Intermedio</option>
+                                <option value="avanzado">Avanzado</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Duración (horas)</label>
+                            <input type="number" id="cursoDuracion" class="form-input" placeholder="Ej: 10" min="1" max="1000">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Precio (MXN)</label>
+                            <input type="number" id="cursoPrecio" class="form-input" placeholder="Ej: 499" min="0" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Estado</label>
+                            <select id="cursoEstado" class="form-select">
+                                <option value="borrador">Borrador</option>
+                                <option value="publicado">Publicado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">URL de imagen (opcional)</label>
+                        <input type="url" id="cursoImagen" class="form-input" placeholder="https://ejemplo.com/imagen.jpg">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-modal-secondary" onclick="cerrarModalCurso()">
+                    Cancelar
+                </button>
+                <button type="submit" form="formCurso" id="btnGuardarCurso" class="btn-modal btn-modal-primary">
+                    <span id="btnGuardarTexto">💾 Guardar Curso</span>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>

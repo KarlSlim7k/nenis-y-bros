@@ -78,6 +78,8 @@ class Curso {
     public function findById($id, $includeStats = true) {
         $query = "SELECT 
             c.*,
+            c.total_inscritos as total_inscripciones,
+            c.calificacion_promedio as promedio_calificacion,
             cat.nombre as categoria_nombre,
             cat.color as categoria_color,
             u.nombre as instructor_nombre,
@@ -137,9 +139,11 @@ class Curso {
         if (isset($filters['estado'])) {
             $conditions[] = "c.estado = ?";
             $params[] = $filters['estado'];
-        } else {
+        } elseif (!isset($filters['sin_filtro_estado']) || !$filters['sin_filtro_estado']) {
+            // Solo aplicar filtro de estado 'publicado' si no se pasó el flag sin_filtro_estado
             $conditions[] = "c.estado = 'publicado'";
         }
+        // Si sin_filtro_estado = true, no se aplica ningún filtro de estado
         
         // Filtro por instructor
         if (!empty($filters['id_instructor'])) {
@@ -149,9 +153,8 @@ class Curso {
         
         // Búsqueda por texto
         if (!empty($filters['search'])) {
-            $conditions[] = "(c.titulo LIKE ? OR c.descripcion LIKE ? OR c.descripcion_corta LIKE ?)";
+            $conditions[] = "(c.titulo LIKE ? OR c.descripcion LIKE ?)";
             $searchTerm = "%{$filters['search']}%";
-            $params[] = $searchTerm;
             $params[] = $searchTerm;
             $params[] = $searchTerm;
         }
@@ -171,10 +174,10 @@ class Curso {
         if (!empty($filters['order_by'])) {
             switch ($filters['order_by']) {
                 case 'popular':
-                    $orderBy = "c.total_inscripciones DESC";
+                    $orderBy = "c.total_inscritos DESC";
                     break;
                 case 'rating':
-                    $orderBy = "c.promedio_calificacion DESC";
+                    $orderBy = "c.calificacion_promedio DESC";
                     break;
                 case 'newest':
                     $orderBy = "c.fecha_publicacion DESC";
@@ -187,6 +190,8 @@ class Curso {
         
         $query = "SELECT 
             c.*,
+            c.total_inscritos as total_inscripciones,
+            c.calificacion_promedio as promedio_calificacion,
             cat.nombre as categoria_nombre,
             cat.color as categoria_color,
             u.nombre as instructor_nombre,
