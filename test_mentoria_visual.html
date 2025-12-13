@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test MentorIA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        .status.info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .test-result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test MentorIA - Verificación de Funcionalidad</h1>
+    
+    <div class="test-section">
+        <h2>1. Verificar Configuración</h2>
+        <div id="config-status" class="status info">
+            Verificando configuración...
+        </div>
+        <button onclick="verificarConfig()">Verificar</button>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Test de Login</h2>
+        <div id="login-status" class="status info">
+            Esperando test de login...
+        </div>
+        <button onclick="testLogin()">Test Login</button>
+        <div id="login-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Test de Pregunta a MentorIA</h2>
+        <div id="pregunta-status" class="status info">
+            Esperando test de pregunta...
+        </div>
+        <input type="text" id="pregunta-input" placeholder="Escribe una pregunta..." style="width: 100%; padding: 10px; margin: 10px 0;">
+        <button onclick="testPregunta()">Enviar Pregunta</button>
+        <div id="pregunta-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Test con Historial</h2>
+        <div id="historial-status" class="status info">
+            Esperando test con historial...
+        </div>
+        <button onclick="testConHistorial()">Test con Historial</button>
+        <div id="historial-result" class="test-result" style="display: none;"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>5. Verificar Página de MentorIA</h2>
+        <div id="page-status" class="status info">
+            La página de MentorIA está en: <code>frontend/pages/emprendedor/mentoria-ai.html</code>
+        </div>
+        <button onclick="abrirMentorIA()">Abrir MentorIA</button>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost/nenis-y-bros/backend/api/v1';
+        let authToken = null;
+
+        function mostrarResultado(elementId, data) {
+            const element = document.getElementById(elementId);
+            element.style.display = 'block';
+            element.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        }
+
+        function verificarConfig() {
+            const statusEl = document.getElementById('config-status');
+            statusEl.className = 'status info';
+            statusEl.textContent = 'Verificando...';
+
+            fetch(API_BASE_URL + '/health')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        statusEl.className = 'status success';
+                        statusEl.textContent = '✓ API Backend está funcionando correctamente';
+                    } else {
+                        statusEl.className = 'status error';
+                        statusEl.textContent = '✗ Error en API Backend';
+                    }
+                })
+                .catch(error => {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '✗ No se pudo conectar con el backend: ' + error.message;
+                });
+        }
+
+        async function testLogin() {
+            const statusEl = document.getElementById('login-status');
+            statusEl.className = 'status info';
+            statusEl.textContent = 'Intentando login...';
+
+            try {
+                const response = await fetch(API_BASE_URL + '/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'emprendedor@test.com',
+                        password: 'Password123'
+                    })
+                });
+
+                const data = await response.json();
+                mostrarResultado('login-result', data);
+
+                if (data.success) {
+                    authToken = data.data.token;
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✓ Login exitoso. Token obtenido.';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '✗ Error en login: ' + data.message;
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '✗ Error: ' + error.message;
+            }
+        }
+
+        async function testPregunta() {
+            if (!authToken) {
+                alert('Primero debes hacer login');
+                return;
+            }
+
+            const statusEl = document.getElementById('pregunta-status');
+            const pregunta = document.getElementById('pregunta-input').value || '¿Cómo puedo mejorar las ventas de mi negocio?';
+            
+            statusEl.className = 'status info';
+            statusEl.textContent = 'Enviando pregunta...';
+
+            try {
+                const response = await fetch(API_BASE_URL + '/mentoria/preguntar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + authToken
+                    },
+                    body: JSON.stringify({
+                        pregunta: pregunta,
+                        historial: []
+                    })
+                });
+
+                const data = await response.json();
+                mostrarResultado('pregunta-result', data);
+
+                if (data.success) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✓ Respuesta recibida de MentorIA';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '✗ Error: ' + data.message;
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '✗ Error: ' + error.message;
+            }
+        }
+
+        async function testConHistorial() {
+            if (!authToken) {
+                alert('Primero debes hacer login');
+                return;
+            }
+
+            const statusEl = document.getElementById('historial-status');
+            statusEl.className = 'status info';
+            statusEl.textContent = 'Enviando pregunta con historial...';
+
+            try {
+                const response = await fetch(API_BASE_URL + '/mentoria/preguntar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + authToken
+                    },
+                    body: JSON.stringify({
+                        pregunta: '¿Qué estrategias de marketing digital me recomiendas?',
+                        historial: [
+                            {
+                                role: 'user',
+                                content: '¿Cómo puedo mejorar las ventas?'
+                            },
+                            {
+                                role: 'assistant',
+                                content: 'Hay varias estrategias que puedes implementar...'
+                            }
+                        ]
+                    })
+                });
+
+                const data = await response.json();
+                mostrarResultado('historial-result', data);
+
+                if (data.success) {
+                    statusEl.className = 'status success';
+                    statusEl.textContent = '✓ Respuesta con contexto recibida';
+                } else {
+                    statusEl.className = 'status error';
+                    statusEl.textContent = '✗ Error: ' + data.message;
+                }
+            } catch (error) {
+                statusEl.className = 'status error';
+                statusEl.textContent = '✗ Error: ' + error.message;
+            }
+        }
+
+        function abrirMentorIA() {
+            window.open('../frontend/pages/emprendedor/mentoria-ai.html', '_blank');
+        }
+
+        // Auto-verificar al cargar
+        window.onload = verificarConfig;
+    </script>
+</body>
+</html>
