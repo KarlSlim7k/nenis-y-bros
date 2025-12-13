@@ -43,6 +43,88 @@
             display: none;
         }
 
+        /* Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-info p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        /* Filters */
+        .filters-row {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+        }
+
         /* Resource Item Styles */
         .resource-list {
             display: flex;
@@ -71,29 +153,60 @@
             display: flex;
             align-items: center;
             gap: 1rem;
+            flex: 1;
         }
 
         .resource-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             background: rgba(99, 102, 241, 0.1);
             color: #818cf8;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
+        }
+
+        .resource-details {
+            flex: 1;
         }
 
         .resource-name {
-            font-weight: 500;
+            font-weight: 600;
             color: var(--text-main);
             font-size: 1rem;
+            margin-bottom: 0.25rem;
         }
 
         .resource-meta {
             font-size: 0.85rem;
             color: var(--text-muted);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .resource-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-publicado {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        .badge-borrador {
+            background: rgba(156, 163, 175, 0.15);
+            color: #9ca3af;
+        }
+
+        .resource-actions {
+            display: flex;
+            gap: 0.5rem;
         }
 
         .btn-modern {
@@ -107,6 +220,164 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-icon {
+            padding: 0.5rem;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-icon:hover {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--surface-dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            background: rgba(18, 18, 28, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group select option {
+            background: #12121c;
+            color: var(--text-main);
+            padding: 0.5rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #818cf8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -143,76 +414,195 @@
                 <h1 class="hero-welcome">Biblioteca de <span class="text-gradient">Recursos</span> 📖</h1>
                 <p class="hero-subtitle">Gestiona los materiales educativos y herramientas para los usuarios.</p>
             </div>
-            <button class="btn-modern" onclick="alert('Funcionalidad en desarrollo')">
-                <span>➕</span> Subir Recurso
+            <button class="btn-modern" onclick="openCreateModal()">
+                <span>➕</span> Nuevo Recurso
             </button>
         </div>
     </header>
 
     <!-- Main Content -->
     <main class="dashboard-grid">
+        <!-- Stats Cards -->
+        <div class="col-span-12">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(99, 102, 241, 0.15);">📚</div>
+                    <div class="stat-info">
+                        <h3 id="totalRecursos">0</h3>
+                        <p>Total Recursos</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">⬇️</div>
+                    <div class="stat-info">
+                        <h3 id="totalDescargas">0</h3>
+                        <p>Descargas Totales</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">📁</div>
+                    <div class="stat-info">
+                        <h3 id="totalCategorias">0</h3>
+                        <p>Categorías</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters and Resources List -->
         <div class="col-span-12">
             <div class="glass-panel" style="padding: 2rem;">
                 <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">Recursos Disponibles</h3>
 
-                <div class="resource-list" id="recursosList">
-                    <!-- Static Items for now -->
-                    <div class="resource-item">
-                        <div class="resource-info">
-                            <div class="resource-icon">📄</div>
-                            <div>
-                                <div class="resource-name">Guía de inicio empresarial</div>
-                                <div class="resource-meta">PDF • 2.3 MB</div>
-                            </div>
-                        </div>
-                        <button class="btn-outline" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Descargar</button>
-                    </div>
-
-                    <div class="resource-item">
-                        <div class="resource-info">
-                            <div class="resource-icon">📹</div>
-                            <div>
-                                <div class="resource-name">Video tutorial marketing</div>
-                                <div class="resource-meta">Video • 45 min</div>
-                            </div>
-                        </div>
-                        <button class="btn-outline" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Ver</button>
-                    </div>
-
-                    <div class="resource-item">
-                        <div class="resource-info">
-                            <div class="resource-icon">📊</div>
-                            <div>
-                                <div class="resource-name">Plantilla de plan de negocio</div>
-                                <div class="resource-meta">Excel • 1.1 MB</div>
-                            </div>
-                        </div>
-                        <button class="btn-outline" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Descargar</button>
-                    </div>
-
-                    <div class="resource-item">
-                        <div class="resource-info">
-                            <div class="resource-icon">📚</div>
-                            <div>
-                                <div class="resource-name">Manual completo de operaciones</div>
-                                <div class="resource-meta">PDF • 5.8 MB</div>
-                            </div>
-                        </div>
-                        <button class="btn-outline" style="padding: 0.5rem 1rem; font-size: 0.85rem;">Descargar</button>
-                    </div>
+                <!-- Filters -->
+                <div class="filters-row">
+                    <input type="text" class="search-input" id="searchInput" placeholder="🔍 Buscar recursos...">
+                    <select class="filter-select" id="categoriaFilter">
+                        <option value="">Todas las categorías</option>
+                    </select>
+                    <select class="filter-select" id="tipoFilter">
+                        <option value="">Todos los tipos</option>
+                        <option value="articulo">📄 Artículo</option>
+                        <option value="ebook">📕 Ebook</option>
+                        <option value="plantilla">📋 Plantilla</option>
+                        <option value="herramienta">🛠️ Herramienta</option>
+                        <option value="video">🎥 Video</option>
+                        <option value="infografia">📊 Infografía</option>
+                        <option value="podcast">🎙️ Podcast</option>
+                    </select>
+                    <select class="filter-select" id="estadoFilter">
+                        <option value="">Todos los estados</option>
+                        <option value="publicado">Publicado</option>
+                        <option value="borrador">Borrador</option>
+                    </select>
                 </div>
 
-                <div style="margin-top: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
-                    <span style="opacity: 0.7;">🔄 Carga dinámica desde API en desarrollo</span>
+                <!-- Resources List -->
+                <div class="resource-list" id="recursosList">
+                    <!-- Cargado dinámicamente -->
+                </div>
+
+                <div style="margin-top: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;" id="emptyState">
+                    <span style="opacity: 0.7;">Cargando recursos...</span>
                 </div>
             </div>
         </div>
     </main>
 
+    <!-- Modal Crear/Editar Recurso -->
+    <div class="modal-overlay" id="recursoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Nuevo Recurso</h2>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <form id="recursoForm" onsubmit="handleSubmit(event)">
+                <input type="hidden" id="recursoId" value="">
+                
+                <div class="form-group">
+                    <label for="titulo">Título *</label>
+                    <input type="text" id="titulo" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción *</label>
+                    <textarea id="descripcion" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo_recurso">Tipo de Recurso *</label>
+                    <select id="tipo_recurso" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="articulo">Artículo</option>
+                        <option value="ebook">Ebook</option>
+                        <option value="plantilla">Plantilla</option>
+                        <option value="herramienta">Herramienta</option>
+                        <option value="video">Video</option>
+                        <option value="infografia">Infografía</option>
+                        <option value="podcast">Podcast</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_categoria">Categoría *</label>
+                    <select id="id_categoria" required>
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="tipo_acceso">Tipo de Acceso *</label>
+                    <select id="tipo_acceso" required>
+                        <option value="publico">Público</option>
+                        <option value="registrado">Solo Registrados</option>
+                        <option value="premium">Premium</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="nivel">Nivel *</label>
+                    <select id="nivel" required>
+                        <option value="principiante">Principiante</option>
+                        <option value="intermedio">Intermedio</option>
+                        <option value="avanzado">Avanzado</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="url_recurso">URL del Recurso</label>
+                    <input type="url" id="url_recurso" placeholder="https://...">
+                </div>
+
+                <div class="form-group">
+                    <label for="idioma">Idioma</label>
+                    <select id="idioma">
+                        <option value="es">Español</option>
+                        <option value="en">Inglés</option>
+                        <option value="pt">Portugués</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="duracion_minutos">Duración (minutos)</label>
+                    <input type="number" id="duracion_minutos" min="0" placeholder="Solo para videos/podcasts">
+                </div>
+
+                <div class="form-group">
+                    <label for="estado">Estado *</label>
+                    <select id="estado" required>
+                        <option value="borrador">Borrador</option>
+                        <option value="publicado">Publicado</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="destacado" style="width: auto; margin: 0;">
+                    <label for="destacado" style="margin: 0; cursor: pointer;">⭐ Marcar como destacado</label>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-outline" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-modern">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/api.js"></script>
     <script>
         if (!checkAuth() || !isAdmin()) window.location.href = ROUTES.login;
+
+        // Variables globales
+        let recursos = [];
+        let categorias = [];
+        let currentRecursoId = null;
 
         function logout() {
             localStorage.removeItem(AUTH_TOKEN_KEY);
@@ -229,13 +619,323 @@
                 avatar.textContent = user.nombre.charAt(0).toUpperCase();
             }
         }
-    </script>
-    <script src="../../assets/js/navigation.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
+
+        // ========== FUNCIONES DE CARGA ==========
+        async function cargarEstadisticas() {
+            try {
+                const response = await fetchAPI(`${API_BASE_URL}/recursos/estadisticas`);
+                if (response.success && response.data) {
+                    document.getElementById('totalRecursos').textContent = response.data.total_recursos || 0;
+                    document.getElementById('totalDescargas').textContent = response.data.total_descargas || 0;
+                    document.getElementById('totalCategorias').textContent = response.data.total_categorias || 0;
+                }
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+            }
+        }
+
+        async function cargarCategorias() {
+            try {
+                const response = await fetchAPI(`${API_BASE_URL}/recursos/categorias`);
+                if (response.success && response.data) {
+                    categorias = response.data;
+                    
+                    // Actualizar select de filtro
+                    const filterSelect = document.getElementById('categoriaFilter');
+                    filterSelect.innerHTML = '<option value="">Todas las categorías</option>';
+                    categorias.forEach(cat => {
+                        const option = document.createElement('option');
+                        option.value = cat.id_categoria;
+                        option.textContent = `${cat.icono || '📁'} ${cat.nombre}`;
+                        filterSelect.appendChild(option);
+                    });
+
+                    // Actualizar select del modal
+                    const modalSelect = document.getElementById('id_categoria');
+                    modalSelect.innerHTML = '<option value="">Seleccionar...</option>';
+                    categorias.forEach(cat => {
+                        const option = document.createElement('option');
+                        option.value = cat.id_categoria;
+                        option.textContent = `${cat.icono || '📁'} ${cat.nombre}`;
+                        modalSelect.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Error cargando categorías:', error);
+            }
+        }
+
+        async function cargarRecursos() {
+            showLoading();
+            try {
+                const searchTerm = document.getElementById('searchInput').value;
+                const categoria = document.getElementById('categoriaFilter').value;
+                const tipo = document.getElementById('tipoFilter').value;
+                const estado = document.getElementById('estadoFilter').value;
+
+                let url = `${API_BASE_URL}/recursos?`;
+                const params = [];
+                
+                if (searchTerm) params.push(`buscar=${encodeURIComponent(searchTerm)}`);
+                if (categoria) params.push(`categoria=${categoria}`);
+                if (tipo) params.push(`tipo_recurso=${tipo}`);
+                if (estado) params.push(`estado=${estado}`);
+                
+                url += params.join('&');
+
+                const response = await fetchAPI(url);
+                
+                if (response.success && response.data) {
+                    // El backend devuelve { recursos: [...], total: ..., pagina_actual: ... }
+                    recursos = response.data.recursos || response.data;
+                    renderRecursos();
+                } else {
+                    mostrarError('No se pudieron cargar los recursos');
+                }
+            } catch (error) {
+                console.error('Error cargando recursos:', error);
+                mostrarError('Error al cargar recursos: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function renderRecursos() {
+            const container = document.getElementById('recursosList');
+            const emptyState = document.getElementById('emptyState');
+
+            if (recursos.length === 0) {
+                container.innerHTML = '';
+                emptyState.innerHTML = '<span style="opacity: 0.7;">📭 No se encontraron recursos</span>';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.innerHTML = recursos.map(recurso => `
+                <div class="resource-item">
+                    <div class="resource-info">
+                        <div class="resource-icon">${getResourceIcon(recurso.tipo_recurso)}</div>
+                        <div class="resource-details">
+                            <div class="resource-name">
+                                ${recurso.destacado == 1 ? '⭐ ' : ''}${recurso.titulo}
+                            </div>
+                            <div class="resource-meta">
+                                <span>${recurso.categoria_nombre || 'Sin categoría'}</span>
+                                <span>•</span>
+                                <span>${recurso.tipo_recurso || 'N/A'}</span>
+                                <span>•</span>
+                                <span>${recurso.total_descargas || 0} descargas</span>
+                                ${recurso.calificacion_promedio ? `
+                                    <span>•</span>
+                                    <span>⭐ ${Number(recurso.calificacion_promedio).toFixed(1)}</span>
+                                ` : ''}
+                                ${recurso.duracion_minutos ? `
+                                    <span>•</span>
+                                    <span>⏱️ ${recurso.duracion_minutos} min</span>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="resource-actions">
+                        <span class="resource-badge badge-${recurso.estado}">${recurso.estado}</span>
+                        ${recurso.destacado == 1 ? '<span style="font-size: 1.2rem;" title="Recurso destacado">⭐</span>' : ''}
+                        <button class="btn-icon" onclick="editarRecurso(${recurso.id_recurso})" title="Editar">✏️</button>
+                        <button class="btn-icon" onclick="confirmarEliminar(${recurso.id_recurso})" title="Eliminar">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getResourceIcon(tipo) {
+            const icons = {
+                'articulo': '📄',
+                'ebook': '📕',
+                'plantilla': '📋',
+                'herramienta': '🛠️',
+                'video': '🎥',
+                'infografia': '📊',
+                'podcast': '🎙️'
+            };
+            return icons[tipo] || '📁';
+        }
+
+        // ========== FUNCIONES DE MODAL ==========
+        function openCreateModal() {
+            currentRecursoId = null;
+            document.getElementById('modalTitle').textContent = 'Nuevo Recurso';
+            document.getElementById('recursoForm').reset();
+            document.getElementById('recursoId').value = '';
+            document.getElementById('recursoModal').classList.add('active');
+        }
+
+        async function editarRecurso(id) {
+            showLoading();
+            try {
+                const response = await fetchAPI(`${API_BASE_URL}/recursos/${id}`);
+                
+                if (response.success && response.data) {
+                    const recurso = response.data;
+                    currentRecursoId = id;
+                    
+                    document.getElementById('modalTitle').textContent = 'Editar Recurso';
+                    document.getElementById('recursoId').value = id;
+                    document.getElementById('titulo').value = recurso.titulo || '';
+                    document.getElementById('descripcion').value = recurso.descripcion || '';
+                    document.getElementById('tipo_recurso').value = recurso.tipo_recurso || '';
+                    document.getElementById('id_categoria').value = recurso.id_categoria || '';
+                    document.getElementById('tipo_acceso').value = recurso.tipo_acceso || 'publico';
+                    document.getElementById('nivel').value = recurso.nivel || 'principiante';
+                    document.getElementById('url_recurso').value = recurso.url_recurso || '';
+                    document.getElementById('idioma').value = recurso.idioma || 'es';
+                    document.getElementById('duracion_minutos').value = recurso.duracion_minutos || '';
+                    document.getElementById('estado').value = recurso.estado || 'borrador';
+                    document.getElementById('destacado').checked = recurso.destacado == 1;
+                    
+                    document.getElementById('recursoModal').classList.add('active');
+                } else {
+                    mostrarError('No se pudo cargar el recurso');
+                }
+            } catch (error) {
+                console.error('Error cargando recurso:', error);
+                mostrarError('Error al cargar recurso: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('recursoModal').classList.remove('active');
+            currentRecursoId = null;
+        }
+
+        async function handleSubmit(event) {
+            event.preventDefault();
+            showLoading();
+
+            const data = {
+                titulo: document.getElementById('titulo').value,
+                descripcion: document.getElementById('descripcion').value,
+                tipo_recurso: document.getElementById('tipo_recurso').value,
+                id_categoria: document.getElementById('id_categoria').value,
+                tipo_acceso: document.getElementById('tipo_acceso').value,
+                nivel: document.getElementById('nivel').value,
+                url_recurso: document.getElementById('url_recurso').value,
+                idioma: document.getElementById('idioma').value,
+                duracion_minutos: document.getElementById('duracion_minutos').value || null,
+                estado: document.getElementById('estado').value,
+                destacado: document.getElementById('destacado').checked ? 1 : 0
+            };
+
+            try {
+                let response;
+                if (currentRecursoId) {
+                    // Actualizar
+                    response = await fetchAPI(`${API_BASE_URL}/recursos/${currentRecursoId}`, {
+                        method: 'PUT',
+                        body: JSON.stringify(data)
+                    });
+                } else {
+                    // Crear
+                    response = await fetchAPI(`${API_BASE_URL}/recursos`, {
+                        method: 'POST',
+                        body: JSON.stringify(data)
+                    });
+                }
+
+                if (response.success) {
+                    mostrarExito(currentRecursoId ? 'Recurso actualizado correctamente' : 'Recurso creado correctamente');
+                    closeModal();
+                    await cargarRecursos();
+                    await cargarEstadisticas();
+                } else {
+                    mostrarError(response.message || 'Error al guardar el recurso');
+                }
+            } catch (error) {
+                console.error('Error guardando recurso:', error);
+                mostrarError('Error al guardar: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function confirmarEliminar(id) {
+            if (!confirm('¿Estás seguro de que deseas eliminar este recurso? Esta acción no se puede deshacer.')) {
+                return;
+            }
+
+            showLoading();
+            try {
+                const response = await fetchAPI(`${API_BASE_URL}/recursos/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.success) {
+                    mostrarExito('Recurso eliminado correctamente');
+                    await cargarRecursos();
+                    await cargarEstadisticas();
+                } else {
+                    mostrarError(response.message || 'Error al eliminar el recurso');
+                }
+            } catch (error) {
+                console.error('Error eliminando recurso:', error);
+                mostrarError('Error al eliminar: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ========== UTILIDADES ==========
+        function showLoading() {
+            document.getElementById('loadingOverlay').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.remove('active');
+        }
+
+        function mostrarExito(mensaje) {
+            alert('✅ ' + mensaje);
+        }
+
+        function mostrarError(mensaje) {
+            alert('❌ ' + mensaje);
+        }
+
+        // ========== EVENT LISTENERS ==========
+        document.getElementById('searchInput').addEventListener('input', debounce(cargarRecursos, 500));
+        document.getElementById('categoriaFilter').addEventListener('change', cargarRecursos);
+        document.getElementById('tipoFilter').addEventListener('change', cargarRecursos);
+        document.getElementById('estadoFilter').addEventListener('change', cargarRecursos);
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Cerrar modal al hacer clic fuera
+        document.getElementById('recursoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // ========== INICIALIZACIÓN ==========
+        document.addEventListener('DOMContentLoaded', async function() {
             initDynamicNavbar();
+            await cargarCategorias();
+            await cargarEstadisticas();
+            await cargarRecursos();
         });
     </script>
+    <script src="../../assets/js/navigation.js"></script>
 </body>
 
 </html>

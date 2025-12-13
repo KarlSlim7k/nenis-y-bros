@@ -117,13 +117,18 @@ class ProductoController {
                 return;
             }
 
-            // Registrar vista (solo si está publicado)
+            // Registrar vista (solo si está publicado) - ignorar errores
             if ($producto['estado'] === 'publicado') {
-                $this->productoModel->registrarInteraccion(
-                    $idProducto,
-                    'vista',
-                    $idUsuario
-                );
+                try {
+                    $this->productoModel->registrarInteraccion(
+                        $idProducto,
+                        'vista',
+                        $idUsuario
+                    );
+                } catch (Exception $e) {
+                    // Ignorar errores de registro de interacción
+                    // La tabla puede no existir en algunos entornos
+                }
             }
 
             Response::success($producto);
@@ -149,13 +154,17 @@ class ProductoController {
                 return;
             }
 
-            // Registrar vista
+            // Registrar vista - ignorar errores
             if ($producto['estado'] === 'publicado') {
-                $this->productoModel->registrarInteraccion(
-                    $producto['id_producto'],
-                    'vista',
-                    $idUsuario
-                );
+                try {
+                    $this->productoModel->registrarInteraccion(
+                        $producto['id_producto'],
+                        'vista',
+                        $idUsuario
+                    );
+                } catch (Exception $e) {
+                    // Ignorar errores de registro de interacción
+                }
             }
 
             Response::success($producto);
@@ -297,6 +306,12 @@ class ProductoController {
     public function cambiarEstado($idProducto) {
         try {
             $user = AuthMiddleware::requireAuth();
+            
+            if (!$user) {
+                Response::unauthorized('Sesión no válida');
+                return;
+            }
+            
             $idUsuario = $user['id_usuario'];
             $data = json_decode(file_get_contents('php://input'), true);
 
@@ -312,10 +327,14 @@ class ProductoController {
             );
 
             if ($resultado) {
-                // Registrar puntos si se publica
+                // Registrar puntos si se publica - ignorar errores
                 if ($data['estado'] === 'publicado') {
-                    $puntosModel = new PuntosUsuario();
-                    $puntosModel->otorgarPuntos($idUsuario, 'publicar_producto', 'producto', $idProducto);
+                    try {
+                        $puntosModel = new PuntosUsuario();
+                        $puntosModel->otorgarPuntos($idUsuario, 'publicar_producto', 'producto', $idProducto);
+                    } catch (Exception $e) {
+                        // Ignorar error de puntos
+                    }
                 }
 
                 Response::success(['mensaje' => 'Estado actualizado exitosamente']);
@@ -324,7 +343,8 @@ class ProductoController {
             }
 
         } catch (Exception $e) {
-            Response::error($e->getMessage(), 403);
+            Logger::error("Error cambiando estado producto $idProducto: " . $e->getMessage());
+            Response::error($e->getMessage(), 400);
         }
     }
 

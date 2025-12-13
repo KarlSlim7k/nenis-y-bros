@@ -585,22 +585,25 @@ class DiagnosticoController {
             }
             
             if ($tipo) {
-                $where[] = "dr.id_tipo_diagnostico = ?";
+                // Usar id_diagnostico que es la FK real en la tabla
+                $where[] = "dr.id_diagnostico = ?";
                 $params[] = $tipo;
             }
             
             $whereClause = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
             
+            // Nota: La tabla usa id_diagnostico como FK hacia tipos_diagnostico
+            // y no tiene id_perfil_empresarial, usamos un subquery para el perfil
             $query = "SELECT 
                 dr.*,
                 td.nombre as tipo_diagnostico,
                 u.nombre as usuario_nombre,
                 u.email as usuario_email,
-                pe.nombre_empresa
+                (SELECT pe.nombre_empresa FROM perfiles_empresariales pe 
+                 WHERE pe.id_usuario = dr.id_usuario LIMIT 1) as nombre_empresa
             FROM diagnosticos_realizados dr
-            INNER JOIN tipos_diagnostico td ON dr.id_tipo_diagnostico = td.id_tipo_diagnostico
+            INNER JOIN tipos_diagnostico td ON dr.id_diagnostico = td.id_tipo_diagnostico
             INNER JOIN usuarios u ON dr.id_usuario = u.id_usuario
-            LEFT JOIN perfiles_empresariales pe ON dr.id_perfil_empresarial = pe.id_perfil
             $whereClause
             ORDER BY dr.fecha_inicio DESC";
             

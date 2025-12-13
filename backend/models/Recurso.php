@@ -14,6 +14,48 @@ class Recurso {
     }
     
     /**
+     * Generar slug único a partir del título
+     */
+    private function generateSlug($titulo, $idRecurso = null) {
+        // Convertir a minúsculas y reemplazar caracteres especiales
+        $slug = strtolower($titulo);
+        $slug = preg_replace('/[áàäâ]/u', 'a', $slug);
+        $slug = preg_replace('/[éèëê]/u', 'e', $slug);
+        $slug = preg_replace('/[íìïî]/u', 'i', $slug);
+        $slug = preg_replace('/[óòöô]/u', 'o', $slug);
+        $slug = preg_replace('/[úùüû]/u', 'u', $slug);
+        $slug = preg_replace('/ñ/u', 'n', $slug);
+        $slug = preg_replace('/[^a-z0-9]+/', '-', $slug);
+        $slug = trim($slug, '-');
+        
+        // Verificar unicidad
+        $baseSlug = $slug;
+        $counter = 1;
+        
+        while (true) {
+            $query = "SELECT COUNT(*) as count FROM recursos_aprendizaje WHERE slug = ?";
+            if ($idRecurso) {
+                $query .= " AND id_recurso != ?";
+                $stmt = $this->db->prepare($query);
+                $stmt->execute([$slug, $idRecurso]);
+            } else {
+                $stmt = $this->db->prepare($query);
+                $stmt->execute([$slug]);
+            }
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($result['count'] == 0) {
+                break;
+            }
+            
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+        
+        return $slug;
+    }
+    
+    /**
      * Obtener todos los recursos con filtros
      */
     public function getAll($filters = [], $page = 1, $limit = 20) {
@@ -27,13 +69,13 @@ class Recurso {
         }
         
         $offset = ($page - 1) * $limit;
-        $where = ['r.estado = "publicado"'];
+        $where = ['r.activo = 1'];
         $params = [];
         
         // Filtros
         if (!empty($filters['categoria'])) {
-            $where[] = 'r.id_categoria = ?';
-            $params[] = $filters['categoria'];
+            $where[] = 'JSON_CONTAINS(r.categorias, ?)';
+            $params[] = '"' . $filters['categoria'] . '"';
         }
         
         if (!empty($filters['tipo_recurso'])) {
@@ -41,9 +83,13 @@ class Recurso {
             $params[] = $filters['tipo_recurso'];
         }
         
-        if (!empty($filters['tipo_acceso'])) {
-            $where[] = 'r.tipo_acceso = ?';
-            $params[] = $filters['tipo_acceso'];
+        if (!empty($filters['estado'])) {
+            // Para recursos_aprendizaje solo usamos activo/inactivo
+            if ($filters['estado'] === 'publicado') {
+                $where[] = 'r.activo = 1';
+            } else {
+                $where[] = 'r.activo = 0';
+            }
         }
         
         if (!empty($filters['nivel'])) {
@@ -56,18 +102,20 @@ class Recurso {
         }
         
         if (!empty($filters['etiqueta'])) {
-            $where[] = 'EXISTS (
-                SELECT 1 FROM recursos_etiquetas re
-                JOIN etiquetas_recursos e ON re.id_etiqueta = e.id_etiqueta
-                WHERE re.id_recurso = r.id_recurso AND e.slug = ?
-            )';
-            $params[] = $filters['etiqueta'];
+            $where[] = 'JSON_CONTAINS(r.etiquetas, ?)';
+            $params[] = '"' . $filters['etiqueta'] . '"';
         }
         
-        // Búsqueda por texto
+        if (!empty($filters['idioma'])) {
+            $where[] = 'r.idioma = ?';
+            $params[] = $filters['idioma'];
+        }
+        
+        // Búsqueda por texto (incluir contenido_texto)
         if (!empty($filters['buscar'])) {
-            $where[] = '(r.titulo LIKE ? OR r.descripcion LIKE ?)';
+            $where[] = '(r.titulo LIKE ? OR r.descripcion LIKE ? OR r.contenido_texto LIKE ?)';
             $searchTerm = '%' . $filters['buscar'] . '%';
+            $params[] = $searchTerm;
             $params[] = $searchTerm;
             $params[] = $searchTerm;
         }
@@ -79,10 +127,10 @@ class Recurso {
         if (!empty($filters['orden'])) {
             switch ($filters['orden']) {
                 case 'mas_descargados':
-                    $orderBy = 'ORDER BY r.total_descargas DESC';
+                    $orderBy = 'ORDER BY r.descargas DESC';
                     break;
                 case 'mejor_calificados':
-                    $orderBy = 'ORDER BY r.calificacion_promedio DESC, r.total_calificaciones DESC';
+                    $orderBy = 'ORDER BY r.calificacion_promedio DESC';
                     break;
                 case 'recientes':
                     $orderBy = 'ORDER BY r.fecha_publicacion DESC';
@@ -95,7 +143,34 @@ class Recurso {
         
         // Query principal
         $query = "
-            SELECT * FROM vista_recursos_completos r
+            SELECT 
+                r.id_recurso,
+                r.titulo,
+                r.slug,
+                r.id_autor,
+                r.descripcion,
+                r.tipo_recurso,
+                r.url_recurso,
+                r.archivo_recurso,
+                r.duracion_minutos,
+                r.imagen_portada,
+                r.imagen_preview,
+                r.categorias,
+                r.etiquetas,
+                r.es_gratuito,
+                r.nivel,
+                r.idioma,
+                r.formato,
+                r.destacado,
+                r.descargas as total_descargas,
+                r.vistas as total_vistas,
+                r.calificacion_promedio,
+                r.activo,
+                r.fecha_creacion,
+                r.fecha_publicacion,
+                CASE WHEN r.activo = 1 THEN 'publicado' ELSE 'borrador' END as estado,
+                CASE WHEN r.es_gratuito = 1 THEN 'publico' ELSE 'premium' END as tipo_acceso
+            FROM recursos_aprendizaje r
             {$whereClause}
             {$orderBy}
             LIMIT ? OFFSET ?
@@ -109,7 +184,7 @@ class Recurso {
         $recursos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Contar total para paginación
-        $countQuery = "SELECT COUNT(*) as total FROM recursos r {$whereClause}";
+        $countQuery = "SELECT COUNT(*) as total FROM recursos_aprendizaje r {$whereClause}";
         $countParams = array_slice($params, 0, -2); // Quitar limit y offset
         $stmt = $this->db->prepare($countQuery);
         $stmt->execute($countParams);
@@ -141,7 +216,42 @@ class Recurso {
             }
         }
         
-        $query = "SELECT * FROM vista_recursos_completos WHERE id_recurso = ?";
+        $query = "
+            SELECT 
+                id_recurso,
+                titulo,
+                slug,
+                id_autor,
+                descripcion,
+                contenido_texto,
+                contenido_html,
+                tipo_recurso,
+                url_recurso,
+                archivo_recurso,
+                duracion_minutos,
+                imagen_portada,
+                imagen_preview,
+                video_preview,
+                categorias,
+                etiquetas,
+                es_gratuito,
+                nivel,
+                idioma,
+                formato,
+                licencia,
+                destacado,
+                descargas as total_descargas,
+                vistas as total_vistas,
+                calificacion_promedio,
+                activo,
+                fecha_creacion,
+                fecha_publicacion,
+                fecha_actualizacion,
+                CASE WHEN activo = 1 THEN 'publicado' ELSE 'borrador' END as estado,
+                CASE WHEN es_gratuito = 1 THEN 'publico' ELSE 'premium' END as tipo_acceso
+            FROM recursos_aprendizaje 
+            WHERE id_recurso = ?
+        ";
         $stmt = $this->db->prepare($query);
         $stmt->execute([$id]);
         $recurso = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -150,9 +260,22 @@ class Recurso {
             return null;
         }
         
+        // Extraer primera categoría del JSON
+        if ($recurso['categorias']) {
+            $cats = json_decode($recurso['categorias'], true);
+            $recurso['id_categoria'] = $cats[0] ?? null;
+        }
+        
         // Incrementar contador de vistas si se solicita
         if ($incrementarVistas) {
-            $this->registrarVista($id, $idUsuario);
+            try {
+                $updateQuery = "UPDATE recursos_aprendizaje SET vistas = vistas + 1 WHERE id_recurso = ?";
+                $updateStmt = $this->db->prepare($updateQuery);
+                $updateStmt->execute([$id]);
+            } catch (Exception $e) {
+                // No fallar si no se puede incrementar
+                Logger::error("Error incrementando vistas: " . $e->getMessage());
+            }
         } else {
             // Cachear por 5 minutos
             Cache::getInstance()->set("recurso:$id", $recurso, 300);
@@ -186,47 +309,68 @@ class Recurso {
      * Crear nuevo recurso
      */
     public function create($data) {
+        // Preparar categorias como JSON
+        $categorias = null;
+        if (!empty($data['id_categoria'])) {
+            $categorias = json_encode([$data['id_categoria']]);
+        }
+        
+        // Generar slug si no se proporciona
+        $slug = $data['slug'] ?? $this->generateSlug($data['titulo']);
+        
+        // Mapear nivel: principiante -> basico
+        $nivel = $data['nivel'] ?? 'principiante';
+        if ($nivel === 'principiante') {
+            $nivel = 'basico';
+        }
+        
+        // Determinar si es gratuito basado en tipo_acceso
+        $esGratuito = ($data['tipo_acceso'] ?? 'publico') === 'publico' ? 1 : 0;
+        
+        // Determinar si está activo basado en estado
+        $activo = ($data['estado'] ?? 'borrador') === 'publicado' ? 1 : 0;
+        
+        // Si se publica, establecer fecha de publicación
+        $fechaPublicacion = $activo ? date('Y-m-d H:i:s') : null;
+        
         $query = "
-            INSERT INTO recursos (
-                id_categoria, id_autor, titulo, slug, descripcion,
-                tipo_recurso, tipo_acceso, archivo_url, archivo_nombre,
-                archivo_tipo, archivo_tamanio, contenido_texto, contenido_html,
-                url_externo, duracion_minutos, imagen_portada, imagen_preview,
-                video_preview, nivel, idioma, formato, licencia,
-                estado, destacado, fecha_publicacion
+            INSERT INTO recursos_aprendizaje (
+                titulo, slug, id_autor, descripcion, contenido_texto, contenido_html,
+                tipo_recurso, url_recurso, archivo_recurso, duracion_minutos,
+                imagen_portada, imagen_preview, video_preview,
+                categorias, etiquetas, es_gratuito, nivel, idioma, formato, licencia,
+                destacado, activo, fecha_publicacion
             ) VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
         ";
         
         $stmt = $this->db->prepare($query);
         
         $success = $stmt->execute([
-            $data['id_categoria'],
-            $data['id_autor'],
             $data['titulo'],
-            $data['slug'],
-            $data['descripcion'],
-            $data['tipo_recurso'],
-            $data['tipo_acceso'] ?? 'gratuito',
-            $data['archivo_url'] ?? null,
-            $data['archivo_nombre'] ?? null,
-            $data['archivo_tipo'] ?? null,
-            $data['archivo_tamanio'] ?? null,
+            $slug,
+            $data['id_autor'] ?? null,
+            $data['descripcion'] ?? '',
             $data['contenido_texto'] ?? null,
             $data['contenido_html'] ?? null,
-            $data['url_externo'] ?? null,
+            $data['tipo_recurso'],
+            $data['url_recurso'] ?? null,
+            $data['archivo_recurso'] ?? null,
             $data['duracion_minutos'] ?? null,
             $data['imagen_portada'] ?? null,
             $data['imagen_preview'] ?? null,
             $data['video_preview'] ?? null,
-            $data['nivel'] ?? 'principiante',
+            $categorias,
+            json_encode($data['etiquetas'] ?? []),
+            $esGratuito,
+            $nivel,
             $data['idioma'] ?? 'es',
             $data['formato'] ?? null,
             $data['licencia'] ?? 'Uso educativo',
-            $data['estado'] ?? 'borrador',
-            $data['destacado'] ?? false,
-            $data['fecha_publicacion'] ?? ($data['estado'] === 'publicado' ? date('Y-m-d H:i:s') : null)
+            $data['destacado'] ?? 0,
+            $activo,
+            $fechaPublicacion
         ]);
         
         if (!$success) {
@@ -250,7 +394,7 @@ class Recurso {
      * Actualizar recurso
      */
     public function update($id, $data, $idUsuario = null, $descripcionCambio = null) {
-        // Obtener datos actuales para versionado
+        // Obtener datos actuales
         $recursoActual = $this->getById($id);
         if (!$recursoActual) {
             return false;
@@ -258,42 +402,72 @@ class Recurso {
         
         $fields = [];
         $values = [];
-        $camposModificados = [];
-        $datosAnteriores = [];
         
+        // Mapeo completo de todos los campos soportados
         $allowedFields = [
-            'id_categoria', 'titulo', 'slug', 'descripcion', 'tipo_recurso',
-            'tipo_acceso', 'archivo_url', 'archivo_nombre', 'archivo_tipo',
-            'archivo_tamanio', 'contenido_texto', 'contenido_html', 'url_externo',
-            'duracion_minutos', 'imagen_portada', 'imagen_preview', 'video_preview',
-            'nivel', 'idioma', 'formato', 'licencia', 'estado', 'destacado',
-            'fecha_publicacion'
+            'titulo', 'slug', 'id_autor', 'descripcion', 'contenido_texto', 'contenido_html',
+            'tipo_recurso', 'url_recurso', 'archivo_recurso', 'duracion_minutos',
+            'imagen_portada', 'imagen_preview', 'video_preview',
+            'nivel', 'idioma', 'formato', 'licencia', 'destacado'
         ];
         
         foreach ($allowedFields as $field) {
             if (isset($data[$field])) {
-                $fields[] = "{$field} = ?";
-                $values[] = $data[$field];
-                
-                // Trackear cambios para versionado
-                if (isset($recursoActual[$field]) && $recursoActual[$field] != $data[$field]) {
-                    $camposModificados[] = $field;
-                    $datosAnteriores[$field] = $recursoActual[$field];
+                if ($field === 'nivel') {
+                    // Convertir principiante -> basico
+                    $nivel = $data[$field];
+                    if ($nivel === 'principiante') {
+                        $nivel = 'basico';
+                    }
+                    $fields[] = "nivel = ?";
+                    $values[] = $nivel;
+                } elseif ($field === 'slug' && empty($data[$field])) {
+                    // Generar slug si está vacío
+                    $fields[] = "slug = ?";
+                    $values[] = $this->generateSlug($data['titulo'] ?? $recursoActual['titulo'], $id);
+                } else {
+                    $fields[] = "{$field} = ?";
+                    $values[] = $data[$field];
                 }
             }
         }
         
-        if (empty($fields)) {
-            return false;
+        // Actualizar categoría si se proporciona
+        if (isset($data['id_categoria'])) {
+            $fields[] = "categorias = ?";
+            $values[] = json_encode([$data['id_categoria']]);
         }
         
-        // Si se está publicando y no tiene fecha, asignar ahora
-        if (isset($data['estado']) && $data['estado'] === 'publicado' && empty($data['fecha_publicacion'])) {
-            $fields[] = "fecha_publicacion = NOW()";
+        // Actualizar etiquetas si se proporcionan
+        if (isset($data['etiquetas']) && is_array($data['etiquetas'])) {
+            $fields[] = "etiquetas = ?";
+            $values[] = json_encode($data['etiquetas']);
+        }
+        
+        // Actualizar tipo_acceso -> es_gratuito
+        if (isset($data['tipo_acceso'])) {
+            $fields[] = "es_gratuito = ?";
+            $values[] = ($data['tipo_acceso'] === 'publico') ? 1 : 0;
+        }
+        
+        // Actualizar estado -> activo y fecha_publicacion
+        if (isset($data['estado'])) {
+            $activo = ($data['estado'] === 'publicado') ? 1 : 0;
+            $fields[] = "activo = ?";
+            $values[] = $activo;
+            
+            // Si se está publicando y no tenía fecha de publicación, establecerla
+            if ($activo && empty($recursoActual['fecha_publicacion'])) {
+                $fields[] = "fecha_publicacion = NOW()";
+            }
+        }
+        
+        if (empty($fields)) {
+            return true; // No hay nada que actualizar
         }
         
         $values[] = $id;
-        $query = "UPDATE recursos SET " . implode(', ', $fields) . " WHERE id_recurso = ?";
+        $query = "UPDATE recursos_aprendizaje SET " . implode(', ', $fields) . " WHERE id_recurso = ?";
         
         $stmt = $this->db->prepare($query);
         $success = $stmt->execute($values);
@@ -346,7 +520,7 @@ class Recurso {
      * Eliminar recurso
      */
     public function delete($id) {
-        $query = "DELETE FROM recursos WHERE id_recurso = ?";
+        $query = "DELETE FROM recursos_aprendizaje WHERE id_recurso = ?";
         $stmt = $this->db->prepare($query);
         $success = $stmt->execute([$id]);
         
@@ -363,14 +537,52 @@ class Recurso {
      * Registrar descarga de recurso
      */
     public function registrarDescarga($idRecurso, $idUsuario) {
-        // Usar stored procedure para registrar descarga y otorgar puntos
-        $query = "CALL sp_registrar_descarga(?, ?, ?, ?)";
-        $stmt = $this->db->prepare($query);
-        
-        $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
-        $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
-        
-        return $stmt->execute([$idRecurso, $idUsuario, $ipAddress, $userAgent]);
+        try {
+            $ipAddress = $_SERVER['REMOTE_ADDR'] ?? null;
+            $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+            
+            // Registrar descarga
+            $query = "
+                INSERT INTO descargas_recursos (id_recurso, id_usuario, ip_address, user_agent)
+                VALUES (?, ?, ?, ?)
+            ";
+            $stmt = $this->db->prepare($query);
+            $success = $stmt->execute([$idRecurso, $idUsuario, $ipAddress, $userAgent]);
+            
+            if ($success) {
+                // El trigger se encarga de incrementar el contador
+                // Otorgar puntos al usuario por descargar (solo primera vez)
+                $checkQuery = "
+                    SELECT COUNT(*) as total 
+                    FROM puntos_usuario 
+                    WHERE id_usuario = ? 
+                    AND tipo_actividad = 'descargar_recurso' 
+                    AND referencia_id = ?
+                ";
+                $stmt = $this->db->prepare($checkQuery);
+                $stmt->execute([$idUsuario, $idRecurso]);
+                $yaDescargo = $stmt->fetch(PDO::FETCH_ASSOC)['total'] > 0;
+                
+                if (!$yaDescargo) {
+                    try {
+                        $puntosQuery = "
+                            INSERT INTO puntos_usuario (id_usuario, puntos_obtenidos, tipo_actividad, referencia_id)
+                            VALUES (?, 5, 'descargar_recurso', ?)
+                        ";
+                        $stmt = $this->db->prepare($puntosQuery);
+                        $stmt->execute([$idUsuario, $idRecurso]);
+                    } catch (Exception $e) {
+                        // No fallar si no existe tabla de puntos
+                        Logger::error("Error otorgando puntos por descarga: " . $e->getMessage());
+                    }
+                }
+            }
+            
+            return $success;
+        } catch (Exception $e) {
+            Logger::error("Error registrando descarga: " . $e->getMessage());
+            return false;
+        }
     }
     
     /**
@@ -647,22 +859,31 @@ class Recurso {
      * Estadísticas globales de recursos
      */
     public function getEstadisticas() {
+        // Estadísticas de recursos
         $query = "
             SELECT 
                 COUNT(*) as total_recursos,
-                COUNT(CASE WHEN estado = 'publicado' THEN 1 END) as publicados,
-                COUNT(CASE WHEN estado = 'borrador' THEN 1 END) as borradores,
-                SUM(total_descargas) as total_descargas_global,
-                SUM(total_vistas) as total_vistas_global,
-                AVG(calificacion_promedio) as calificacion_promedio_global,
-                COUNT(CASE WHEN destacado = 1 THEN 1 END) as destacados
-            FROM recursos
+                COUNT(CASE WHEN activo = 1 THEN 1 END) as publicados,
+                COUNT(CASE WHEN activo = 0 THEN 1 END) as borradores,
+                COALESCE(SUM(descargas), 0) as total_descargas,
+                COALESCE(SUM(vistas), 0) as total_vistas,
+                COALESCE(AVG(calificacion_promedio), 0) as calificacion_promedio_global
+            FROM recursos_aprendizaje
         ";
         
         $stmt = $this->db->prepare($query);
         $stmt->execute();
+        $stats = $stmt->fetch(PDO::FETCH_ASSOC);
         
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        // Contar categorías desde tabla categorias_recursos
+        $queryCat = "SELECT COUNT(*) as total FROM categorias_recursos WHERE activa = 1";
+        $stmtCat = $this->db->prepare($queryCat);
+        $stmtCat->execute();
+        $catResult = $stmtCat->fetch(PDO::FETCH_ASSOC);
+        
+        $stats['total_categorias'] = $catResult['total'] ?? 0;
+        
+        return $stats;
     }
     
     /**
@@ -981,18 +1202,5 @@ class Recurso {
         }
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    
-    /**
-     * Generar slug único
-     */
-    private function generateSlug($text) {
-        // Normalizar texto
-        $slug = strtolower(trim($text));
-        $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);
-        $slug = preg_replace('/-+/', '-', $slug);
-        $slug = trim($slug, '-');
-        
-        return $slug;
     }
 }

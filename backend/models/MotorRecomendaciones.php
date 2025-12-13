@@ -30,15 +30,12 @@ class MotorRecomendaciones {
      */
     public function generarRecomendaciones($diagnosticoId) {
         // Obtener diagnóstico con resultados
+        // Nota: El esquema usa id_diagnostico como FK hacia tipos_diagnostico
         $query = "SELECT 
             dr.*,
-            td.nombre as tipo_diagnostico,
-            pe.nombre_empresa,
-            pe.sector,
-            pe.etapa_negocio
+            td.nombre as tipo_diagnostico
         FROM diagnosticos_realizados dr
-        INNER JOIN tipos_diagnostico td ON dr.id_tipo_diagnostico = td.id_tipo_diagnostico
-        LEFT JOIN perfiles_empresariales pe ON dr.id_perfil_empresarial = pe.id_perfil
+        INNER JOIN tipos_diagnostico td ON dr.id_diagnostico = td.id_tipo_diagnostico
         WHERE dr.id_diagnostico_realizado = ?";
         
         $diagnostico = $this->db->fetchOne($query, [$diagnosticoId]);

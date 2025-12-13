@@ -6,16 +6,46 @@
  * Gestiona productos y servicios del marketplace
  * Incluye: CRUD, búsqueda, filtros, estadísticas, favoritos, interacciones
  * 
+ * NOTA: Este modelo soporta dos esquemas diferentes:
+ * - Desarrollo: tabla 'productos' con esquema extendido
+ * - Producción: tabla 'productos_vitrina' con esquema simplificado
+ * 
  * @package Models
  * @author Nenis y Bros
- * @version 1.0.0
+ * @version 1.1.0
  */
 
 class Producto {
     private $db;
+    private $tabla;
+    private $esEsquemaProduccion;
 
     public function __construct() {
         $this->db = Database::getInstance();
+        
+        // Detectar qué tabla está disponible
+        $this->detectarEsquema();
+    }
+    
+    /**
+     * Detectar si estamos usando el esquema de producción o desarrollo
+     */
+    private function detectarEsquema() {
+        try {
+            // Intentar con productos_vitrina primero (producción)
+            $result = $this->db->fetchOne("SHOW TABLES LIKE 'productos_vitrina'");
+            if ($result) {
+                $this->tabla = 'productos_vitrina';
+                $this->esEsquemaProduccion = true;
+                return;
+            }
+        } catch (Exception $e) {
+            // Ignorar error
+        }
+        
+        // Fallback a tabla productos (desarrollo)
+        $this->tabla = 'productos';
+        $this->esEsquemaProduccion = false;
     }
 
     /**
@@ -194,6 +224,62 @@ class Producto {
      * @return array|null Datos completos del producto
      */
     public function getById($idProducto, $idUsuario = null) {
+        if ($this->esEsquemaProduccion) {
+            return $this->getByIdProduccion($idProducto, $idUsuario);
+        }
+        return $this->getByIdDesarrollo($idProducto, $idUsuario);
+    }
+    
+    /**
+     * getById para esquema de producción
+     */
+    private function getByIdProduccion($idProducto, $idUsuario = null) {
+        $query = "
+            SELECT 
+                p.*,
+                p.nombre as titulo,
+                p.vistas as total_vistas,
+                c.nombre AS categoria,
+                c.nombre AS categoria_nombre,
+                u.nombre AS vendedor_nombre,
+                u.nombre AS nombre_usuario,
+                u.email AS vendedor_email,
+                u.email AS email_usuario,
+                u.telefono AS telefono_usuario,
+                pe.nombre_empresa
+            FROM {$this->tabla} p
+            LEFT JOIN categorias_productos c ON p.id_categoria_producto = c.id_categoria_producto
+            LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+            LEFT JOIN perfiles_empresariales pe ON p.id_perfil = pe.id_perfil
+            WHERE p.id_producto = ?
+        ";
+
+        $producto = $this->db->fetchOne($query, [$idProducto]);
+
+        if ($producto) {
+            // Procesar imagenes JSON
+            if (!empty($producto['imagenes'])) {
+                $imagenes = json_decode($producto['imagenes'], true);
+                if (is_array($imagenes) && count($imagenes) > 0) {
+                    $producto['imagen_principal'] = $imagenes[0];
+                    $producto['imagenes_array'] = $imagenes;
+                }
+            }
+            $producto['imagen_principal'] = $producto['imagen_principal'] ?? null;
+            
+            // Adaptar campos para compatibilidad
+            $producto['etiquetas'] = !empty($producto['etiquetas']) ? json_decode($producto['etiquetas'], true) : [];
+            $producto['num_favoritos'] = 0; // No tenemos esta tabla en producción
+            $producto['num_contactos'] = $producto['contactos_recibidos'] ?? 0;
+        }
+
+        return $producto;
+    }
+    
+    /**
+     * getById para esquema de desarrollo
+     */
+    private function getByIdDesarrollo($idProducto, $idUsuario = null) {
         $esFavoritoSubquery = "";
         if ($idUsuario) {
             $esFavoritoSubquery = ", EXISTS(
@@ -264,6 +350,152 @@ class Producto {
      * @return array ['productos' => [], 'total' => int, 'paginas' => int]
      */
     public function buscar($filtros = [], $pagina = 1, $porPagina = 20) {
+        // Usar método específico según el esquema
+        if ($this->esEsquemaProduccion) {
+            return $this->buscarProduccion($filtros, $pagina, $porPagina);
+        }
+        return $this->buscarDesarrollo($filtros, $pagina, $porPagina);
+    }
+    
+    /**
+     * Búsqueda para esquema de producción (productos_vitrina)
+     */
+    private function buscarProduccion($filtros = [], $pagina = 1, $porPagina = 20) {
+        $where = [];
+        $params = [];
+
+        // Filtro por estado - admin puede ver todos, usuarios solo publicados
+        if (!empty($filtros['estado'])) {
+            $where[] = "p.estado = ?";
+            $params[] = $filtros['estado'];
+        } else {
+            $where[] = "p.estado = 'publicado'";
+        }
+
+        // Filtro por categoría
+        if (!empty($filtros['categoria'])) {
+            $where[] = "p.id_categoria_producto = ?";
+            $params[] = $filtros['categoria'];
+        }
+
+        // Filtro por rango de precio
+        if (!empty($filtros['precio_min'])) {
+            $where[] = "p.precio >= ?";
+            $params[] = $filtros['precio_min'];
+        }
+        if (!empty($filtros['precio_max'])) {
+            $where[] = "p.precio <= ?";
+            $params[] = $filtros['precio_max'];
+        }
+
+        // Búsqueda por texto (LIKE simple para compatibilidad)
+        if (!empty($filtros['q']) || !empty($filtros['search'])) {
+            $searchTerm = '%' . ($filtros['q'] ?? $filtros['search']) . '%';
+            $where[] = "(p.nombre LIKE ? OR p.descripcion LIKE ? OR p.descripcion_corta LIKE ?)";
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+            $params[] = $searchTerm;
+        }
+
+        // Solo productos destacados
+        if (!empty($filtros['destacados'])) {
+            $where[] = "p.destacado = 1";
+        }
+
+        // Vendedor específico
+        if (!empty($filtros['vendedor'])) {
+            $where[] = "p.id_usuario = ?";
+            $params[] = $filtros['vendedor'];
+        }
+
+        $whereClause = count($where) > 0 ? "WHERE " . implode(" AND ", $where) : "";
+
+        // Orden
+        $orderBy = "ORDER BY p.fecha_creacion DESC";
+        if (!empty($filtros['orden'])) {
+            switch ($filtros['orden']) {
+                case 'precio_asc':
+                    $orderBy = "ORDER BY p.precio ASC";
+                    break;
+                case 'precio_desc':
+                    $orderBy = "ORDER BY p.precio DESC";
+                    break;
+                case 'populares':
+                    $orderBy = "ORDER BY p.vistas DESC";
+                    break;
+                case 'recientes':
+                    $orderBy = "ORDER BY p.fecha_creacion DESC";
+                    break;
+            }
+        }
+
+        // Contar total
+        $queryCount = "SELECT COUNT(*) as total FROM {$this->tabla} p $whereClause";
+        $totalResult = $this->db->fetchOne($queryCount, $params);
+        $total = (int)($totalResult['total'] ?? 0);
+
+        // Calcular paginación
+        $offset = ($pagina - 1) * $porPagina;
+        $totalPaginas = $total > 0 ? ceil($total / $porPagina) : 0;
+
+        // Obtener productos
+        $query = "
+            SELECT 
+                p.id_producto,
+                p.nombre,
+                p.nombre as titulo,
+                p.descripcion,
+                p.descripcion_corta,
+                p.precio,
+                p.moneda,
+                p.estado,
+                p.destacado,
+                p.vistas,
+                p.vistas as total_vistas,
+                p.fecha_creacion,
+                p.fecha_publicacion,
+                p.imagenes,
+                c.nombre AS categoria,
+                c.nombre AS categoria_nombre,
+                u.nombre AS vendedor_nombre,
+                u.nombre AS nombre_usuario,
+                u.email AS email_usuario,
+                pe.nombre_empresa
+            FROM {$this->tabla} p
+            LEFT JOIN categorias_productos c ON p.id_categoria_producto = c.id_categoria_producto
+            LEFT JOIN usuarios u ON p.id_usuario = u.id_usuario
+            LEFT JOIN perfiles_empresariales pe ON p.id_perfil = pe.id_perfil
+            $whereClause
+            $orderBy
+            LIMIT $porPagina OFFSET $offset
+        ";
+
+        $productos = $this->db->fetchAll($query, $params);
+        
+        // Procesar productos para extraer imagen principal del JSON
+        foreach ($productos as &$producto) {
+            if (!empty($producto['imagenes'])) {
+                $imagenes = json_decode($producto['imagenes'], true);
+                if (is_array($imagenes) && count($imagenes) > 0) {
+                    $producto['imagen_principal'] = $imagenes[0];
+                }
+            }
+            $producto['imagen_principal'] = $producto['imagen_principal'] ?? null;
+        }
+
+        return [
+            'productos' => $productos,
+            'total' => $total,
+            'pagina_actual' => $pagina,
+            'por_pagina' => $porPagina,
+            'total_paginas' => $totalPaginas
+        ];
+    }
+    
+    /**
+     * Búsqueda para esquema de desarrollo (productos)
+     */
+    private function buscarDesarrollo($filtros = [], $pagina = 1, $porPagina = 20) {
         $where = ["p.estado = 'publicado'"];
         $params = [];
 
@@ -442,34 +674,48 @@ class Producto {
      * 
      * @param int $idProducto
      * @param string $nuevoEstado
-     * @param int $idUsuario Para verificar permisos
+     * @param int $idUsuario Para verificar permisos (admin puede cambiar cualquiera)
      * @return bool
      */
     public function cambiarEstado($idProducto, $nuevoEstado, $idUsuario) {
         $producto = $this->getById($idProducto);
         
-        if (!$producto || $producto['id_usuario'] != $idUsuario) {
+        if (!$producto) {
+            throw new Exception("Producto no encontrado");
+        }
+        
+        // Verificar permisos: dueño del producto o admin
+        $user = AuthMiddleware::getCurrentUser();
+        $esAdmin = $user && ($user['tipo_usuario'] === 'administrador' || $user['tipo_usuario'] === 'admin');
+        
+        if ($producto['id_usuario'] != $idUsuario && !$esAdmin) {
             throw new Exception("No tienes permiso para modificar este producto");
         }
 
-        $estadosValidos = ['borrador', 'publicado', 'pausado', 'agotado', 'archivado'];
+        // Estados válidos según esquema
+        $estadosValidos = $this->esEsquemaProduccion 
+            ? ['borrador', 'publicado', 'pausado', 'agotado', 'pendiente', 'rechazado']
+            : ['borrador', 'publicado', 'pausado', 'agotado', 'archivado'];
+            
         if (!in_array($nuevoEstado, $estadosValidos)) {
             throw new Exception("Estado no válido");
         }
 
-        $query = "UPDATE productos SET estado = ? WHERE id_producto = ?";
+        $query = "UPDATE {$this->tabla} SET estado = ? WHERE id_producto = ?";
         $resultado = $this->db->query($query, [$nuevoEstado, $idProducto]);
 
         // Si se publica por primera vez
-        if ($nuevoEstado === 'publicado' && !$producto['fecha_publicacion']) {
+        if ($nuevoEstado === 'publicado') {
+            $fechaCol = $this->esEsquemaProduccion ? 'fecha_publicacion' : 'fecha_publicacion';
             $this->db->query(
-                "UPDATE productos SET fecha_publicacion = NOW() WHERE id_producto = ?",
+                "UPDATE {$this->tabla} SET $fechaCol = NOW() WHERE id_producto = ? AND $fechaCol IS NULL",
                 [$idProducto]
             );
         }
 
         if ($resultado) {
-            Logger::activity($idUsuario, "Producto cambiado a $nuevoEstado: {$producto['titulo']}");
+            $titulo = $producto['titulo'] ?? $producto['nombre'] ?? 'Producto #' . $idProducto;
+            Logger::activity($idUsuario, "Producto cambiado a $nuevoEstado: $titulo");
         }
 
         return $resultado;
@@ -682,6 +928,19 @@ class Producto {
      * @return bool
      */
     public function registrarInteraccion($idProducto, $tipo, $idUsuario = null, $metadata = []) {
+        // En producción, simplemente incrementar contadores directamente
+        if ($this->esEsquemaProduccion) {
+            if ($tipo === 'vista') {
+                $query = "UPDATE {$this->tabla} SET vistas = vistas + 1 WHERE id_producto = ?";
+                return $this->db->query($query, [$idProducto]);
+            } elseif ($tipo === 'contacto') {
+                $query = "UPDATE {$this->tabla} SET contactos_recibidos = contactos_recibidos + 1 WHERE id_producto = ?";
+                return $this->db->query($query, [$idProducto]);
+            }
+            return true;
+        }
+        
+        // Esquema de desarrollo: usar tabla de interacciones
         $query = "
             INSERT INTO interacciones_productos 
                 (id_producto, id_usuario, tipo_interaccion, metadata, ip_address, user_agent)
