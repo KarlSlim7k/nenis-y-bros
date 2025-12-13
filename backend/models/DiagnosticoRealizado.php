@@ -18,16 +18,17 @@ class DiagnosticoRealizado {
     
     /**
      * Iniciar nuevo diagnóstico
+     * Nota: El esquema de producción usa id_diagnostico como FK hacia tipos_diagnostico
+     * y no tiene columna id_perfil_empresarial
      */
     public function create($data) {
         $query = "INSERT INTO diagnosticos_realizados (
-            id_usuario, id_perfil_empresarial, id_tipo_diagnostico, estado
-        ) VALUES (?, ?, ?, 'en_progreso')";
+            id_usuario, id_diagnostico, estado
+        ) VALUES (?, ?, 'en_progreso')";
         
         $params = [
             $data['id_usuario'],
-            $data['id_perfil_empresarial'] ?? null,
-            $data['id_tipo_diagnostico']
+            $data['id_tipo_diagnostico'] ?? $data['id_diagnostico']
         ];
         
         try {
@@ -52,23 +53,29 @@ class DiagnosticoRealizado {
             td.nombre as tipo_diagnostico,
             td.descripcion as tipo_descripcion,
             u.nombre as usuario_nombre,
-            u.email as usuario_email,
-            pe.nombre_empresa
+            u.email as usuario_email
         FROM diagnosticos_realizados dr
-        INNER JOIN tipos_diagnostico td ON dr.id_tipo_diagnostico = td.id_tipo_diagnostico
+        INNER JOIN tipos_diagnostico td ON dr.id_diagnostico = td.id_tipo_diagnostico
         INNER JOIN usuarios u ON dr.id_usuario = u.id_usuario
-        LEFT JOIN perfiles_empresariales pe ON dr.id_perfil_empresarial = pe.id_perfil
         WHERE dr.id_diagnostico_realizado = ?";
         
         $diagnostico = $this->db->fetchOne($query, [$id]);
         
         if ($diagnostico) {
-            // Decodificar JSONs
+            // Decodificar JSONs - compatibilidad con diferentes esquemas
+            // Esquema producción: puntuacion_por_area, recomendaciones
+            // Esquema desarrollo: resultados_areas, recomendaciones_generadas, areas_fuertes, areas_mejora
+            if (isset($diagnostico['puntuacion_por_area']) && $diagnostico['puntuacion_por_area']) {
+                $diagnostico['puntuacion_por_area'] = json_decode($diagnostico['puntuacion_por_area'], true);
+            }
             if (isset($diagnostico['resultados_areas']) && $diagnostico['resultados_areas']) {
                 $diagnostico['resultados_areas'] = json_decode($diagnostico['resultados_areas'], true);
             }
             if (isset($diagnostico['recomendaciones_generadas']) && $diagnostico['recomendaciones_generadas']) {
                 $diagnostico['recomendaciones_generadas'] = json_decode($diagnostico['recomendaciones_generadas'], true);
+            }
+            if (isset($diagnostico['cursos_recomendados']) && $diagnostico['cursos_recomendados']) {
+                $diagnostico['cursos_recomendados'] = json_decode($diagnostico['cursos_recomendados'], true);
             }
             if (isset($diagnostico['areas_fuertes']) && $diagnostico['areas_fuertes']) {
                 $diagnostico['areas_fuertes'] = json_decode($diagnostico['areas_fuertes'], true);
@@ -98,7 +105,7 @@ class DiagnosticoRealizado {
         }
         
         if (isset($filters['tipo_diagnostico'])) {
-            $where[] = "dr.id_tipo_diagnostico = ?";
+            $where[] = "dr.id_diagnostico = ?";
             $params[] = $filters['tipo_diagnostico'];
         }
         
@@ -106,18 +113,22 @@ class DiagnosticoRealizado {
         
         $query = "SELECT 
             dr.*,
-            td.nombre as tipo_diagnostico,
-            pe.nombre_empresa
+            td.nombre as tipo_diagnostico
         FROM diagnosticos_realizados dr
-        INNER JOIN tipos_diagnostico td ON dr.id_tipo_diagnostico = td.id_tipo_diagnostico
-        LEFT JOIN perfiles_empresariales pe ON dr.id_perfil_empresarial = pe.id_perfil
+        INNER JOIN tipos_diagnostico td ON dr.id_diagnostico = td.id_tipo_diagnostico
         WHERE $whereClause
         ORDER BY dr.fecha_inicio DESC";
         
         $diagnosticos = $this->db->fetchAll($query, $params);
         
-        // Decodificar JSONs
+        // Decodificar JSONs - compatibilidad con diferentes esquemas
         foreach ($diagnosticos as &$diag) {
+            if (isset($diag['puntuacion_por_area']) && $diag['puntuacion_por_area']) {
+                $diag['puntuacion_por_area'] = json_decode($diag['puntuacion_por_area'], true);
+            }
+            if (isset($diag['cursos_recomendados']) && $diag['cursos_recomendados']) {
+                $diag['cursos_recomendados'] = json_decode($diag['cursos_recomendados'], true);
+            }
             if (isset($diag['resultados_areas']) && $diag['resultados_areas']) {
                 $diag['resultados_areas'] = json_decode($diag['resultados_areas'], true);
             }
@@ -187,26 +198,27 @@ class DiagnosticoRealizado {
     
     /**
      * Calcular progreso del diagnóstico
+     * Nota: El esquema usa id_diagnostico como FK hacia tipos_diagnostico
      */
     public function getProgreso($diagnosticoId) {
         $query = "SELECT 
             (SELECT COUNT(*) FROM respuestas_diagnostico WHERE id_diagnostico_realizado = ?) as respondidas,
             (SELECT COUNT(*) FROM preguntas_diagnostico pd
              INNER JOIN areas_evaluacion ae ON pd.id_area = ae.id_area
-             INNER JOIN diagnosticos_realizados dr ON ae.id_tipo_diagnostico = dr.id_tipo_diagnostico
+             INNER JOIN diagnosticos_realizados dr ON ae.id_tipo_diagnostico = dr.id_diagnostico
              WHERE dr.id_diagnostico_realizado = ?) as total";
         
         $result = $this->db->fetchOne($query, [$diagnosticoId, $diagnosticoId]);
         
-        $respondidas = (int)$result['respondidas'];
-        $total = (int)$result['total'];
+        $respondidas = (int)($result['respondidas'] ?? 0);
+        $total = (int)($result['total'] ?? 0);
         $porcentaje = $total > 0 ? round(($respondidas / $total) * 100, 2) : 0;
         
         return [
             'respondidas' => $respondidas,
             'total' => $total,
             'porcentaje' => $porcentaje,
-            'completo' => $respondidas === $total
+            'completo' => $respondidas === $total && $total > 0
         ];
     }
     
