@@ -360,18 +360,11 @@
             }
         }
 
-        // Cargar actividad reciente
+        // Cargar actividad reciente - No hay endpoint disponible, se mantienen datos estáticos
         async function cargarActividadReciente() {
-            try {
-                const response = await fetchAPI(`${API_BASE_URL}/chat/mensajes/recientes?limite=3`);
-                
-                if (response.success && response.data) {
-                    // Aquí podrías renderizar la actividad reciente si el endpoint existe
-                    // Por ahora mantenemos los datos estáticos
-                }
-            } catch (error) {
-                console.error('Error cargando actividad:', error);
-            }
+            // El endpoint /chat/mensajes/recientes no existe
+            // La actividad reciente se muestra con datos estáticos en el HTML
+            console.log('Actividad reciente: usando datos estáticos');
         }
 
         document.addEventListener('DOMContentLoaded', () => {
