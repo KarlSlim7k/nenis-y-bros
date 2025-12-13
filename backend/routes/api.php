@@ -471,6 +471,54 @@ function registerRoutes(Router $router) {
         $diagnosticoController->delete($id);
     });
     
+    // ADMIN: CRUD de tipos de diagnósticos
+    $router->post('/diagnosticos/tipos', function() use ($diagnosticoController) {
+        $diagnosticoController->createTipo();
+    });
+    
+    $router->put('/diagnosticos/tipos/{id}', function($id) use ($diagnosticoController) {
+        $diagnosticoController->updateTipo($id);
+    });
+    
+    $router->delete('/diagnosticos/tipos/{id}', function($id) use ($diagnosticoController) {
+        $diagnosticoController->deleteTipo($id);
+    });
+    
+    // ADMIN: Listar todos los diagnósticos realizados
+    $router->get('/diagnosticos/admin/realizados', function() use ($diagnosticoController) {
+        $diagnosticoController->adminListarRealizados();
+    });
+    
+    // ADMIN: CRUD de áreas de evaluación
+    $router->post('/diagnosticos/areas', function() use ($diagnosticoController) {
+        $diagnosticoController->createArea();
+    });
+    
+    $router->put('/diagnosticos/areas/{id}', function($id) use ($diagnosticoController) {
+        $diagnosticoController->updateArea($id);
+    });
+    
+    $router->delete('/diagnosticos/areas/{id}', function($id) use ($diagnosticoController) {
+        $diagnosticoController->deleteArea($id);
+    });
+    
+    $router->get('/diagnosticos/areas/{id}/preguntas', function($id) use ($diagnosticoController) {
+        $diagnosticoController->getPreguntas($id);
+    });
+    
+    // ADMIN: CRUD de preguntas
+    $router->post('/diagnosticos/preguntas', function() use ($diagnosticoController) {
+        $diagnosticoController->createPregunta();
+    });
+    
+    $router->put('/diagnosticos/preguntas/{id}', function($id) use ($diagnosticoController) {
+        $diagnosticoController->updatePregunta($id);
+    });
+    
+    $router->delete('/diagnosticos/preguntas/{id}', function($id) use ($diagnosticoController) {
+        $diagnosticoController->deletePregunta($id);
+    });
+    
     // =========================================================================
     // RUTAS DE EVALUACIONES (FASE 2B)
     // =========================================================================

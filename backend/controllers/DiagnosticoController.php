@@ -40,7 +40,10 @@ class DiagnosticoController {
     public function verTipoDiagnostico($id) {
         $this->authMiddleware->requireAuth();
         
-        $diagnostico = $this->tipoDiagnosticoModel->findById($id, true);
+        // Permitir forzar inclusión de detalles via query string
+        $withDetails = isset($_GET['withDetails']) ? ($_GET['withDetails'] === 'true' || $_GET['withDetails'] === '1') : true;
+        
+        $diagnostico = $this->tipoDiagnosticoModel->findById($id, $withDetails);
         
         if (!$diagnostico) {
             Response::error('Tipo de diagnóstico no encontrado', 404);
@@ -411,6 +414,508 @@ class DiagnosticoController {
             Response::error('Error al cancelar diagnóstico', 500);
         } catch (Exception $e) {
             Response::error('Error: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    // =========================================================================
+    // ADMIN: GESTIÓN DE TIPOS DE DIAGNÓSTICOS
+    // =========================================================================
+    
+    /**
+     * POST /api/v1/diagnosticos/tipos
+     * Crear nuevo tipo de diagnóstico (Solo admin)
+     */
+    public function createTipo() {
+        $user = $this->authMiddleware->requireAuth();
+        
+        // Verificar permisos de administrador
+        if ($user['tipo_usuario'] !== 'administrador') {
+            Response::error('No tienes permisos para realizar esta acción', 403);
+        }
+        
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        // Validar campos requeridos
+        $rules = [
+            'nombre' => 'required|string|min:5'
+        ];
+        
+        $validator = new Validator($data, $rules);
+        if (!$validator->validate()) {
+            Response::validationError($validator->getErrors());
+        }
+        
+        // Generar slug único
+        $data['slug'] = $this->tipoDiagnosticoModel->generateUniqueSlug($data['nombre']);
+        
+        try {
+            $tipoId = $this->tipoDiagnosticoModel->create($data);
+            
+            if ($tipoId) {
+                $tipo = $this->tipoDiagnosticoModel->findById($tipoId);
+                Response::success([
+                    'tipo' => $tipo
+                ], 'Tipo de diagnóstico creado exitosamente', 201);
+            }
+            
+            Response::error('Error al crear tipo de diagnóstico', 500);
+        } catch (Exception $e) {
+            Response::error('Error al crear tipo: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    /**
+     * PUT /api/v1/diagnosticos/tipos/{id}
+     * Actualizar tipo de diagnóstico (Solo admin)
+     */
+    public function updateTipo($id) {
+        $user = $this->authMiddleware->requireAuth();
+        
+        // Verificar permisos de administrador
+        if ($user['tipo_usuario'] !== 'administrador') {
+            Response::error('No tienes permisos para realizar esta acción', 403);
+        }
+        
+        // Verificar que el tipo existe
+        $tipoExistente = $this->tipoDiagnosticoModel->findById($id);
+        if (!$tipoExistente) {
+            Response::error('Tipo de diagnóstico no encontrado', 404);
+        }
+        
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        // Si se cambia el nombre, regenerar slug
+        if (isset($data['nombre']) && $data['nombre'] !== $tipoExistente['nombre']) {
+            $data['slug'] = $this->tipoDiagnosticoModel->generateUniqueSlug($data['nombre'], $id);
+        }
+        
+        try {
+            // Construir query de actualización dinámicamente
+            $updates = [];
+            $params = [];
+            $allowedFields = ['nombre', 'descripcion', 'slug', 'duracion_estimada', 'activo', 'nivel_detalle'];
+            
+            foreach ($allowedFields as $field) {
+                if (array_key_exists($field, $data)) {
+                    $updates[] = "$field = ?";
+                    $params[] = $data[$field];
+                }
+            }
+            
+            if (empty($updates)) {
+                Response::error('No hay campos para actualizar', 400);
+            }
+            
+            $params[] = $id;
+            $query = "UPDATE tipos_diagnostico SET " . implode(', ', $updates) . " WHERE id_tipo_diagnostico = ?";
+            
+            $db = Database::getInstance();
+            $result = $db->query($query, $params);
+            
+            if ($result) {
+                $tipoActualizado = $this->tipoDiagnosticoModel->findById($id);
+                Response::success([
+                    'tipo' => $tipoActualizado
+                ], 'Tipo actualizado exitosamente');
+            }
+            
+            Response::error('Error al actualizar tipo', 500);
+        } catch (Exception $e) {
+            Response::error('Error al actualizar: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    /**
+     * DELETE /api/v1/diagnosticos/tipos/{id}
+     * Eliminar tipo de diagnóstico (Solo admin)
+     */
+    public function deleteTipo($id) {
+        $user = $this->authMiddleware->requireAuth();
+        
+        // Verificar permisos de administrador
+        if ($user['tipo_usuario'] !== 'administrador') {
+            Response::error('No tienes permisos para realizar esta acción', 403);
+        }
+        
+        // Verificar que el tipo existe
+        $tipo = $this->tipoDiagnosticoModel->findById($id);
+        if (!$tipo) {
+            Response::error('Tipo de diagnóstico no encontrado', 404);
+        }
+        
+        try {
+            $db = Database::getInstance();
+            $query = "DELETE FROM tipos_diagnostico WHERE id_tipo_diagnostico = ?";
+            $result = $db->query($query, [$id]);
+            
+            if ($result) {
+                Response::success(['mensaje' => 'Tipo eliminado exitosamente']);
+            }
+            
+            Response::error('Error al eliminar tipo', 500);
+        } catch (Exception $e) {
+            Response::error('Error al eliminar: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    /**
+     * GET /api/v1/diagnosticos/admin/realizados
+     * Listar todos los diagnósticos realizados (Solo admin)
+     */
+    public function adminListarRealizados() {
+        $user = $this->authMiddleware->requireAuth();
+        
+        // Verificar permisos de administrador
+        if ($user['tipo_usuario'] !== 'administrador') {
+            Response::error('No tienes permisos para realizar esta acción', 403);
+        }
+        
+        $estado = $_GET['estado'] ?? null;
+        $tipo = $_GET['tipo'] ?? null;
+        
+        try {
+            $db = Database::getInstance();
+            
+            $where = [];
+            $params = [];
+            
+            if ($estado) {
+                $where[] = "dr.estado = ?";
+                $params[] = $estado;
+            }
+            
+            if ($tipo) {
+                $where[] = "dr.id_tipo_diagnostico = ?";
+                $params[] = $tipo;
+            }
+            
+            $whereClause = !empty($where) ? "WHERE " . implode(" AND ", $where) : "";
+            
+            $query = "SELECT 
+                dr.*,
+                td.nombre as tipo_diagnostico,
+                u.nombre as usuario_nombre,
+                u.email as usuario_email,
+                pe.nombre_empresa
+            FROM diagnosticos_realizados dr
+            INNER JOIN tipos_diagnostico td ON dr.id_tipo_diagnostico = td.id_tipo_diagnostico
+            INNER JOIN usuarios u ON dr.id_usuario = u.id_usuario
+            LEFT JOIN perfiles_empresariales pe ON dr.id_perfil_empresarial = pe.id_perfil
+            $whereClause
+            ORDER BY dr.fecha_inicio DESC";
+            
+            $diagnosticos = $db->fetchAll($query, $params);
+            
+            // Agregar progreso a cada diagnóstico
+            foreach ($diagnosticos as &$diag) {
+                $diag['progreso'] = $this->diagnosticoRealizadoModel->getProgreso($diag['id_diagnostico_realizado']);
+            }
+            
+            Response::success($diagnosticos);
+        } catch (Exception $e) {
+            Response::error('Error al listar diagnósticos: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    // =========================================================================
+    // ADMIN: GESTIÓN DE ÁREAS
+    // =========================================================================
+    
+    /**
+     * POST /api/v1/diagnosticos/areas
+     * Crear nueva área de evaluación (Solo admin)
+     */
+    public function createArea() {
+        $user = $this->authMiddleware->requireAuth();
+        
+        if ($user['tipo_usuario'] !== 'administrador') {
+            Response::error('No tienes permisos para realizar esta acción', 403);
+        }
+        
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        $rules = [
+            'id_tipo_diagnostico' => 'required|integer',
+            'nombre' => 'required|string|min:3'
+        ];
+        
+        $validator = new Validator($data, $rules);
+        if (!$validator->validate()) {
+            Response::validationError($validator->getErrors());
+        }
+        
+        try {
+            $areaId = $this->tipoDiagnosticoModel->createArea($data);
+            
+            if ($areaId) {
+                $db = Database::getInstance();
+                $query = "SELECT * FROM areas_evaluacion WHERE id_area = ?";
+                $area = $db->fetchOne($query, [$areaId]);
+                
+                Response::success([
+                    'area' => $area
+                ], 'Área creada exitosamente', 201);
+            }
+            
+            Response::error('Error al crear área', 500);
+        } catch (Exception $e) {
+            Response::error('Error al crear área: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    /**
+     * PUT /api/v1/diagnosticos/areas/{id}
+     * Actualizar área de evaluación (Solo admin)
+     */
+    public function updateArea($id) {
+        $user = $this->authMiddleware->requireAuth();
+        
+        if ($user['tipo_usuario'] !== 'administrador') {
+            Response::error('No tienes permisos para realizar esta acción', 403);
+        }
+        
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        try {
+            $db = Database::getInstance();
+            
+            // Verificar que existe
+            $query = "SELECT * FROM areas_evaluacion WHERE id_area = ?";
+            $area = $db->fetchOne($query, [$id]);
+            
+            if (!$area) {
+                Response::error('Área no encontrada', 404);
+            }
+            
+            // Actualizar
+            $updates = [];
+            $params = [];
+            $allowedFields = ['nombre', 'descripcion', 'icono', 'color', 'ponderacion', 'orden'];
+            
+            foreach ($allowedFields as $field) {
+                if (array_key_exists($field, $data)) {
+                    $updates[] = "$field = ?";
+                    $params[] = $data[$field];
+                }
+            }
+            
+            if (empty($updates)) {
+                Response::error('No hay campos para actualizar', 400);
+            }
+            
+            $params[] = $id;
+            $query = "UPDATE areas_evaluacion SET " . implode(', ', $updates) . " WHERE id_area = ?";
+            
+            $result = $db->query($query, $params);
+            
+            if ($result) {
+                $areaActualizada = $db->fetchOne("SELECT * FROM areas_evaluacion WHERE id_area = ?", [$id]);
+                Response::success([
+                    'area' => $areaActualizada
+                ], 'Área actualizada exitosamente');
+            }
+            
+            Response::error('Error al actualizar área', 500);
+        } catch (Exception $e) {
+            Response::error('Error al actualizar área: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    /**
+     * DELETE /api/v1/diagnosticos/areas/{id}
+     * Eliminar área de evaluación (Solo admin)
+     */
+    public function deleteArea($id) {
+        $user = $this->authMiddleware->requireAuth();
+        
+        if ($user['tipo_usuario'] !== 'administrador') {
+            Response::error('No tienes permisos para realizar esta acción', 403);
+        }
+        
+        try {
+            $db = Database::getInstance();
+            
+            // Verificar que existe
+            $query = "SELECT * FROM areas_evaluacion WHERE id_area = ?";
+            $area = $db->fetchOne($query, [$id]);
+            
+            if (!$area) {
+                Response::error('Área no encontrada', 404);
+            }
+            
+            // Eliminar (las preguntas se eliminan en cascada)
+            $query = "DELETE FROM areas_evaluacion WHERE id_area = ?";
+            $result = $db->query($query, [$id]);
+            
+            if ($result) {
+                Response::success(['mensaje' => 'Área eliminada exitosamente']);
+            }
+            
+            Response::error('Error al eliminar área', 500);
+        } catch (Exception $e) {
+            Response::error('Error al eliminar área: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    /**
+     * GET /api/v1/diagnosticos/areas/{id}/preguntas
+     * Listar preguntas de un área
+     */
+    public function getPreguntas($areaId) {
+        $user = $this->authMiddleware->requireAuth();
+        
+        try {
+            $preguntas = $this->tipoDiagnosticoModel->getPreguntasByArea($areaId);
+            Response::success($preguntas);
+        } catch (Exception $e) {
+            Response::error('Error al listar preguntas: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    // =========================================================================
+    // ADMIN: GESTIÓN DE PREGUNTAS
+    // =========================================================================
+    
+    /**
+     * POST /api/v1/diagnosticos/preguntas
+     * Crear nueva pregunta (Solo admin)
+     */
+    public function createPregunta() {
+        $user = $this->authMiddleware->requireAuth();
+        
+        if ($user['tipo_usuario'] !== 'administrador') {
+            Response::error('No tienes permisos para realizar esta acción', 403);
+        }
+        
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        $rules = [
+            'id_area' => 'required|integer',
+            'pregunta' => 'required|string|min:10',
+            'tipo_pregunta' => 'required'
+        ];
+        
+        $validator = new Validator($data, $rules);
+        if (!$validator->validate()) {
+            Response::validationError($validator->getErrors());
+        }
+        
+        try {
+            $preguntaId = $this->tipoDiagnosticoModel->createPregunta($data);
+            
+            if ($preguntaId) {
+                $pregunta = $this->tipoDiagnosticoModel->getPreguntaById($preguntaId);
+                
+                Response::success([
+                    'pregunta' => $pregunta
+                ], 'Pregunta creada exitosamente', 201);
+            }
+            
+            Response::error('Error al crear pregunta', 500);
+        } catch (Exception $e) {
+            Response::error('Error al crear pregunta: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    /**
+     * PUT /api/v1/diagnosticos/preguntas/{id}
+     * Actualizar pregunta (Solo admin)
+     */
+    public function updatePregunta($id) {
+        $user = $this->authMiddleware->requireAuth();
+        
+        if ($user['tipo_usuario'] !== 'administrador') {
+            Response::error('No tienes permisos para realizar esta acción', 403);
+        }
+        
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        try {
+            $db = Database::getInstance();
+            
+            // Verificar que existe
+            $pregunta = $this->tipoDiagnosticoModel->getPreguntaById($id);
+            
+            if (!$pregunta) {
+                Response::error('Pregunta no encontrada', 404);
+            }
+            
+            // Actualizar
+            $updates = [];
+            $params = [];
+            $allowedFields = [
+                'pregunta', 'descripcion_ayuda', 'tipo_pregunta', 'opciones',
+                'escala_minima', 'escala_maxima', 'etiqueta_minima', 'etiqueta_maxima',
+                'ponderacion', 'es_obligatoria', 'orden'
+            ];
+            
+            foreach ($allowedFields as $field) {
+                if (array_key_exists($field, $data)) {
+                    $updates[] = "$field = ?";
+                    
+                    // Convertir opciones a JSON si es array
+                    if ($field === 'opciones' && is_array($data[$field])) {
+                        $params[] = json_encode($data[$field]);
+                    } else {
+                        $params[] = $data[$field];
+                    }
+                }
+            }
+            
+            if (empty($updates)) {
+                Response::error('No hay campos para actualizar', 400);
+            }
+            
+            $params[] = $id;
+            $query = "UPDATE preguntas_diagnostico SET " . implode(', ', $updates) . " WHERE id_pregunta = ?";
+            
+            $result = $db->query($query, $params);
+            
+            if ($result) {
+                $preguntaActualizada = $this->tipoDiagnosticoModel->getPreguntaById($id);
+                Response::success([
+                    'pregunta' => $preguntaActualizada
+                ], 'Pregunta actualizada exitosamente');
+            }
+            
+            Response::error('Error al actualizar pregunta', 500);
+        } catch (Exception $e) {
+            Response::error('Error al actualizar pregunta: ' . $e->getMessage(), 500);
+        }
+    }
+    
+    /**
+     * DELETE /api/v1/diagnosticos/preguntas/{id}
+     * Eliminar pregunta (Solo admin)
+     */
+    public function deletePregunta($id) {
+        $user = $this->authMiddleware->requireAuth();
+        
+        if ($user['tipo_usuario'] !== 'administrador') {
+            Response::error('No tienes permisos para realizar esta acción', 403);
+        }
+        
+        try {
+            $db = Database::getInstance();
+            
+            // Verificar que existe
+            $pregunta = $this->tipoDiagnosticoModel->getPreguntaById($id);
+            
+            if (!$pregunta) {
+                Response::error('Pregunta no encontrada', 404);
+            }
+            
+            // Eliminar
+            $query = "DELETE FROM preguntas_diagnostico WHERE id_pregunta = ?";
+            $result = $db->query($query, [$id]);
+            
+            if ($result) {
+                Response::success(['mensaje' => 'Pregunta eliminada exitosamente']);
+            }
+            
+            Response::error('Error al eliminar pregunta', 500);
+        } catch (Exception $e) {
+            Response::error('Error al eliminar pregunta: ' . $e->getMessage(), 500);
         }
     }
 }

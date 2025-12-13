@@ -42,6 +42,220 @@
         .nav-link.active::after {
             display: none;
         }
+
+        /* Section Tabs */
+        .section-tab {
+            background: none;
+            border: none;
+            padding: 1rem 1.75rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .section-tab:hover {
+            color: var(--text-main);
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .section-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content-wide {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 1.5rem 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 1.5rem 2.5rem 2rem;
+        }
+
+        .modal-footer {
+            padding: 1.25rem 2.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-close:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-main);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="number"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Modern Table */
+        .modern-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .modern-table thead th {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-main);
+            border-bottom: 2px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .modern-table thead th:first-child {
+            border-top-left-radius: 8px;
+        }
+
+        .modern-table thead th:last-child {
+            border-top-right-radius: 8px;
+        }
+
+        .modern-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .modern-table tbody tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .modern-table tbody td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content-wide {
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+            }
+        }
     </style>
 </head>
 
@@ -86,8 +300,8 @@
                 <div class="stat-card-modern">
                     <div class="stat-icon-box" style="color: var(--accent);">📊</div>
                     <div>
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">Total Diagnósticos</div>
-                        <div style="font-size: 1.8rem; font-weight: 700;" id="totalDiag">0</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">Tipos Disponibles</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;" id="totalTipos">0</div>
                     </div>
                 </div>
 
@@ -96,39 +310,388 @@
                     <div class="stat-icon-box" style="color: var(--success);">✅</div>
                     <div>
                         <div style="color: var(--text-muted); font-size: 0.9rem;">Completados</div>
-                        <div style="font-size: 1.8rem; font-weight: 700;" id="completados">0</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;" id="totalCompletados">0</div>
                     </div>
                 </div>
 
                 <!-- Stat 3 -->
                 <div class="stat-card-modern">
-                    <div class="stat-icon-box" style="color: var(--warning);">⭐</div>
+                    <div class="stat-icon-box" style="color: var(--warning);">⏳</div>
                     <div>
-                        <div style="color: var(--text-muted); font-size: 0.9rem;">Puntuación Promedio</div>
-                        <div style="font-size: 1.8rem; font-weight: 700;" id="promedio">0</div>
+                        <div style="color: var(--text-muted); font-size: 0.9rem;">En Progreso</div>
+                        <div style="font-size: 1.8rem; font-weight: 700;" id="totalEnProgreso">0</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- History Section -->
+        <!-- Tabs Navigation -->
         <div class="col-span-12">
-            <div class="glass-panel" style="padding: 2rem;">
-                <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1.5rem;">Historial de Diagnósticos</h3>
+            <div class="glass-panel" style="padding: 0;">
+                <div style="display: flex; border-bottom: 2px solid var(--border-color); padding: 0 2rem;">
+                    <button class="section-tab active" onclick="switchSection('tipos')" id="tab-tipos">
+                        <span style="margin-right: 0.5rem;">📋</span> Tipos de Diagnóstico
+                    </button>
+                    <button class="section-tab" onclick="switchSection('realizados')" id="tab-realizados">
+                        <span style="margin-right: 0.5rem;">📊</span> Diagnósticos Realizados
+                    </button>
+                </div>
+            </div>
+        </div>
 
-                <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
-                    <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">🚧</div>
-                    <p>Funcionalidad de reportes detallados en desarrollo</p>
+        <!-- Section: Tipos de Diagnóstico -->
+        <div class="col-span-12" id="section-tipos">
+            <div class="glass-panel" style="padding: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.25rem; font-weight: 600;">Tipos de Diagnóstico</h3>
+                    <button class="btn-primary" onclick="openCreateModal()">
+                        <span style="margin-right: 0.5rem;">➕</span> Nuevo Tipo
+                    </button>
+                </div>
+
+                <div id="tiposGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+                    <div style="text-align: center; padding: 3rem; color: var(--text-muted); grid-column: 1/-1;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">⏳</div>
+                        <p>Cargando tipos de diagnósticos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Diagnósticos Realizados -->
+        <div class="col-span-12" id="section-realizados" style="display: none;">
+            <div class="glass-panel" style="padding: 2rem;">
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem;">Diagnósticos Realizados</h3>
+                    
+                    <!-- Filtros -->
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <select id="filtroEstado" onchange="cargarDiagnosticosRealizados()" 
+                                style="padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary);">
+                            <option value="">Todos los estados</option>
+                            <option value="en_progreso">En Progreso</option>
+                            <option value="completado">Completados</option>
+                            <option value="abandonado">Abandonados</option>
+                        </select>
+                        
+                        <input type="search" id="buscarUsuario" placeholder="Buscar por usuario..." 
+                               style="padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-secondary); min-width: 250px;">
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Tipo</th>
+                                <th>Fecha Inicio</th>
+                                <th>Estado</th>
+                                <th>Progreso</th>
+                                <th>Puntuación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaDiagnosticos">
+                            <tr>
+                                <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                                    <div style="font-size: 2rem; margin-bottom: 1rem;">⏳</div>
+                                    <p>Cargando diagnósticos realizados...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
     </main>
 
+    <!-- Modal: Crear/Editar Tipo de Diagnóstico -->
+    <div id="tipoModal" class="modal">
+        <div class="modal-content-wide">
+            <div class="modal-header">
+                <h2 id="modalTipoTitle" style="font-size: 1.35rem; font-weight: 700;">Nuevo Tipo de Diagnóstico</h2>
+                <button class="btn-close" onclick="closeTipoModal()">✕</button>
+            </div>
+            <form id="formTipoDiagnostico" onsubmit="handleSaveTipo(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Nombre del Diagnóstico *</label>
+                        <input type="text" id="tipo-nombre" name="nombre" required minlength="5" 
+                               placeholder="ej: Diagnóstico Digital, Evaluación de Innovación">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea id="tipo-descripcion" name="descripcion" rows="3" 
+                                  placeholder="Describe el propósito y alcance de este diagnóstico..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tiempo Estimado (minutos)</label>
+                            <input type="number" id="tipo-tiempo" name="tiempo_estimado_minutos" 
+                                   min="5" max="180" placeholder="ej: 30">
+                        </div>
+                        <div class="form-group">
+                            <label>Icono (emoji o URL)</label>
+                            <input type="text" id="tipo-icono" name="icono" 
+                                   placeholder="📊 o https://...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="tipo-activo" name="activo" checked>
+                            Diagnóstico activo y disponible
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" onclick="closeTipoModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Tipo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Ver Detalles de Diagnóstico Realizado -->
+    <div id="detalleModal" class="modal">
+        <div class="modal-content-wide">
+            <div class="modal-header">
+                <h2 style="font-size: 1.35rem; font-weight: 700;">Detalles del Diagnóstico</h2>
+                <button class="btn-close" onclick="closeDetalleModal()">✕</button>
+            </div>
+            <div class="modal-body" id="detalleContent">
+                <div style="text-align: center; padding: 3rem;">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">⏳</div>
+                    <p style="color: var(--text-muted);">Cargando detalles...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" onclick="closeDetalleModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Gestión de Áreas -->
+    <div id="areasModal" class="modal">
+        <div class="modal-content-wide">
+            <div class="modal-header">
+                <h2 style="font-size: 1.35rem; font-weight: 700;">Gestión de Áreas y Preguntas</h2>
+                <button class="btn-close" onclick="closeAreasModal()">✕</button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem 2.5rem 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3 style="font-size: 1.1rem; font-weight: 600;" id="nombreTipoDiag">Tipo de Diagnóstico</h3>
+                    <button class="btn-primary" onclick="openAreaFormModal()">
+                        <span style="margin-right: 0.5rem;">➕</span> Nueva Área
+                    </button>
+                </div>
+
+                <div id="areasListado" style="display: grid; gap: 1rem;">
+                    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">⏳</div>
+                        <p>Cargando áreas...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" onclick="closeAreasModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Crear/Editar Área -->
+    <div id="areaFormModal" class="modal" style="z-index: 10001;">
+        <div class="modal-content-wide" style="max-width: 700px;">
+            <div class="modal-header">
+                <h2 id="modalAreaTitle" style="font-size: 1.35rem; font-weight: 700;">Nueva Área de Evaluación</h2>
+                <button class="btn-close" onclick="closeAreaFormModal()">✕</button>
+            </div>
+            <form id="formArea" onsubmit="handleSaveArea(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Nombre del Área *</label>
+                        <input type="text" id="area-nombre" name="nombre" required minlength="3" 
+                               placeholder="ej: Finanzas, Marketing Digital, Operaciones">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <textarea id="area-descripcion" name="descripcion" rows="2" 
+                                  placeholder="Breve descripción del área a evaluar..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Icono (emoji)</label>
+                            <input type="text" id="area-icono" name="icono" maxlength="2"
+                                   placeholder="💰">
+                        </div>
+                        <div class="form-group">
+                            <label>Color (hex)</label>
+                            <input type="text" id="area-color" name="color" 
+                                   placeholder="#667eea">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ponderación (%)</label>
+                            <input type="number" id="area-ponderacion" name="ponderacion" 
+                                   min="0" max="100" step="0.01" value="100">
+                        </div>
+                        <div class="form-group">
+                            <label>Orden</label>
+                            <input type="number" id="area-orden" name="orden" 
+                                   min="0" value="0">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" onclick="closeAreaFormModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Área</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Gestión de Preguntas de un Área -->
+    <div id="preguntasModal" class="modal" style="z-index: 10002;">
+        <div class="modal-content-wide" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h2 style="font-size: 1.35rem; font-weight: 700;" id="preguntasAreaTitle">Preguntas del Área</h2>
+                <button class="btn-close" onclick="closePreguntasModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
+                    <button class="btn-primary" onclick="openPreguntaFormModal()">
+                        <span style="margin-right: 0.5rem;">➕</span> Nueva Pregunta
+                    </button>
+                </div>
+
+                <div id="preguntasListado" style="display: grid; gap: 1rem;">
+                    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">⏳</div>
+                        <p>Cargando preguntas...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" onclick="closePreguntasModal()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Crear/Editar Pregunta -->
+    <div id="preguntaFormModal" class="modal" style="z-index: 10003;">
+        <div class="modal-content-wide" style="max-width: 800px;">
+            <div class="modal-header">
+                <h2 id="modalPreguntaTitle" style="font-size: 1.35rem; font-weight: 700;">Nueva Pregunta</h2>
+                <button class="btn-close" onclick="closePreguntaFormModal()">✕</button>
+            </div>
+            <form id="formPregunta" onsubmit="handleSavePregunta(event)">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Pregunta *</label>
+                        <textarea id="pregunta-texto" name="pregunta" required minlength="10" rows="2"
+                                  placeholder="Escribe la pregunta que deseas hacer..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descripción de Ayuda</label>
+                        <textarea id="pregunta-ayuda" name="descripcion_ayuda" rows="2"
+                                  placeholder="Texto adicional que ayude a entender la pregunta..."></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tipo de Pregunta *</label>
+                            <select id="pregunta-tipo" name="tipo_pregunta" required onchange="handleTipoPreguntaChange()">
+                                <option value="escala_numerica">Escala Numérica</option>
+                                <option value="multiple_choice">Opción Múltiple</option>
+                                <option value="si_no">Sí / No</option>
+                                <option value="texto_corto">Texto Corto</option>
+                                <option value="texto_largo">Texto Largo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Orden</label>
+                            <input type="number" id="pregunta-orden" name="orden" min="0" value="0">
+                        </div>
+                    </div>
+
+                    <!-- Configuración Escala Numérica -->
+                    <div id="escalaConfig" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Escala Mínima</label>
+                                <input type="number" id="pregunta-escala-min" name="escala_minima" value="1">
+                            </div>
+                            <div class="form-group">
+                                <label>Escala Máxima</label>
+                                <input type="number" id="pregunta-escala-max" name="escala_maxima" value="5">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Etiqueta Mínima</label>
+                                <input type="text" id="pregunta-etiqueta-min" name="etiqueta_minima" 
+                                       placeholder="Muy malo">
+                            </div>
+                            <div class="form-group">
+                                <label>Etiqueta Máxima</label>
+                                <input type="text" id="pregunta-etiqueta-max" name="etiqueta_maxima" 
+                                       placeholder="Excelente">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuración Opciones Múltiples -->
+                    <div id="opcionesConfig" style="display: none;">
+                        <div class="form-group">
+                            <label>Opciones de Respuesta</label>
+                            <div id="opcionesLista" style="display: grid; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <input type="text" class="opcion-input" placeholder="Opción 1" style="padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary);">
+                            </div>
+                            <button type="button" class="btn-outline" onclick="agregarOpcion()" style="font-size: 0.85rem;">
+                                ➕ Agregar Opción
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Ponderación</label>
+                            <input type="number" id="pregunta-ponderacion" name="ponderacion" 
+                                   min="0" step="0.01" value="1.00">
+                        </div>
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="pregunta-obligatoria" name="es_obligatoria" checked>
+                                Pregunta obligatoria
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-outline" onclick="closePreguntaFormModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar Pregunta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
     <script>
         if (!checkAuth() || !isAdmin()) window.location.href = ROUTES.login;
+
+        let editingTipoId = null;
+        let tiposData = [];
+        let diagnosticosRealizados = [];
 
         function logout() {
             localStorage.removeItem(AUTH_TOKEN_KEY);
@@ -146,12 +709,950 @@
             }
         }
 
-        // Simular carga de datos
-        setTimeout(() => {
-            document.getElementById('totalDiag').textContent = '156';
-            document.getElementById('completados').textContent = '89';
-            document.getElementById('promedio').textContent = '8.5';
-        }, 500);
+        // ===== NAVEGACIÓN ENTRE SECCIONES =====
+        function switchSection(section) {
+            // Actualizar tabs
+            document.querySelectorAll('.section-tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(`tab-${section}`).classList.add('active');
+
+            // Mostrar sección correspondiente
+            document.getElementById('section-tipos').style.display = section === 'tipos' ? 'block' : 'none';
+            document.getElementById('section-realizados').style.display = section === 'realizados' ? 'block' : 'none';
+
+            // Cargar datos según sección
+            if (section === 'tipos') {
+                cargarTiposDiagnosticos();
+            } else {
+                cargarDiagnosticosRealizados();
+            }
+        }
+
+        // ===== GESTIÓN DE TIPOS DE DIAGNÓSTICOS =====
+        async function cargarTiposDiagnosticos() {
+            try {
+                const response = await fetch(API_URL + '/diagnosticos/tipos', {
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+
+                const result = await response.json();
+                console.log('Tipos recibidos:', result);
+
+                if (result.success) {
+                    tiposData = result.data || result;
+                    renderTiposGrid();
+                    actualizarEstadisticas();
+                } else {
+                    showError('Error al cargar tipos: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('tiposGrid').innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--error); grid-column: 1/-1;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">❌</div>
+                        <p>Error al cargar tipos de diagnósticos</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderTiposGrid() {
+            const grid = document.getElementById('tiposGrid');
+            
+            if (!tiposData || tiposData.length === 0) {
+                grid.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-muted); grid-column: 1/-1;">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">📋</div>
+                        <p>No hay tipos de diagnósticos creados</p>
+                        <button class="btn-primary" onclick="openCreateModal()" style="margin-top: 1rem;">
+                            Crear Primer Tipo
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = tiposData.map(tipo => `
+                <div class="glass-panel" style="padding: 1.5rem; position: relative;">
+                    ${!tipo.activo ? '<div style="position: absolute; top: 1rem; right: 1rem; background: var(--warning); color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Inactivo</div>' : ''}
+                    
+                    <div style="font-size: 2.5rem; margin-bottom: 1rem;">${tipo.icono || '📊'}</div>
+                    <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-main);">${tipo.nombre}</h4>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem; min-height: 3em; line-height: 1.5;">
+                        ${tipo.descripcion || 'Sin descripción'}
+                    </p>
+                    
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-muted);">
+                        <div><span style="margin-right: 0.25rem;">❓</span> ${tipo.total_preguntas || 0} preguntas</div>
+                        <div><span style="margin-right: 0.25rem;">⏱️</span> ${tipo.tiempo_estimado_minutos || '-'} min</div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <button class="btn-outline" onclick="editTipo(${tipo.id_tipo_diagnostico})" style="flex: 1; font-size: 0.85rem;">
+                            ✏️ Editar
+                        </button>
+                        <button class="btn-outline" onclick="toggleActivoTipo(${tipo.id_tipo_diagnostico}, ${!tipo.activo})" 
+                                style="flex: 1; font-size: 0.85rem; ${tipo.activo ? 'color: var(--warning);' : 'color: var(--success);'}">
+                            ${tipo.activo ? '⏸️ Desactivar' : '▶️ Activar'}
+                        </button>
+                    </div>
+                    <button class="btn-primary" onclick="gestionarAreas(${tipo.id_tipo_diagnostico})" style="width: 100%; font-size: 0.85rem;">
+                        📝 Gestionar Áreas y Preguntas
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function openCreateModal() {
+            editingTipoId = null;
+            document.getElementById('modalTipoTitle').textContent = 'Nuevo Tipo de Diagnóstico';
+            document.getElementById('formTipoDiagnostico').reset();
+            document.getElementById('tipo-activo').checked = true;
+            document.getElementById('tipoModal').style.display = 'flex';
+        }
+
+        function closeTipoModal() {
+            document.getElementById('tipoModal').style.display = 'none';
+            editingTipoId = null;
+        }
+
+        async function editTipo(id) {
+            const tipo = tiposData.find(t => t.id_tipo_diagnostico === id);
+            if (!tipo) return;
+
+            editingTipoId = id;
+            document.getElementById('modalTipoTitle').textContent = 'Editar Tipo de Diagnóstico';
+            document.getElementById('tipo-nombre').value = tipo.nombre || '';
+            document.getElementById('tipo-descripcion').value = tipo.descripcion || '';
+            document.getElementById('tipo-tiempo').value = tipo.tiempo_estimado_minutos || '';
+            document.getElementById('tipo-icono').value = tipo.icono || '';
+            document.getElementById('tipo-activo').checked = tipo.activo !== false;
+            
+            document.getElementById('tipoModal').style.display = 'flex';
+        }
+
+        async function handleSaveTipo(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const data = {
+                nombre: formData.get('nombre'),
+                descripcion: formData.get('descripcion'),
+                tiempo_estimado_minutos: formData.get('tiempo_estimado_minutos') ? parseInt(formData.get('tiempo_estimado_minutos')) : null,
+                icono: formData.get('icono'),
+                activo: document.getElementById('tipo-activo').checked
+            };
+
+            // Validación manual
+            if (data.nombre.length < 5) {
+                showError('El nombre debe tener al menos 5 caracteres');
+                return;
+            }
+
+            try {
+                const url = editingTipoId 
+                    ? `${API_URL}/diagnosticos/tipos/${editingTipoId}` 
+                    : `${API_URL}/diagnosticos/tipos`;
+                
+                const method = editingTipoId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                console.log('Resultado:', result);
+
+                if (result.success) {
+                    showSuccess(editingTipoId ? 'Tipo actualizado exitosamente' : 'Tipo creado exitosamente');
+                    closeTipoModal();
+                    cargarTiposDiagnosticos();
+                } else {
+                    showError(result.message || 'Error al guardar tipo');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error al guardar: ' + error.message);
+            }
+        }
+
+        async function toggleActivoTipo(id, nuevoEstado) {
+            if (!confirm(`¿Deseas ${nuevoEstado ? 'activar' : 'desactivar'} este tipo de diagnóstico?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/diagnosticos/tipos/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify({ activo: nuevoEstado })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showSuccess(nuevoEstado ? 'Tipo activado' : 'Tipo desactivado');
+                    cargarTiposDiagnosticos();
+                } else {
+                    showError(result.message || 'Error al cambiar estado');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error al cambiar estado');
+            }
+        }
+
+        // ===== GESTIÓN DE DIAGNÓSTICOS REALIZADOS =====
+        async function cargarDiagnosticosRealizados() {
+            const estado = document.getElementById('filtroEstado').value;
+            
+            try {
+                let url = `${API_URL}/diagnosticos/admin/realizados`;
+                if (estado) url += `?estado=${estado}`;
+
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+
+                const result = await response.json();
+                console.log('Diagnósticos realizados:', result);
+
+                if (result.success) {
+                    diagnosticosRealizados = result.data || result;
+                    renderTablaDiagnosticos();
+                    actualizarEstadisticas();
+                } else {
+                    showError('Error al cargar diagnósticos: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('tablaDiagnosticos').innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--error);">
+                            Error al cargar diagnósticos realizados
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function renderTablaDiagnosticos() {
+            const tbody = document.getElementById('tablaDiagnosticos');
+            
+            if (!diagnosticosRealizados || diagnosticosRealizados.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                            <div style="font-size: 2rem; margin-bottom: 1rem;">📊</div>
+                            <p>No hay diagnósticos realizados con los filtros seleccionados</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = diagnosticosRealizados.map(diag => {
+                const estadoBadge = {
+                    'en_progreso': '<span style="background: var(--warning); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">En Progreso</span>',
+                    'completado': '<span style="background: var(--success); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Completado</span>',
+                    'abandonado': '<span style="background: var(--error); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600;">Abandonado</span>'
+                };
+
+                const progreso = diag.progreso || {};
+                const porcentaje = progreso.porcentaje || 0;
+
+                return `
+                    <tr>
+                        <td>
+                            <div style="font-weight: 600;">${diag.usuario_nombre || 'Usuario'}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">${diag.usuario_email || ''}</div>
+                        </td>
+                        <td>${diag.tipo_diagnostico || '-'}</td>
+                        <td style="font-size: 0.9rem;">${formatFecha(diag.fecha_inicio)}</td>
+                        <td>${estadoBadge[diag.estado] || diag.estado}</td>
+                        <td>
+                            <div style="background: var(--bg-tertiary); border-radius: 8px; height: 8px; overflow: hidden; margin-bottom: 0.25rem;">
+                                <div style="background: var(--accent); height: 100%; width: ${porcentaje}%; transition: width 0.3s;"></div>
+                            </div>
+                            <span style="font-size: 0.85rem; color: var(--text-muted);">${porcentaje}%</span>
+                        </td>
+                        <td style="font-weight: 600; color: ${diag.puntuacion_total ? 'var(--accent)' : 'var(--text-muted)'};">
+                            ${diag.puntuacion_total || '-'}
+                        </td>
+                        <td>
+                            <button class="btn-outline" onclick="verDetalleDiagnostico(${diag.id_diagnostico_realizado})" 
+                                    style="font-size: 0.85rem; padding: 0.4rem 0.8rem;">
+                                👁️ Ver
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function verDetalleDiagnostico(id) {
+            document.getElementById('detalleModal').style.display = 'flex';
+            document.getElementById('detalleContent').innerHTML = `
+                <div style="text-align: center; padding: 3rem;">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">⏳</div>
+                    <p style="color: var(--text-muted);">Cargando detalles...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`${API_URL}/diagnosticos/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+
+                const result = await response.json();
+                console.log('Detalle:', result);
+
+                if (result.success) {
+                    const diag = result.data || result;
+                    renderDetalleContent(diag);
+                } else {
+                    document.getElementById('detalleContent').innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: var(--error);">
+                            <p>Error al cargar detalles: ${result.message}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('detalleContent').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--error);">
+                        <p>Error al cargar detalles del diagnóstico</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderDetalleContent(diag) {
+            const content = document.getElementById('detalleContent');
+            const progreso = diag.progreso || {};
+            
+            content.innerHTML = `
+                <div style="display: grid; gap: 1.5rem;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div class="glass-panel" style="padding: 1rem;">
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Usuario</div>
+                            <div style="font-weight: 600;">${diag.usuario_nombre || '-'}</div>
+                        </div>
+                        <div class="glass-panel" style="padding: 1rem;">
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Tipo</div>
+                            <div style="font-weight: 600;">${diag.tipo_diagnostico || '-'}</div>
+                        </div>
+                        <div class="glass-panel" style="padding: 1rem;">
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Estado</div>
+                            <div style="font-weight: 600; text-transform: capitalize;">${diag.estado.replace('_', ' ')}</div>
+                        </div>
+                        <div class="glass-panel" style="padding: 1rem;">
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">Puntuación</div>
+                            <div style="font-weight: 600; font-size: 1.5rem; color: var(--accent);">${diag.puntuacion_total || '-'}</div>
+                        </div>
+                    </div>
+
+                    ${diag.resultados_areas ? `
+                        <div>
+                            <h4 style="font-weight: 600; margin-bottom: 1rem;">Resultados por Área</h4>
+                            <div style="display: grid; gap: 0.75rem;">
+                                ${Object.entries(diag.resultados_areas).map(([area, resultado]) => `
+                                    <div class="glass-panel" style="padding: 1rem;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-weight: 500;">${area}</span>
+                                            <span style="font-weight: 700; color: var(--accent);">${resultado.puntuacion || 0}</span>
+                                        </div>
+                                        <div style="background: var(--bg-tertiary); border-radius: 8px; height: 6px; overflow: hidden; margin-top: 0.5rem;">
+                                            <div style="background: var(--accent); height: 100%; width: ${(resultado.puntuacion / 10) * 100}%;"></div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${diag.recomendaciones_generadas ? `
+                        <div>
+                            <h4 style="font-weight: 600; margin-bottom: 1rem;">Recomendaciones</h4>
+                            <div class="glass-panel" style="padding: 1.5rem;">
+                                <p style="line-height: 1.6; white-space: pre-wrap;">${diag.recomendaciones_generadas}</p>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function closeDetalleModal() {
+            document.getElementById('detalleModal').style.display = 'none';
+        }
+
+        // ===== ESTADÍSTICAS =====
+        function actualizarEstadisticas() {
+            document.getElementById('totalTipos').textContent = tiposData.length || 0;
+            
+            if (diagnosticosRealizados.length > 0) {
+                const completados = diagnosticosRealizados.filter(d => d.estado === 'completado').length;
+                const enProgreso = diagnosticosRealizados.filter(d => d.estado === 'en_progreso').length;
+                
+                document.getElementById('totalCompletados').textContent = completados;
+                document.getElementById('totalEnProgreso').textContent = enProgreso;
+            }
+        }
+
+        // ===== UTILIDADES =====
+        function formatFecha(fecha) {
+            if (!fecha) return '-';
+            const date = new Date(fecha);
+            return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        function showError(message) {
+            alert('❌ ' + message);
+        }
+
+        function showSuccess(message) {
+            alert('✅ ' + message);
+        }
+
+        // ===== GESTIÓN DE ÁREAS Y PREGUNTAS =====
+        let currentTipoDiagnosticoId = null;
+        let currentAreaId = null;
+        let editingAreaId = null;
+        let editingPreguntaId = null;
+        let areasData = [];
+        let preguntasData = [];
+
+        async function gestionarAreas(tipoId) {
+            currentTipoDiagnosticoId = tipoId;
+            const tipo = tiposData.find(t => t.id_tipo_diagnostico === tipoId);
+            
+            if (tipo) {
+                document.getElementById('nombreTipoDiag').textContent = tipo.nombre;
+            }
+            
+            document.getElementById('areasModal').style.display = 'flex';
+            await cargarAreas(tipoId);
+        }
+
+        function closeAreasModal() {
+            document.getElementById('areasModal').style.display = 'none';
+            currentTipoDiagnosticoId = null;
+        }
+
+        async function cargarAreas(tipoId) {
+            try {
+                const response = await fetch(`${API_URL}/diagnosticos/tipos/${tipoId}?withDetails=true`, {
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+
+                const result = await response.json();
+                console.log('Áreas recibidas:', result);
+
+                if (result.success) {
+                    const tipo = result.data || result;
+                    areasData = tipo.areas || [];
+                    renderAreasListado();
+                } else {
+                    showError('Error al cargar áreas: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('areasListado').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--error);">
+                        <p>Error al cargar áreas</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderAreasListado() {
+            const container = document.getElementById('areasListado');
+            
+            if (!areasData || areasData.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">📋</div>
+                        <p>No hay áreas creadas para este diagnóstico</p>
+                        <button class="btn-primary" onclick="openAreaFormModal()" style="margin-top: 1rem;">
+                            Crear Primera Área
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = areasData.map(area => `
+                <div class="glass-panel" style="padding: 1.25rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <span style="font-size: 1.5rem;">${area.icono || '📊'}</span>
+                                <h4 style="font-size: 1rem; font-weight: 600; color: var(--text-main);">${area.nombre}</h4>
+                            </div>
+                            ${area.descripcion ? `<p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">${area.descripcion}</p>` : ''}
+                            <div style="display: flex; gap: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+                                <span>❓ ${area.preguntas?.length || 0} preguntas</span>
+                                <span>⚖️ Pond: ${area.ponderacion || 100}%</span>
+                                <span>#️⃣ Orden: ${area.orden || 0}</span>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn-outline" onclick="editArea(${area.id_area})" 
+                                    style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                                ✏️ Editar
+                            </button>
+                            <button class="btn-primary" onclick="gestionarPreguntas(${area.id_area})" 
+                                    style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                                📝 Preguntas
+                            </button>
+                            <button class="btn-outline" onclick="deleteArea(${area.id_area})" 
+                                    style="font-size: 0.8rem; padding: 0.4rem 0.8rem; color: var(--error);">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openAreaFormModal() {
+            editingAreaId = null;
+            document.getElementById('modalAreaTitle').textContent = 'Nueva Área de Evaluación';
+            document.getElementById('formArea').reset();
+            document.getElementById('area-ponderacion').value = '100';
+            document.getElementById('area-orden').value = areasData.length;
+            document.getElementById('areaFormModal').style.display = 'flex';
+        }
+
+        function closeAreaFormModal() {
+            document.getElementById('areaFormModal').style.display = 'none';
+            editingAreaId = null;
+        }
+
+        async function editArea(areaId) {
+            const area = areasData.find(a => a.id_area === areaId);
+            if (!area) return;
+
+            editingAreaId = areaId;
+            document.getElementById('modalAreaTitle').textContent = 'Editar Área';
+            document.getElementById('area-nombre').value = area.nombre || '';
+            document.getElementById('area-descripcion').value = area.descripcion || '';
+            document.getElementById('area-icono').value = area.icono || '';
+            document.getElementById('area-color').value = area.color || '#667eea';
+            document.getElementById('area-ponderacion').value = area.ponderacion || 100;
+            document.getElementById('area-orden').value = area.orden || 0;
+            
+            document.getElementById('areaFormModal').style.display = 'flex';
+        }
+
+        async function handleSaveArea(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const data = {
+                id_tipo_diagnostico: currentTipoDiagnosticoId,
+                nombre: formData.get('nombre'),
+                descripcion: formData.get('descripcion'),
+                icono: formData.get('icono'),
+                color: formData.get('color') || '#667eea',
+                ponderacion: parseFloat(formData.get('ponderacion')) || 100,
+                orden: parseInt(formData.get('orden')) || 0
+            };
+
+            if (data.nombre.length < 3) {
+                showError('El nombre debe tener al menos 3 caracteres');
+                return;
+            }
+
+            try {
+                const url = editingAreaId 
+                    ? `${API_URL}/diagnosticos/areas/${editingAreaId}` 
+                    : `${API_URL}/diagnosticos/areas`;
+                
+                const method = editingAreaId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                console.log('Resultado área:', result);
+
+                if (result.success) {
+                    showSuccess(editingAreaId ? 'Área actualizada' : 'Área creada exitosamente');
+                    closeAreaFormModal();
+                    await cargarAreas(currentTipoDiagnosticoId);
+                } else {
+                    showError(result.message || 'Error al guardar área');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error al guardar: ' + error.message);
+            }
+        }
+
+        async function deleteArea(areaId) {
+            const area = areasData.find(a => a.id_area === areaId);
+            if (!area) return;
+
+            const numPreguntas = area.preguntas?.length || 0;
+            const mensaje = numPreguntas > 0 
+                ? `¿Eliminar el área "${area.nombre}" y sus ${numPreguntas} preguntas?`
+                : `¿Eliminar el área "${area.nombre}"?`;
+
+            if (!confirm(mensaje)) return;
+
+            try {
+                const response = await fetch(`${API_URL}/diagnosticos/areas/${areaId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showSuccess('Área eliminada');
+                    await cargarAreas(currentTipoDiagnosticoId);
+                } else {
+                    showError(result.message || 'Error al eliminar');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error al eliminar área');
+            }
+        }
+
+        // ===== GESTIÓN DE PREGUNTAS =====
+        async function gestionarPreguntas(areaId) {
+            currentAreaId = areaId;
+            const area = areasData.find(a => a.id_area === areaId);
+            
+            if (area) {
+                document.getElementById('preguntasAreaTitle').textContent = `Preguntas: ${area.nombre}`;
+            }
+            
+            document.getElementById('preguntasModal').style.display = 'flex';
+            await cargarPreguntas(areaId);
+        }
+
+        function closePreguntasModal() {
+            document.getElementById('preguntasModal').style.display = 'none';
+            currentAreaId = null;
+        }
+
+        async function cargarPreguntas(areaId) {
+            try {
+                const response = await fetch(`${API_URL}/diagnosticos/areas/${areaId}/preguntas`, {
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+
+                const result = await response.json();
+                console.log('Preguntas recibidas:', result);
+
+                if (result.success) {
+                    preguntasData = result.data || result;
+                    renderPreguntasListado();
+                } else {
+                    showError('Error al cargar preguntas: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('preguntasListado').innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--error);">
+                        <p>Error al cargar preguntas</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderPreguntasListado() {
+            const container = document.getElementById('preguntasListado');
+            
+            if (!preguntasData || preguntasData.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <div style="font-size: 2rem; margin-bottom: 1rem;">❓</div>
+                        <p>No hay preguntas en esta área</p>
+                        <button class="btn-primary" onclick="openPreguntaFormModal()" style="margin-top: 1rem;">
+                            Crear Primera Pregunta
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = preguntasData.map(pregunta => {
+                const tipoIcons = {
+                    'escala_numerica': '🔢',
+                    'multiple_choice': '☑️',
+                    'si_no': '✅',
+                    'texto_corto': '📝',
+                    'texto_largo': '📄'
+                };
+
+                return `
+                    <div class="glass-panel" style="padding: 1.25rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem;">
+                            <div style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <span style="font-size: 1.2rem;">${tipoIcons[pregunta.tipo_pregunta] || '❓'}</span>
+                                    <span style="font-size: 0.75rem; padding: 0.15rem 0.5rem; background: var(--bg-tertiary); border-radius: 12px; color: var(--text-muted);">
+                                        ${pregunta.tipo_pregunta.replace('_', ' ')}
+                                    </span>
+                                    ${pregunta.es_obligatoria ? '<span style="color: var(--error); font-size: 0.9rem;">*</span>' : ''}
+                                </div>
+                                <p style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 0.5rem; line-height: 1.5;">
+                                    ${pregunta.pregunta}
+                                </p>
+                                ${pregunta.descripcion_ayuda ? `
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; font-style: italic;">
+                                        💡 ${pregunta.descripcion_ayuda}
+                                    </p>
+                                ` : ''}
+                                <div style="display: flex; gap: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+                                    ${pregunta.tipo_pregunta === 'escala_numerica' ? 
+                                        `<span>📊 Escala: ${pregunta.escala_minima}-${pregunta.escala_maxima}</span>` : ''}
+                                    ${pregunta.opciones ? `<span>☑️ ${JSON.parse(pregunta.opciones).length} opciones</span>` : ''}
+                                    <span>⚖️ Pond: ${pregunta.ponderacion || 1}</span>
+                                    <span>#️⃣ Orden: ${pregunta.orden || 0}</span>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn-outline" onclick="editPregunta(${pregunta.id_pregunta})" 
+                                        style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                                    ✏️
+                                </button>
+                                <button class="btn-outline" onclick="deletePregunta(${pregunta.id_pregunta})" 
+                                        style="font-size: 0.8rem; padding: 0.4rem 0.8rem; color: var(--error);">
+                                    🗑️
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openPreguntaFormModal() {
+            editingPreguntaId = null;
+            document.getElementById('modalPreguntaTitle').textContent = 'Nueva Pregunta';
+            document.getElementById('formPregunta').reset();
+            document.getElementById('pregunta-tipo').value = 'escala_numerica';
+            document.getElementById('pregunta-orden').value = preguntasData.length;
+            document.getElementById('pregunta-obligatoria').checked = true;
+            document.getElementById('pregunta-ponderacion').value = '1.00';
+            
+            // Reset opciones múltiples
+            document.getElementById('opcionesLista').innerHTML = `
+                <input type="text" class="opcion-input" placeholder="Opción 1" style="padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary);">
+            `;
+            
+            handleTipoPreguntaChange();
+            document.getElementById('preguntaFormModal').style.display = 'flex';
+        }
+
+        function closePreguntaFormModal() {
+            document.getElementById('preguntaFormModal').style.display = 'none';
+            editingPreguntaId = null;
+        }
+
+        function handleTipoPreguntaChange() {
+            const tipo = document.getElementById('pregunta-tipo').value;
+            
+            document.getElementById('escalaConfig').style.display = 
+                tipo === 'escala_numerica' ? 'block' : 'none';
+            
+            document.getElementById('opcionesConfig').style.display = 
+                tipo === 'multiple_choice' ? 'block' : 'none';
+        }
+
+        function agregarOpcion() {
+            const container = document.getElementById('opcionesLista');
+            const numOpciones = container.querySelectorAll('.opcion-input').length + 1;
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'opcion-input';
+            input.placeholder = `Opción ${numOpciones}`;
+            input.style.cssText = 'padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary);';
+            
+            container.appendChild(input);
+        }
+
+        async function editPregunta(preguntaId) {
+            const pregunta = preguntasData.find(p => p.id_pregunta === preguntaId);
+            if (!pregunta) return;
+
+            editingPreguntaId = preguntaId;
+            document.getElementById('modalPreguntaTitle').textContent = 'Editar Pregunta';
+            document.getElementById('pregunta-texto').value = pregunta.pregunta || '';
+            document.getElementById('pregunta-ayuda').value = pregunta.descripcion_ayuda || '';
+            document.getElementById('pregunta-tipo').value = pregunta.tipo_pregunta || 'escala_numerica';
+            document.getElementById('pregunta-orden').value = pregunta.orden || 0;
+            document.getElementById('pregunta-ponderacion').value = pregunta.ponderacion || 1;
+            document.getElementById('pregunta-obligatoria').checked = pregunta.es_obligatoria !== false;
+            
+            if (pregunta.tipo_pregunta === 'escala_numerica') {
+                document.getElementById('pregunta-escala-min').value = pregunta.escala_minima || 1;
+                document.getElementById('pregunta-escala-max').value = pregunta.escala_maxima || 5;
+                document.getElementById('pregunta-etiqueta-min').value = pregunta.etiqueta_minima || '';
+                document.getElementById('pregunta-etiqueta-max').value = pregunta.etiqueta_maxima || '';
+            }
+            
+            if (pregunta.tipo_pregunta === 'multiple_choice' && pregunta.opciones) {
+                const opciones = JSON.parse(pregunta.opciones);
+                const container = document.getElementById('opcionesLista');
+                container.innerHTML = '';
+                
+                opciones.forEach((opcion, index) => {
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.className = 'opcion-input';
+                    input.value = opcion;
+                    input.placeholder = `Opción ${index + 1}`;
+                    input.style.cssText = 'padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary);';
+                    container.appendChild(input);
+                });
+            }
+            
+            handleTipoPreguntaChange();
+            document.getElementById('preguntaFormModal').style.display = 'flex';
+        }
+
+        async function handleSavePregunta(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const tipo = formData.get('tipo_pregunta');
+            
+            const data = {
+                id_area: currentAreaId,
+                pregunta: formData.get('pregunta'),
+                descripcion_ayuda: formData.get('descripcion_ayuda'),
+                tipo_pregunta: tipo,
+                ponderacion: parseFloat(formData.get('ponderacion')) || 1,
+                es_obligatoria: document.getElementById('pregunta-obligatoria').checked,
+                orden: parseInt(formData.get('orden')) || 0
+            };
+
+            if (tipo === 'escala_numerica') {
+                data.escala_minima = parseInt(formData.get('escala_minima')) || 1;
+                data.escala_maxima = parseInt(formData.get('escala_maxima')) || 5;
+                data.etiqueta_minima = formData.get('etiqueta_minima');
+                data.etiqueta_maxima = formData.get('etiqueta_maxima');
+            }
+
+            if (tipo === 'multiple_choice') {
+                const opciones = Array.from(document.querySelectorAll('.opcion-input'))
+                    .map(input => input.value.trim())
+                    .filter(v => v.length > 0);
+                
+                if (opciones.length < 2) {
+                    showError('Debes agregar al menos 2 opciones');
+                    return;
+                }
+                
+                data.opciones = opciones;
+            }
+
+            if (data.pregunta.length < 10) {
+                showError('La pregunta debe tener al menos 10 caracteres');
+                return;
+            }
+
+            try {
+                const url = editingPreguntaId 
+                    ? `${API_URL}/diagnosticos/preguntas/${editingPreguntaId}` 
+                    : `${API_URL}/diagnosticos/preguntas`;
+                
+                const method = editingPreguntaId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                console.log('Resultado pregunta:', result);
+
+                if (result.success) {
+                    showSuccess(editingPreguntaId ? 'Pregunta actualizada' : 'Pregunta creada exitosamente');
+                    closePreguntaFormModal();
+                    await cargarPreguntas(currentAreaId);
+                    // Recargar áreas para actualizar contador
+                    await cargarAreas(currentTipoDiagnosticoId);
+                } else {
+                    showError(result.message || 'Error al guardar pregunta');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error al guardar: ' + error.message);
+            }
+        }
+
+        async function deletePregunta(preguntaId) {
+            if (!confirm('¿Eliminar esta pregunta?')) return;
+
+            try {
+                const response = await fetch(`${API_URL}/diagnosticos/preguntas/${preguntaId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${getAuthToken()}`
+                    }
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    showSuccess('Pregunta eliminada');
+                    await cargarPreguntas(currentAreaId);
+                    await cargarAreas(currentTipoDiagnosticoId);
+                } else {
+                    showError(result.message || 'Error al eliminar');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error al eliminar pregunta');
+            }
+        }
+
+        // ===== INICIALIZACIÓN =====
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarTiposDiagnosticos();
+        });
+
+        // Cerrar modales al hacer clic fuera
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        };
     </script>
     <script src="../../assets/js/navigation.js"></script>
     <script>
