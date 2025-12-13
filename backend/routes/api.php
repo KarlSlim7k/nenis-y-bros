@@ -1015,6 +1015,27 @@ function registerRoutes(Router $router) {
     });
     
     // =========================================================================
+    // RUTAS DE AUDITORÍA
+    // =========================================================================
+    
+    $auditoriaController = new AuditoriaController();
+    
+    // Listar logs con filtros
+    $router->get('/auditoria', function() use ($auditoriaController) {
+        $auditoriaController->listarLogs();
+    });
+    
+    // Estadísticas de auditoría
+    $router->get('/auditoria/estadisticas', function() use ($auditoriaController) {
+        $auditoriaController->estadisticas();
+    });
+    
+    // Detalle de un log
+    $router->get('/auditoria/{id}', function($id) use ($auditoriaController) {
+        $auditoriaController->obtenerLog($id);
+    });
+    
+    // =========================================================================
     // RUTA NO ENCONTRADA
     // =========================================================================
     

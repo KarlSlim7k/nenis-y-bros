@@ -131,51 +131,45 @@
                         Logs</button>
                 </div>
 
-                <div class="log-list">
-                    <div class="log-entry">
-                        <div class="log-content">
-                            <div class="log-action">Inicio de sesión exitoso: admin@test.com</div>
-                            <div class="log-time">2025-11-22 10:30:15</div>
-                        </div>
-                        <div class="log-icon">👤</div>
-                    </div>
-
-                    <div class="log-entry" style="border-left-color: var(--warning);">
-                        <div class="log-content">
-                            <div class="log-action">Actualización de perfil: maria@test.com</div>
-                            <div class="log-time">2025-11-22 09:45:22</div>
-                        </div>
-                        <div class="log-icon">✏️</div>
-                    </div>
-
-                    <div class="log-entry" style="border-left-color: var(--success);">
-                        <div class="log-content">
-                            <div class="log-action">Nuevo curso creado: 'Marketing Digital'</div>
-                            <div class="log-time">2025-11-22 08:20:11</div>
-                        </div>
-                        <div class="log-icon">📚</div>
-                    </div>
-
-                    <div class="log-entry" style="border-left-color: var(--danger);">
-                        <div class="log-content">
-                            <div class="log-action">Intento de acceso fallido: IP 192.168.1.50</div>
-                            <div class="log-time">2025-11-22 03:15:00</div>
-                        </div>
-                        <div class="log-icon">⚠️</div>
+                <div class="log-list" id="logsList">
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <div class="spinner"></div>
+                        <p style="margin-top: 1rem;">Cargando logs...</p>
                     </div>
                 </div>
 
-                <div style="margin-top: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
-                    <span style="opacity: 0.7;">🔍 Sistema de logs completo en desarrollo</span>
+                <div id="emptyState" style="display: none; margin-top: 2rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">
+                    <span style="opacity: 0.7;">📭 No hay logs de auditoría</span>
                 </div>
             </div>
         </div>
     </main>
 
+    <style>
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #818cf8;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
     <script src="../../assets/js/config.js"></script>
     <script src="../../assets/js/auth.js"></script>
+    <script src="../../assets/js/api.js"></script>
     <script>
         if (!checkAuth() || !isAdmin()) window.location.href = ROUTES.login;
+
+        let logs = [];
 
         function logout() {
             localStorage.removeItem(AUTH_TOKEN_KEY);
@@ -192,6 +186,91 @@
                 avatar.textContent = user.nombre.charAt(0).toUpperCase();
             }
         }
+
+        // Cargar logs
+        async function cargarLogs() {
+            try {
+                const response = await fetchAPI(`${API_BASE_URL}/auditoria?limite=50`);
+                
+                if (response.success && response.data) {
+                    logs = response.data.logs || response.data;
+                    renderLogs();
+                } else {
+                    mostrarError();
+                }
+            } catch (error) {
+                console.error('Error cargando logs:', error);
+                mostrarError();
+            }
+        }
+
+        function renderLogs() {
+            const container = document.getElementById('logsList');
+            const emptyState = document.getElementById('emptyState');
+
+            if (logs.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.innerHTML = logs.map(log => {
+                const {icon, color} = getEventIcon(log.tipo_evento);
+                const userName = log.nombre ? `${log.nombre} ${log.apellido || ''}`.trim() : log.email || 'Sistema';
+                
+                return `
+                    <div class="log-entry" style="border-left-color: ${color};">
+                        <div class="log-content">
+                            <div class="log-action">${log.accion}</div>
+                            <div class="log-time">
+                                ${userName} • ${log.ip_address || 'N/A'} • ${formatDate(log.fecha_creacion)}
+                            </div>
+                        </div>
+                        <div class="log-icon">${icon}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getEventIcon(tipo) {
+            const icons = {
+                'login': {icon: '👤', color: 'var(--primary)'},
+                'logout': {icon: '🚪', color: 'var(--text-muted)'},
+                'crear': {icon: '✨', color: 'var(--success)'},
+                'actualizar': {icon: '✏️', color: 'var(--warning)'},
+                'eliminar': {icon: '🗑️', color: 'var(--danger)'},
+                'ver': {icon: '👁️', color: 'var(--info)'},
+                'descargar': {icon: '⬇️', color: 'var(--primary)'},
+                'error': {icon: '❌', color: 'var(--danger)'},
+                'seguridad': {icon: '⚠️', color: 'var(--warning)'},
+                'sistema': {icon: '⚙️', color: 'var(--text-muted)'}
+            };
+            return icons[tipo] || {icon: '📋', color: 'var(--primary)'};
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('es-MX', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function mostrarError() {
+            const container = document.getElementById('logsList');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: var(--danger);">
+                    ❌ Error al cargar logs
+                </div>
+            `;
+        }
+
+        // Cargar logs al inicio
+        cargarLogs();
     </script>
     <script src="../../assets/js/navigation.js"></script>
     <script>
